@@ -1,0 +1,345 @@
+@charset "UTF-8";
+
+article, aside, figure, footer, header, nav, section {
+    display: block;
+}
+
+html {
+    background-image: -moz-linear-gradient(top, white 0%, #facd8a 100%);
+}
+
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 87.5%;
+    width: 964px;
+    background-color: white;
+    margin: 15px auto;
+    padding: 15px 25px;
+    border: 1px solid black;
+}
+
+section {
+	border-left: 2px solid #ef9c00;
+	border-right: 2px solid #ef9c00;
+}
+
+section, aside, h1, h2, p, ul {
+    margin: 0;
+    padding: 0;
+}
+
+section, aside {
+    margin-top: 1.5em;
+    margin-bottom: 1em;    
+}
+
+h1 { font-size: 175%; }
+
+h2 { font-size: 125%; }
+
+h1, h2 {
+	text-align: center;
+}
+
+a { font-weight: bold; }
+a:link { color: green; }
+a:visited { color: green; }
+a.current { color: #ef9c00; }
+a:hover, a:focus { color: blue; }
+
+ul { 
+    margin-left: 1.5em;
+    margin-bottom: 1.5em; 
+}
+
+li { padding-bottom: 0.25em; }
+
+p { padding-bottom: 0.5em; }
+    
+em { font-weight: bold; }
+
+header { 
+    padding-bottom: 2em;
+    border-bottom: 2px solid #ef9c00;
+}
+
+header h1 {
+    color: #ef9c00;
+    margin-left: 120px;
+    margin-bottom: 0.25em;
+}
+
+header h2 {
+    color: green;
+    font-style: italic;
+    margin-left: 120px;
+}
+
+header img { 
+    float: left;
+}
+
+#nav_bar {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    border-bottom: 2px solid #ef9c00;
+    text-align: center;
+}
+
+#nav_bar ul {
+    margin-bottom: .5em;
+    list-style: none;
+    padding-top: .5em;
+}
+
+#nav_bar li {
+    display: inline;
+    padding: 0 0.5em;
+    border-left: 2px solid black;
+}
+
+#nav_bar li:last-child {
+    display: inline;
+    padding: 0 0.5em;
+    border-right: 2px solid black;
+}
+
+#sidebarA ul {
+    margin-left: 0;
+    list-style: none;
+}
+
+#sidebarA li {
+    margin-bottom: .5em;
+}
+
+section {
+    width: 520px;
+    min-height: 400px;
+    padding-right: 20px;
+    padding-left: 20px;
+    float: left;    
+}
+
+section h1 {
+    margin-bottom: 0.35em; 
+}
+
+section h2 {
+    margin-bottom: 0.35em;
+}
+
+.top_margin {
+    margin-top: 1em;
+}
+
+section img {
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 1em;
+}
+
+.clear_both {
+    clear: both;
+}
+
+section label {
+    float: left;
+    width: 8em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    padding-top: 0.25em;    
+}
+
+section input[type="text"], input[type="email"], input[type="password"] {
+    width: 12em;
+    margin-left: 0.5em;    
+    margin-bottom: 0.5em;
+}
+
+section input[type="submit"] {
+    margin-left: 0.5em;
+}
+
+br {
+    clear: both;
+}
+
+#submit {
+    margin-left: 0.5em;
+}
+
+table, th {
+	border:none;
+}
+
+th {
+    vertical-align: bottom;
+    text-align: left;
+}
+
+td {
+    vertical-align: top;
+}
+
+th, td {
+    padding: .3em;
+}
+
+.top {
+    vertical-align: top;
+}
+
+.cart {
+    width: 700px;
+}
+
+.cart label {
+    float: left;
+    width: 10em;
+    font-weight: bold;
+    padding-top: 0.25em;    
+}
+
+.cart input[type="text"], input[type="email"], input[type="password"] {
+    float: left;
+    width: 12em;
+    margin-left: 0.5em;
+    margin-right: 0.2em;
+}
+
+.cart input[type="button"] {
+    margin-left: 0.5em;
+}
+
+.cart select {
+    margin-left: 0.5em;
+    margin-right: 0.2em;
+}
+
+.cart_row input[type="text"] {
+    width: 2em;
+    margin-left: 0em;
+}
+
+.cart p {
+	font-size: 75%;
+}
+
+#required {
+    margin-left: 8.5em;
+    margin-bottom: .5em;
+}
+
+.required {
+    color: red;
+    margin-bottom: 0;
+}
+
+#quantity_text {
+    width: 2em;
+}
+
+#float_left {
+    float: left;
+    margin-right: 1em;
+}
+
+#admin {
+    width: 700px;
+}
+
+#admin form {
+    margin-top: .5em;
+}
+
+#admin label {
+    width: 14em;
+    margin-left: .5em;
+    padding-top: 0.25em;    
+}
+
+#admin .left_margin {
+    margin-left: 0em;
+}
+
+#admin table {
+	width: 100%;
+	font-size: 75%;
+}
+
+#admin table, #admin tr, #admin td {
+	border: solid 2px black;
+	border-collapse: collapse;
+}
+
+aside h1 {
+    font-size: 125%;
+    padding-bottom: .5em;
+}
+
+aside h2 {
+    font-size: 100%;
+    color: green;
+    padding-bottom: .5em;
+}
+
+aside p {
+    margin-bottom: .5em;
+}
+
+aside img {
+    margin-bottom: 1em;    
+}
+
+#sidebarA { 
+    width: 180px; 
+    height: 100%;
+    float: left; 
+}
+
+#sidebarB { 
+    width: 180px; 
+    height: 100%;
+    float: right; 
+    padding-left: 20px;
+}
+
+footer {
+    clear: both;
+    margin-top: 1em;
+    border-top: 2px solid #ef9c00;
+    padding-top: 0.7em;
+}
+
+footer p {
+    font-size: 80%;
+    text-align: right;
+}
+
+.pad_top {
+    padding-top: 0.25em;
+}
+
+.no_pad_top {
+    padding-top: 0;
+}
+
+.margin_left {
+    margin-left: 0.5em;
+}
+
+.no_underline {
+    text-decoration:none;
+}
+
+#edit table, #edit tr, #edit td, #edit th {
+	border-collapse: collapse;
+	vertical-align: middle;
+}
+
+table, th, td, tr {
+	border: solid 1px black;
+	border-collapse: collapse;
+}
