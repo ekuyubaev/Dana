@@ -15,18 +15,18 @@ public class OrderDB {
 
         //This method adds a record to the Invoices table.
         //To insert the exact invoice date, the SQL NOW() function is used.
-        String query = "INSERT INTO Заказ (`ИДКлиент`,`ДатаЗаказа`,"
-        		+ "`Сумма`,`ИДИсполнитель`,`ДатаИсполнения`,`Выполнен`) "
+        String query = "INSERT INTO пїЅпїЅпїЅпїЅпїЅ (`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`,`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`,"
+        		+ "`пїЅпїЅпїЅпїЅпїЅ`,`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`,`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`,`пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ`) "
                 + "VALUES (?, NOW(), ?, ?, 'null', 0)";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, order.getUser().getClient().getClientId());
+            ps.setInt(1, 0);
             ps.setBigDecimal(2, order.getOrderTotal());
             ps.setInt(3, order.getExecutor().getEmployeeId());
             ps.executeUpdate();
 
             //Get the OrderID from the last INSERT statement.
-            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.продукт";
+            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
             Statement identityStatement = connection.createStatement();
             ResultSet identityResultSet = identityStatement.executeQuery(identityQuery);
             identityResultSet.next();
@@ -55,9 +55,9 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Заказ SET "
-                + "Выполнен = 1 "
-                + "WHERE ИДЗаказ = ?";
+        String query = "UPDATE пїЅпїЅпїЅпїЅпїЅ SET "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = 1 "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, order.getOrderId());
@@ -82,22 +82,22 @@ public class OrderDB {
         //Invoice objects, which each contain a User object.
         //This method returns null if no unprocessed invoices are found.
         String query = "SELECT * "
-                + "FROM Заказ "
-                + "WHERE Выполнен = 0 "
-                + "ORDER BY ДатаЗаказа";
+                + "FROM пїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = 0 "
+                + "ORDER BY пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Order> unprocessedOrders = new ArrayList<>();
             while (rs.next()) {
                 //Create a User object
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
                 User user = UserDB.selectUserByClientID(client.getClientId());
-                user.setClient(client);
-                Employee executor = EmployeeDB.selectEmployee(rs.getInt("ИДИсполнитель"));
+                //user.setClient(client);
+                Employee executor = EmployeeDB.selectEmployee(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
 
                 //Get line items
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 //Create the Order object
@@ -106,8 +106,8 @@ public class OrderDB {
                 order.setUser(user);
                 order.setExecutor(executor);
                 order.setLineItems(lineItems);
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setOrdereDate(rs.getDate("ДатаЗаказа"));          
+                order.setProcessed(rs.getBoolean("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                order.setOrdereDate(rs.getDate("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));          
 
                 unprocessedOrders.add(order);
             }

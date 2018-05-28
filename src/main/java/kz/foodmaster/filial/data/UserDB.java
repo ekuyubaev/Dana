@@ -10,17 +10,12 @@ public class UserDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
-        ClientDB.insert(user.getClient());
 
         String query
-                = "INSERT INTO Клиент (ИДКлиент, ИДСотрудник, ИДРоль, Логин, Пароль) "
+                = "INSERT INTO пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ) "
                 + "VALUES (?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, user.getClient().getClientId());
-            ps.setInt(2, user.getEmployee().getEmployeeId());
-            ps.setInt(3, user.getUserRoleId());
             ps.setString(4, user.getUserLogin());
             ps.setString(5, user.getUserPass());
             
@@ -51,13 +46,11 @@ public class UserDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
-        ClientDB.update(user.getClient());
 
-        String query = "UPDATE Пользователь SET "
-                + "Пароль = ?, "
-                + "ИДРоль = ?, "
-                + "WHERE ИДЗапись = ?";
+        String query = "UPDATE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SET "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, user.getUserPass());
@@ -80,8 +73,8 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Пользователь "
-                + "WHERE Логин = ?";
+        String query = "SELECT * FROM пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -89,14 +82,14 @@ public class UserDB {
             User user = null;
             if (rs.next()) {
                 user = new User();
-                user.setUserID(rs.getInt("ИДЗапись"));
-                user.setUserLogin(rs.getString("Логин"));
-                user.setUserPass(rs.getString("Пароль"));
-                user.setUserRoleId(rs.getInt("ИДРоль"));
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
-                user.setClient(client);
-                Employee emp = EmployeeDB.selectEmployee(rs.getInt("ИДСотрудник"));
-                user.setEmployee(emp);
+                user.setUserID(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserLogin(rs.getString("пїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserPass(rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserRoleId(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅ"));
+                Client client = ClientDB.selectClient(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                //user.setClient(client);
+                Employee emp = EmployeeDB.selectEmployee(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                //user.setEmployee(emp);
             }
             return user;
         } catch (SQLException e) {
@@ -115,8 +108,8 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Пользователь "
-                + "WHERE ИДКлиент = ?";
+        String query = "SELECT * FROM пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, clientID);
@@ -124,14 +117,14 @@ public class UserDB {
             User user = null;
             if (rs.next()) {
                 user = new User();
-                user.setUserID(rs.getInt("ИДЗапись"));
-                user.setUserLogin(rs.getString("Логин"));
-                user.setUserPass(rs.getString("Пароль"));
-                user.setUserRoleId(rs.getInt("ИДРоль"));
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
-                user.setClient(client);
-                Employee emp = EmployeeDB.selectEmployee(rs.getInt("ИДСотрудник"));
-                user.setEmployee(emp);
+                user.setUserID(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserLogin(rs.getString("пїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserPass(rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅ"));
+                user.setUserRoleId(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅ"));
+                Client client = ClientDB.selectClient(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                //user.setClient(client);
+                Employee emp = EmployeeDB.selectEmployee(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+                //user.setEmployee(emp);
             }
             return user;
         } catch (SQLException e) {
@@ -144,14 +137,15 @@ public class UserDB {
         }
     }
     
+    
     public static boolean loginExists(String login) {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT Логин FROM Пользователь "
-                + "WHERE Логин = ?";
+        String query = "SELECT пїЅпїЅпїЅпїЅпїЅ FROM пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -166,27 +160,5 @@ public class UserDB {
             pool.freeConnection(connection);
         }
     }
-    
-    public static boolean clientExists(String clientID) {
-        ConnectionPool pool = ConnectionPool.getInstance();
-        Connection connection = pool.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        String query = "SELECT ИДКлиент FROM Пользователь "
-                + "WHERE ИДКлиент = ?";
-        try {
-            ps = connection.prepareStatement(query);
-            ps.setString(1, clientID);
-            rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            System.err.println(e);
-            return false;
-        } finally {
-            DBUtil.closeResultSet(rs);
-            DBUtil.closePreparedStatement(ps);
-            pool.freeConnection(connection);
-        }
-    }   
+      
 }

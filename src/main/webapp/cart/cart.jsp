@@ -12,6 +12,7 @@
           <p>Ваша корзина пуста.</p>
       </c:when>
       <c:otherwise>
+      	<p><i>${message}</i></p>
         <table>
            <tr>
             <th>Количество</th>
@@ -60,18 +61,9 @@
 </form>
   
 <c:if test="${emptyCart == null}">
-    <!-- Connection is NOT SECURE.  For testing only. -->
     <form action="<c:url value='/order/checkUser'/>" method="post">
       <input type="submit" value="Оформить заказ">
     </form>
-    <!-- Connection is SECURE.  Before you can use it, you need to configure 
-    a secure connection on your system as described in chapter 15, comment
-    out the previous form, and remove the comments from the following form. -->
-    <!--
-    <form action="${absolutePathSecure}/order/checkUser" method="post">
-      <input type="submit" value="Checkout">
-    </form>
-    -->
 </c:if>
 </section>
 

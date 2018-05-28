@@ -5,6 +5,67 @@ import java.sql.*;
 import kz.foodmaster.filial.business.*;
 
 public class ClientDB {
+    
+	public static boolean clientExists(String login) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT * FROM РљР»РёРµРЅС‚ "
+                + "WHERE Р›РѕРіРёРЅ = ?";
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setString(1, login);
+            rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    } 
+    
+	
+    public static Client selectClientByLoginAndPassword(String login, String password) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT * FROM РљР»РёРµРЅС‚ Рљ inner join РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ Рџ "
+        		+ "ON Рљ.Р›РѕРіРёРЅ = Рџ.Р›РѕРіРёРЅ "
+                + "WHERE Рџ.Р›РѕРіРёРЅ = ? and РџР°СЂРѕР»СЊ = ?";
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setString(1, login);
+            ps.setString(2, password);
+            rs = ps.executeQuery();
+            Client client = null;
+            if (rs.next()) {
+            	client = new Client();
+            	client.setClientId(rs.getInt("РР”РљР»РёРµРЅС‚"));
+            	client.setClientName(rs.getString("Р¤РРћРљР»РёРµРЅС‚"));
+            	client.setClientBirthDate(rs.getDate("Р”Р°С‚Р°Р РѕР¶РґРµРЅРёСЏ"));
+            	client.setClientMail(rs.getString("РџРѕС‡С‚Р°"));
+            	client.setClientPhone(rs.getString("РўРµР»РµС„РѕРЅ"));
+            	client.setClientLogin(rs.getString("Р›РѕРіРёРЅ"));
+            }
+            
+            return client;
+            
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
 
     public static void insert(Client client) {
         ConnectionPool pool = ConnectionPool.getInstance();
@@ -13,7 +74,7 @@ public class ClientDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO Клиент (ФИОКлиент, ДатаРождения, Почта, Телефон, Примечание) "
+                = "INSERT INTO пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -51,13 +112,13 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Клиент SET "
-                + "ФИОКлиент = ?, "
-                + "ДатаРождения = ?, "
-                + "Почта = ?, "
-                + "Телефон = ?, "
-                + "Примечание = ? "
-                + "WHERE ИДКлиент = ?";
+        String query = "UPDATE пїЅпїЅпїЅпїЅпїЅпїЅ SET "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ? "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, client.getClientName());
@@ -83,8 +144,8 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент "
-                + "WHERE ИДКлиент = ?";
+        String query = "SELECT * FROM пїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, clientID);
@@ -92,12 +153,12 @@ public class ClientDB {
             Client client = null;
             if (rs.next()) {
             	client = new Client();
-            	client.setClientId(rs.getInt("ИДКлиент"));
-            	client.setClientName(rs.getString("ФИОКлиент"));
-            	client.setClientMail(rs.getString("Почта"));
-            	client.setClientPhone(rs.getString("Телефон"));
-            	client.setClientNotes(rs.getString("Примечание"));
-            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
+            	client.setClientId(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+            	client.setClientName(rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+            	client.setClientMail(rs.getString("пїЅпїЅпїЅпїЅпїЅ"));
+            	client.setClientPhone(rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+            	client.setClientNotes(rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+            	client.setClientBirthDate(rs.getDate("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
             }
             return client;
         } catch (SQLException e) {
@@ -110,26 +171,4 @@ public class ClientDB {
         }
     }
     
-    public static boolean clientExists(int clientID) {
-        ConnectionPool pool = ConnectionPool.getInstance();
-        Connection connection = pool.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        String query = "SELECT ИДКлиент FROM Клиент "
-                + "WHERE ИДКлиент = ?";
-        try {
-            ps = connection.prepareStatement(query);
-            ps.setInt(1, clientID);
-            rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            System.err.println(e);
-            return false;
-        } finally {
-            DBUtil.closeResultSet(rs);
-            DBUtil.closePreparedStatement(ps);
-            pool.freeConnection(connection);
-        }
-    }    
 }

@@ -20,7 +20,7 @@
     </header>
     <nav id="nav_bar">
         <ul>
-        	<li><a href="<c:url value=''/>">
+        	<li><a href="<c:url value='/login' />">
                     Вход в систему</a></li>
             <li><a href="<c:url value=''/>">
                     Регистрация</a></li>

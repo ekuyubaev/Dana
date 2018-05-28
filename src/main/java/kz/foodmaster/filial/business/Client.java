@@ -12,6 +12,7 @@ public class Client implements Serializable {
     private String clientMail;
     private String clientPhone;
     private String clientNotes;
+    private String clientLogin;
     
     public Client() {
     	clientName = "";
@@ -20,6 +21,14 @@ public class Client implements Serializable {
     	clientPhone = "";
     	clientNotes = "";
     }
+
+	public String getClientLogin() {
+		return clientLogin;
+	}
+
+	public void setClientLogin(String clientLogin) {
+		this.clientLogin = clientLogin;
+	}
 
 	public int getClientId() {
 		return clientId;

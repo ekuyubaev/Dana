@@ -40,6 +40,8 @@ public class OrderController extends HttpServlet {
             url = "/cart/user.jsp";
         } else if (requestURI.endsWith("/completeOrder")) {
             url = completeOrder(request, response);
+        }  else if (requestURI.endsWith("/login")) {
+            url = authorizeUser(request, response);
         }
         
         getServletContext()
@@ -52,18 +54,50 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         String url = defaultURL;
+        
         System.out.println("In doGet with request URI = " + requestURI);
+        
         if (requestURI.endsWith("/showCart")) {
             url = showCart(request, response);
         } else if (requestURI.endsWith("/checkUser")) {
             url = checkUser(request, response);
         } else if (requestURI.endsWith("/addItem")) {
             url = addItem(request, response);
+        } else if (requestURI.endsWith("/login")) {
+            url = "/login/login.jsp";
         }
         getServletContext()
                 .getRequestDispatcher(url)
                 .forward(request, response);
     }
+    
+    
+    private String authorizeUser(HttpServletRequest request,
+            HttpServletResponse response) {
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
+        
+        String errMessage = "РџСЂРѕРёР·РѕС€Р»Р° РЅРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°.";
+        
+        String url = "/login/login.jsp";
+        
+        if (!ClientDB.clientExists(login)) {
+        	errMessage = "РљР»РёРµРЅС‚Р° СЃ С‚Р°РєРёРј Р»РѕРіРёРЅРѕРј/РїР°СЂРѕР»РµРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.";
+        	request.setAttribute("message", errMessage);
+        } else {
+        	Client client = ClientDB.selectClientByLoginAndPassword(login, password);
+        	if (client != null) {
+            	url = "/login/welcome.jsp";
+            	System.out.println("РљР»РёРµРЅС‚ Р°РІС‚РѕСЂРёР·РѕРІР°Р»СЃСЏ РЅР° СЃР°Р№С‚Рµ.");
+        	} else {
+        		errMessage = "РќРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ.";
+            	request.setAttribute("message", errMessage);
+        	}
+        }
+        
+        return url;
+    }
+    
     
     private String showCart(HttpServletRequest request,
             HttpServletResponse response) {
@@ -147,27 +181,18 @@ public class OrderController extends HttpServlet {
             HttpServletResponse response) {
 
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-
-        // if the User object exists with address1, skip User page
-        String url = "/cart/user.jsp";
-        if (user != null) {
+        Client client = (Client) session.getAttribute("client");
+        String message;
+        
+        String url = "/cart/cart.jsp";
+        
+        if (client != null) {
             url = "/order/displayOrder";
-        } else {  // otherwise, check the email cookie
-            Cookie[] cookies = request.getCookies();
-            String login
-                    = CookieUtil.getCookieValue(cookies, "loginCookie");
-            if (login.equals("")) {
-                user = new User();
-                url = "/cart/user.jsp";
-            } else {
-                user = UserDB.selectUser(login);
-                if (user != null) {
-                    url = "/order/displayOrder";
-                }
-            }
+        } else {
+        	message = "Р’С‹ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅС‹.\nРџРѕР¶Р°Р»СѓР№СЃС‚Р° Р°РІС‚РѕСЂРёР·СѓР№С‚РµСЃСЊ РІ СЃРёСЃС‚РµРјРµ С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ РїРѕРєСѓРїРєСѓ";
+            request.setAttribute("message", message);
         }
-        session.setAttribute("user", user);
+
         return url;
     }
 
@@ -206,7 +231,7 @@ public class OrderController extends HttpServlet {
             client.setClientPhone(phone);
             client.setClientNotes(notes);
             
-            user.setClient(client);
+            //user.setClient(client);
             
             UserDB.update(user);
         } else {
@@ -225,7 +250,7 @@ public class OrderController extends HttpServlet {
             client.setClientPhone(phone);
             client.setClientNotes(notes);
             
-            user.setClient(client);
+            //user.setClient(client);
             
             UserDB.update(user);
         }
@@ -285,18 +310,18 @@ public class OrderController extends HttpServlet {
         session.setAttribute("cart", null);
         
         // send an email to the user to confirm the order.
-        String to = user.getClient().getClientMail();
+        //String to = user.getClient().getClientMail();
         String from = "kzfoodmasterfilial@gmail.com";
         String subject = "Order Confirmation";
-        String body = "Дорогая(-ой)" + user.getClient().getClientName() + ",\n\n" +
-            "Спасибо за Ваш заказ. " +
-            "Вы должны получить свой заказ в течение 3-5 рабочих дней. " + 
-            "С Вами свяжется наш сотрудник для подтверждения заказа.\n" +
-            "Хорошего дня и спасибо еще раз!\n\n" +
-            "Филиал Фуд Мастер\n";
+        /*String body = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ(-пїЅпїЅ)" + user.getClient().getClientName() + ",\n\n" +
+            "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. " +
+            "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 3-5 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. " + 
+            "пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.\n" +
+            "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ!\n\n" +
+            "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n";*/
         boolean isBodyHTML = false;
-        try {
-            MailUtil.sendMail(to, from, subject, body, isBodyHTML);
+        /*try {
+            //MailUtil.sendMail(to, from, subject, body, isBodyHTML);
         }
         catch(MessagingException e) {
             this.log(
@@ -310,7 +335,7 @@ public class OrderController extends HttpServlet {
                 "SUBJECT: " + subject + "\n" +
                 "\n" +
                 body + "\n\n");
-        }
+        }*/
         
         return "/cart/complete.jsp";
     }    

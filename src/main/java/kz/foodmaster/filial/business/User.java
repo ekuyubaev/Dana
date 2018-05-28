@@ -10,30 +10,12 @@ public class User implements Serializable {
     private int userRoleId;
     private String userLogin;
     private String userPass;
-    private Client client;
-    private Employee employee;
     
 
     public User() {
     	userLogin = "";
     	userPass = "";
     }
-
-	public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
-	}
-
-	public Employee getEmployee() {
-		return employee;
-	}
-
-	public void setEmployee(Employee employee) {
-		this.employee = employee;
-	}
 	
 	public int getUserID() {
 		return userID;
