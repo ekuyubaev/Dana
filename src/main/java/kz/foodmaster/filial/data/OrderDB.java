@@ -7,7 +7,7 @@ import kz.foodmaster.filial.business.*;
 
 public class OrderDB {
 
-    public static void insert(Order order) {
+    public static boolean insert(Order order) {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
@@ -15,18 +15,16 @@ public class OrderDB {
 
         //This method adds a record to the Invoices table.
         //To insert the exact invoice date, the SQL NOW() function is used.
-        String query = "INSERT INTO ����� (`��������`,`����������`,"
-        		+ "`�����`,`�������������`,`��������������`,`��������`) "
-                + "VALUES (?, NOW(), ?, ?, 'null', 0)";
-        try {
-            ps = connection.prepareStatement(query);
-            ps.setInt(1, 0);
+        String query = "Insert into Заказ (ИДКлиент, ДатаЗаказа, Сумма) "
+                + "VALUES (?, NOW(), ?)";
+        try {      	
+        	ps = connection.prepareStatement(query);
+            ps.setInt(1, order.getClient().getClientId());
             ps.setBigDecimal(2, order.getOrderTotal());
-            ps.setInt(3, order.getExecutor().getEmployeeId());
             ps.executeUpdate();
 
             //Get the OrderID from the last INSERT statement.
-            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.�������";
+            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.Заказ";
             Statement identityStatement = connection.createStatement();
             ResultSet identityResultSet = identityStatement.executeQuery(identityQuery);
             identityResultSet.next();
@@ -37,8 +35,9 @@ public class OrderDB {
             //Write line items to the LineItem table.
             List<LineItem> lineItems = order.getLineItems();
             for (LineItem item : lineItems) {
-                LineItemDB.insert(orderID, item);
-            }
+                if (LineItemDB.insert(orderID, item) == 0) throw new SQLException("Error during insert line items.");
+            }            
+            return true;
         } catch (SQLException e) {
             System.err.println(e);
         } finally {
@@ -46,6 +45,8 @@ public class OrderDB {
             DBUtil.closePreparedStatement(ps);
             pool.freeConnection(connection);
         }
+        
+        return false;
     }
 
     // This method sets the Invoice.IsProcessed column to 'y'
@@ -103,7 +104,7 @@ public class OrderDB {
                 //Create the Order object
                 Order order = new Order();
                 order.setOrderId(orderID);
-                order.setUser(user);
+                order.setClient(client);
                 order.setExecutor(executor);
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("��������"));

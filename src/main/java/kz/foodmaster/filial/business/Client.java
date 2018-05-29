@@ -13,6 +13,7 @@ public class Client implements Serializable {
     private String clientPhone;
     private String clientNotes;
     private String clientLogin;
+    private String clientAdress;
     
     public Client() {
     	clientName = "";
@@ -20,6 +21,24 @@ public class Client implements Serializable {
     	clientMail = "";
     	clientPhone = "";
     	clientNotes = "";
+    }
+
+	public String getClientAdress() {
+		return clientAdress;
+	}
+
+	
+	public void setClientAdress(String clientAdress) {
+		this.clientAdress = clientAdress;
+	}
+	
+	
+    public String getClientAdressHTMLFormat() {
+        String address = clientName + "<br>";
+
+        address += clientAdress;
+
+        return address;
     }
 
 	public String getClientLogin() {

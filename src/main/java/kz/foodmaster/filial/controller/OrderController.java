@@ -64,7 +64,7 @@ public class OrderController extends HttpServlet {
         } else if (requestURI.endsWith("/addItem")) {
             url = addItem(request, response);
         } else if (requestURI.endsWith("/login")) {
-            url = "/login/login.jsp";
+            url = checkAuthorized(request, response);
         }
         getServletContext()
                 .getRequestDispatcher(url)
@@ -74,27 +74,41 @@ public class OrderController extends HttpServlet {
     
     private String authorizeUser(HttpServletRequest request,
             HttpServletResponse response) {
-        String login = request.getParameter("login");
+    	HttpSession session = request.getSession();
+    	
+    	String url = "/login/login.jsp";
+    	
+    	String message = "";
+    	
+    	Client client = (Client)session.getAttribute("client");
+    	
+    	if (client != null) {
+    		url = "/login/welcome.jsp";
+    		message = "Вы уже авторизованы на сайте под логином: " + client.getClientLogin();
+    		request.setAttribute("message", message);
+    		return url;
+    	}
+    	
+    	String login = request.getParameter("login");
         String password = request.getParameter("password");
         
-        String errMessage = "Произошла неизвестная ошибка.";
+        message = "Произошла неизвестная ошибка.";
         
-        String url = "/login/login.jsp";
         
         if (!ClientDB.clientExists(login)) {
-        	errMessage = "Клиента с таким логином/паролем не существует.";
-        	request.setAttribute("message", errMessage);
+        	message = "Клиента с таким логином/паролем не существует.";	
         } else {
-        	Client client = ClientDB.selectClientByLoginAndPassword(login, password);
+        	client = ClientDB.selectClientByLoginAndPassword(login, password);
         	if (client != null) {
             	url = "/login/welcome.jsp";
-            	System.out.println("Клиент авторизовался на сайте.");
+            	message = "Вы успешно авторизованы!";
+            	session.setAttribute("client", client);
         	} else {
-        		errMessage = "Неверный пароль.";
-            	request.setAttribute("message", errMessage);
+        		message = "Клиента с таким логином/паролем не существует.";
         	}
         }
         
+        request.setAttribute("message", message);
         return url;
     }
     
@@ -177,6 +191,26 @@ public class OrderController extends HttpServlet {
         return "/cart/cart.jsp";
     }
     
+    
+    private String checkAuthorized(HttpServletRequest request,
+            HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
+        Client client = (Client) session.getAttribute("client");
+        String message;
+        
+        String url = "/login/login.jsp";
+        
+        if (client != null) {      
+            message = "Вы уже авторизованы на сайте под логином: " + client.getClientLogin();
+    		request.setAttribute("message", message);
+    		url = "/login/welcome.jsp";
+        }
+
+        return url;
+    }
+    
+    
     private String checkUser(HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -196,6 +230,7 @@ public class OrderController extends HttpServlet {
         return url;
     }
 
+    
     private String processUser(HttpServletRequest request,
             HttpServletResponse response) {
         
@@ -264,13 +299,13 @@ public class OrderController extends HttpServlet {
             HttpServletResponse response) {
 
         HttpSession session = request.getSession();        
-        User user = (User) session.getAttribute("user");       
+        Client client = (Client) session.getAttribute("client");       
         Cart cart = (Cart) session.getAttribute("cart");
 
         java.util.Date today = new java.util.Date();
 
         Order order = new Order();
-        order.setUser(user);
+        order.setClient(client);
         order.setOrdereDate(today);
         order.setLineItems(cart.getItems());
         
@@ -283,60 +318,18 @@ public class OrderController extends HttpServlet {
             HttpServletResponse response) {
 
         HttpSession session = request.getSession();
-        Order order = (Order) session.getAttribute("order");
-
-
-        User user = order.getUser();
-        
-        // if a record for the User object exists, update it
-        if (UserDB.loginExists(user.getUserLogin())) {
-            UserDB.update(user);
-        } else { // otherwise, write a new record for the user            
-        	UserDB.insert(user);
-        }        
-        order.setUser(user);
-        
+        Order order = (Order)session.getAttribute("order");
+        String message = "";
         // write a new order record
-        OrderDB.insert(order);
-        
-        // set the emailCookie in the user's browser.
-        Cookie loginCookie = new Cookie("loginCookie",
-        		user.getUserLogin());
-        loginCookie.setMaxAge(60*24*365*2*60);
-        loginCookie.setPath("/");
-        response.addCookie(loginCookie);
-
-        // remove all items from the user's cart
-        session.setAttribute("cart", null);
-        
-        // send an email to the user to confirm the order.
-        //String to = user.getClient().getClientMail();
-        String from = "kzfoodmasterfilial@gmail.com";
-        String subject = "Order Confirmation";
-        /*String body = "�������(-��)" + user.getClient().getClientName() + ",\n\n" +
-            "������� �� ��� �����. " +
-            "�� ������ �������� ���� ����� � ������� 3-5 ������� ����. " + 
-            "� ���� �������� ��� ��������� ��� ������������� ������.\n" +
-            "�������� ��� � ������� ��� ���!\n\n" +
-            "������ ��� ������\n";*/
-        boolean isBodyHTML = false;
-        /*try {
-            //MailUtil.sendMail(to, from, subject, body, isBodyHTML);
+        if (OrderDB.insert(order)) {
+        	message = "Ваш заказ был принят в обработку. " +
+        				"В течение дня с Вами свяжется наш экспедитор, чтобы подтвердить Ваш заказ.";
+        	// remove all items from the user's cart
+            session.setAttribute("cart", null);
         }
-        catch(MessagingException e) {
-            this.log(
-                "Unable to send email. \n" +
-                "You may need to configure your system as " +
-                "described in chapter 15. \n" +
-                "Here is the email you tried to send: \n" +
-                "=====================================\n" +
-                "TO: " + to + "\n" +
-                "FROM: " + from + "\n" +
-                "SUBJECT: " + subject + "\n" +
-                "\n" +
-                body + "\n\n");
-        }*/
-        
+        else message = "В процессе оформления заказа произошла ошибка. Проверьте данные и попробуйте снова.";
+
+        request.setAttribute("message", message);
         return "/cart/complete.jsp";
     }    
 }

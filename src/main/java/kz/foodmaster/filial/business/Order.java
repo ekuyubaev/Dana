@@ -9,7 +9,7 @@ public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int orderId;
-	private User user;
+	private Client client;
     private List<LineItem> lineItems;
     private Date ordereDate;
     private Employee executor;
@@ -20,12 +20,12 @@ public class Order implements Serializable {
     	processedDate = null;
     }
 
-	public User getUser() {
-		return user;
+	public Client getClient() {
+		return client;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 	public List<LineItem> getLineItems() {
@@ -62,7 +62,7 @@ public class Order implements Serializable {
     public BigDecimal getOrderTotal() {
         BigDecimal orderTotal = BigDecimal.ZERO;
         for (LineItem item : lineItems) {
-        	orderTotal.add(item.getTotal());
+        	orderTotal = orderTotal.add(item.getTotal());
         }
         return orderTotal;
     }

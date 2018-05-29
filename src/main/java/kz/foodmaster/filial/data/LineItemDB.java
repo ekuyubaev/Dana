@@ -14,8 +14,9 @@ public class LineItemDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
+        int result = 0;
 
-        String query = "INSERT INTO Корзина(ИДЗаказ, ИДПродукт, Стоимость, Количество) "
+        String query = "INSERT INTO РљРѕСЂР·РёРЅР° (РР”Р—Р°РєР°Р·, РР”РџСЂРѕРґСѓРєС‚, РЎС‚РѕРёРјРѕСЃС‚СЊ, РљРѕР»РёС‡РµСЃС‚РІРѕ) "
                 + "VALUES (?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -23,10 +24,11 @@ public class LineItemDB {
             ps.setLong(2, lineItem.getProduct().getProductID());
             ps.setBigDecimal(3, lineItem.getProduct().getProductPrice());
             ps.setInt(4, lineItem.getQuantity());
-            return ps.executeUpdate();
+            result = ps.executeUpdate();
+            return result;
         } catch (SQLException e) {
             System.err.println(e);
-            return 0;
+            return result;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
@@ -41,8 +43,8 @@ public class LineItemDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Корзина "
-                + "WHERE ИДЗаказ = ?";
+        String query = "SELECT * FROM пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, orderID);
@@ -50,16 +52,17 @@ public class LineItemDB {
             List<LineItem> lineItems = new ArrayList<>();
             while (rs.next()) {
                 LineItem lineItem = new LineItem();
-                String productID = rs.getString("ИДПродукт");
+                String productID = rs.getString("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
                 Product product = ProductDB.selectProduct(productID);
-                product.setProductPrice(rs.getBigDecimal("Стоимость"));
+                product.setProductPrice(rs.getBigDecimal("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
                 lineItem.setProduct(product);
-                lineItem.setQuantity(rs.getInt("Количество"));
+                lineItem.setQuantity(rs.getInt("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
                 lineItems.add(lineItem);
             }
+            
             return lineItems;
         } catch (SQLException e) {
-            System.err.println(e);
+            System.err.println(e); 
             return null;
         } finally {
             DBUtil.closeResultSet(rs);
