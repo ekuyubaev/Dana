@@ -4,6 +4,7 @@ package kz.foodmaster.filial.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,10 +16,12 @@ import javax.servlet.http.HttpSession;
 import kz.foodmaster.filial.business.Category;
 import kz.foodmaster.filial.business.Discount;
 import kz.foodmaster.filial.business.Measure;
+import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.Product;
 import kz.foodmaster.filial.data.CategoryDB;
 import kz.foodmaster.filial.data.DiscountDB;
 import kz.foodmaster.filial.data.MeasureDB;
+import kz.foodmaster.filial.data.OrderDB;
 import kz.foodmaster.filial.data.ProductDB;
 
 public class AdminController extends HttpServlet {
@@ -50,6 +53,14 @@ public class AdminController extends HttpServlet {
             url = insertDiscount(request, response);
         } else if (requestURI.endsWith("/displayDiscounts")) {
         	url = displayDiscounts(request, response);
+        }  else if (requestURI.endsWith("/confirmOrder")) {
+        	url = confirmOrder(request, response);
+        }   else if (requestURI.endsWith("/cancelOrder")) {
+        	url = cancelOrder(request, response);
+        }   else if (requestURI.endsWith("/displayOrders")) {
+        	url = displayOrders(request, response);
+        }   else if (requestURI.endsWith("/completeOrder")) {
+        	url = completeOrder(request, response);
         }
 
         getServletContext()
@@ -90,6 +101,10 @@ public class AdminController extends HttpServlet {
             url = addDiscount(request, response);
         } else if (requestURI.endsWith("/deleteDiscount")) {
             url = deleteDiscount(request, response);
+        } else if (requestURI.endsWith("/displayOrders")) {
+            url = displayOrders(request, response);
+        }  else if (requestURI.endsWith("/displayOrder")) {
+            url = displayOrder(request, response);
         }
 
         getServletContext()
@@ -388,5 +403,66 @@ public class AdminController extends HttpServlet {
     	int discountID = Integer.parseInt(request.getParameter("discountID"));
     	DiscountDB.deleteDiscount(discountID);
         return "/adminController/displayDiscounts";
+    }
+    
+    
+    private String displayOrders(HttpServletRequest request,
+            HttpServletResponse response) {
+
+        int filter = 1;
+        String filterStr = request.getParameter("orderFilter");
+        
+        if (!(filterStr == null)) filter = Integer.parseInt(filterStr);
+        ArrayList<Order> orders = OrderDB.selectOrders(filter);
+        
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderFilter", filterStr);
+        
+        return "/admin/orders.jsp";
+    }
+    
+    
+    private String displayOrder(HttpServletRequest request,
+            HttpServletResponse response) {
+
+        int orderID = Integer.parseInt(request.getParameter("orderID"));
+        Order order = OrderDB.selectOrder(orderID);
+        
+        request.setAttribute("order", order);
+        
+        return "/admin/OrderForm.jsp";
+    }
+    
+    
+    private String confirmOrder(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        
+    	int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+        OrderDB.confirmOrder(orderID);
+
+        return "/adminController/displayOrders";
+    }
+    
+    
+    private String cancelOrder(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        
+    	int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+        OrderDB.cancelOrder(orderID);
+
+        return "/adminController/displayOrders";
+    }
+    
+    
+    private String completeOrder(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        
+    	int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+        OrderDB.finishOrder(orderID);
+
+        return "/adminController/displayOrders";
     }
 }

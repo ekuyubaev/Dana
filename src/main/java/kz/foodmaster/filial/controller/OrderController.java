@@ -4,6 +4,7 @@ package kz.foodmaster.filial.controller;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.mail.MessagingException;
@@ -66,6 +67,7 @@ public class OrderController extends HttpServlet {
         } else if (requestURI.endsWith("/login")) {
             url = checkAuthorized(request, response);
         }
+        
         getServletContext()
                 .getRequestDispatcher(url)
                 .forward(request, response);
@@ -306,7 +308,7 @@ public class OrderController extends HttpServlet {
 
         Order order = new Order();
         order.setClient(client);
-        order.setOrdereDate(today);
+        order.setOrderDate(today);
         order.setLineItems(cart.getItems());
         
         session.setAttribute("order", order);
@@ -331,5 +333,5 @@ public class OrderController extends HttpServlet {
 
         request.setAttribute("message", message);
         return "/cart/complete.jsp";
-    }    
+    } 
 }

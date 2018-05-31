@@ -43,8 +43,8 @@ public class LineItemDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM ������� "
-                + "WHERE ������� = ?";
+        String query = "SELECT * FROM Корзина "
+                + "WHERE ИДЗаказ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, orderID);
@@ -52,11 +52,11 @@ public class LineItemDB {
             List<LineItem> lineItems = new ArrayList<>();
             while (rs.next()) {
                 LineItem lineItem = new LineItem();
-                String productID = rs.getString("���������");
+                String productID = rs.getString("ИДПродукт");
                 Product product = ProductDB.selectProduct(productID);
-                product.setProductPrice(rs.getBigDecimal("���������"));
+                product.setProductPrice(rs.getBigDecimal("Стоимость"));
                 lineItem.setProduct(product);
-                lineItem.setQuantity(rs.getInt("����������"));
+                lineItem.setQuantity(rs.getInt("Количество"));
                 lineItems.add(lineItem);
             }
             

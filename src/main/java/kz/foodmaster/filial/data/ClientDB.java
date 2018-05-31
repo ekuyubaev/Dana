@@ -144,8 +144,8 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM ������ "
-                + "WHERE �������� = ?";
+        String query = "SELECT * FROM Клиент "
+                + "WHERE ИДКлиент = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, clientID);
@@ -153,12 +153,12 @@ public class ClientDB {
             Client client = null;
             if (rs.next()) {
             	client = new Client();
-            	client.setClientId(rs.getInt("��������"));
-            	client.setClientName(rs.getString("���������"));
-            	client.setClientMail(rs.getString("�����"));
-            	client.setClientPhone(rs.getString("�������"));
-            	client.setClientNotes(rs.getString("����������"));
-            	client.setClientBirthDate(rs.getDate("������������"));
+            	client.setClientId(rs.getInt("ИДКлиент"));
+            	client.setClientName(rs.getString("ФИОКлиент"));
+            	client.setClientMail(rs.getString("Почта"));
+            	client.setClientPhone(rs.getString("Телефон"));
+            	client.setClientNotes(rs.getString("Примечание"));
+            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
             }
             return client;
         } catch (SQLException e) {

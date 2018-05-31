@@ -8,13 +8,15 @@ import java.math.BigDecimal;
 public class Order implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private int orderId;
+	private int orderID;
 	private Client client;
     private List<LineItem> lineItems;
-    private Date ordereDate;
+    private Date orderDate;
     private Employee executor;
     private Date processedDate;
-    private boolean isProcessed;
+    private boolean processed;
+    private boolean confirmed;
+    private boolean cancelled;
 
     public Order() {
     	processedDate = null;
@@ -36,26 +38,26 @@ public class Order implements Serializable {
 		this.lineItems = lineItems;
 	}
 
-	public Date getOrdereDate() {
-		return ordereDate;
+	public Date getOrderDate() {
+		return orderDate;
 	}
-
-	public void setOrdereDate(Date ordereDate) {
-		this.ordereDate = ordereDate;
+	
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
 	}
 
 	public String getOrderDateDefaultFormat() {
         DateFormat dateFormat = DateFormat.getDateInstance();
-        String invoiceDateFormatted = dateFormat.format(ordereDate);
+        String invoiceDateFormatted = dateFormat.format(orderDate);
         return invoiceDateFormatted;
     }
 
-    public int getOrderId() {
-		return orderId;
+    public int getOrderID() {
+		return orderID;
 	}
 
-	public void setOrderId(int orderId) {
-		this.orderId = orderId;
+	public void setOrderID(int orderID) {
+		this.orderID = orderID;
 	}
 
 
@@ -90,10 +92,26 @@ public class Order implements Serializable {
 	}
 
 	public boolean isProcessed() {
-		return isProcessed;
+		return processed;
 	}
 
-	public void setProcessed(boolean isProcessed) {
-		this.isProcessed = isProcessed;
+	public void setProcessed(boolean processed) {
+		this.processed = processed;
+	}
+
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 }

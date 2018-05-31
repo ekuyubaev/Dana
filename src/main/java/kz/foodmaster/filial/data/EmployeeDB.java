@@ -13,7 +13,7 @@ public class EmployeeDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO Сотрудник (ИДДолжность, ФИОСотрудник, ДатаРождения, Телефон, Примечание) "
+                = "INSERT INTO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -51,13 +51,13 @@ public class EmployeeDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Сотрудник SET "
-                + "ИДДолжность = ?, "
-        		+ "ФИОСотрудник = ?, "
-                + "ДатаРождения = ?, "
-                + "Телефон = ?, "
-                + "Примечание = ? "
-                + "WHERE ИДСотрудник = ?";
+        String query = "UPDATE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SET "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+        		+ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?, "
+                + "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ? "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, emp.getPositionId());
@@ -83,8 +83,8 @@ public class EmployeeDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Сотрудник "
-                + "WHERE ИДСотрудник = ?";
+        String query = "SELECT * FROM РЎРѕС‚СЂСѓРґРЅРёРє "
+                + "WHERE РР”РЎРѕС‚СЂСѓРґРЅРёРє = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, empID);
@@ -92,12 +92,12 @@ public class EmployeeDB {
             Employee emp = null;
             if (rs.next()) {
             	emp = new Employee();
-            	emp.setEmployeeId(rs.getInt("ИДКлиент"));
-            	emp.setPositionId(rs.getInt("ИДДолжность"));
-            	emp.setEmployeeName(rs.getString("ФИОСотрудник"));
-            	emp.setEmployeePhone(rs.getString("Телефон"));
-            	emp.setEmployeeNotes(rs.getString("Примечание"));
-            	emp.setEmployeeBirthDate(rs.getDate("ДатаРождения"));
+            	emp.setEmployeeId(rs.getInt("РР”РЎРѕС‚СЂСѓРґРЅРёРє"));
+            	emp.setPositionId(rs.getInt("РР”Р”РѕР»Р¶РЅРѕСЃС‚СЊ"));
+            	emp.setEmployeeName(rs.getString("Р¤РРћРЎРѕС‚СЂСѓРґРЅРёРє"));
+            	emp.setEmployeePhone(rs.getString("РўРµР»РµС„РѕРЅ"));
+            	emp.setEmployeeNotes(rs.getString("РџСЂРёРјРµС‡Р°РЅРёРµ"));
+            	emp.setEmployeeBirthDate(rs.getDate("Р”Р°С‚Р°Р РѕР¶РґРµРЅРёСЏ"));
             }
             return emp;
         } catch (SQLException e) {
@@ -116,8 +116,8 @@ public class EmployeeDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT ИДСотрудник FROM Сотрудник "
-                + "WHERE ИДСотрудник = ?";
+        String query = "SELECT пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ FROM пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
+                + "WHERE пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, empID);
