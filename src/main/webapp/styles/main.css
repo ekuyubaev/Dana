@@ -347,3 +347,26 @@ table, th, td, tr {
 i {
 	color: red;
 }
+
+#forum {
+    width: 700px;
+}
+
+#messageTable th {
+	font-size: 75%;	
+	width: 20%;
+}
+
+#forum table {
+	width: 100%;
+}
+
+#forum th {
+	text-align: center;
+}
+
+.theme {	
+	width: 70%;
+}
+
+

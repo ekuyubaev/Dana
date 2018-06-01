@@ -61,6 +61,9 @@ public class TopicDB {
             	topic = new Topic();
             	topic.setID(rs.getInt("ИДТема"));
             	topic.setName(rs.getString("Тема"));
+            	
+            	List<Message> messages = MessageDB.selectMessages(rs.getInt("ИДТема"));
+            	topic.setMessages(messages);
             }
             return topic;
         } catch (SQLException e) {

@@ -26,7 +26,7 @@
                     Регистрация</a></li>
             <li><a href="<c:url value='/order/showCart'/>">
                     Показать корзину</a></li>
-            <li><a href="<c:url value=''/>">
+            <li><a href="<c:url value='/forum'/>">
                     Форум</a></li>
             <li><a href="<c:url value='/order/showCart'/>">
                     Личный кабинет</a></li>

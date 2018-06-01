@@ -109,7 +109,7 @@ public class OrderController extends HttpServlet {
         		message = "Клиента с таким логином/паролем не существует.";
         	}
         }
-        
+        System.out.println(message);
         request.setAttribute("message", message);
         return url;
     }

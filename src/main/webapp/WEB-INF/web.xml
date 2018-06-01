@@ -49,6 +49,14 @@
         <servlet-name>UserController</servlet-name>
         <url-pattern>/client/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <url-pattern>/forum</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <url-pattern>/forumController/*</url-pattern>
+    </servlet-mapping>
 
     <!-- define a servlet context listener -->
     <listener>

@@ -73,8 +73,8 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM ������������ "
-                + "WHERE ����� = ?";
+        String query = "SELECT * FROM Пользователь "
+                + "WHERE Логин = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -82,8 +82,8 @@ public class UserDB {
             User user = null;
             if (rs.next()) {
                 user = new User();
-                user.setUserID(rs.getInt("��������"));
-                user.setUserLogin(rs.getString("�����"));
+                user.setUserID(rs.getInt(""));
+                user.setUserLogin(rs.getString("Логин"));
                 user.setUserPass(rs.getString("������"));
                 user.setUserRoleId(rs.getInt("������"));
                 Client client = ClientDB.selectClient(rs.getInt("��������"));

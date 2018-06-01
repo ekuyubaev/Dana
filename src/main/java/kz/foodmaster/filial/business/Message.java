@@ -7,11 +7,20 @@ public class Message implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int ID;
+	private int topicID;
 	private String userLogin;
 	private Date datetime;
 	private String text;
 	
 	public Message() {
+	}
+
+	public int getTopicID() {
+		return topicID;
+	}
+
+	public void setTopicID(int topicID) {
+		this.topicID = topicID;
 	}
 
 	public int getID() {
