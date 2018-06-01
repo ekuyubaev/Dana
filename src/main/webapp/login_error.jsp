@@ -5,7 +5,7 @@
 
 <section>
 
-<h1>Login Form - Error</h1>
+<h2>Login Form - Error</h2>
 <p>You did not log in successfully.</p>
 <p>Please check your username and password and try again.</p>
 
