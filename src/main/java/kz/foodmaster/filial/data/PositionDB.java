@@ -6,7 +6,7 @@ import java.util.*;
 
 import kz.foodmaster.filial.business.*;
 
-public class CategoryDB {
+public class PositionDB {
 
     public static Category selectCategory(String categoryID) {
         ConnectionPool pool = ConnectionPool.getInstance();
@@ -40,25 +40,24 @@ public class CategoryDB {
     }
 
 
-    public static List<Category> selectCategories() {
+    public static List<Position> selectPositions() {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Категория";
+        String query = "SELECT * FROM Должность";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
-            ArrayList<Category> categories = new ArrayList<>();
+            ArrayList<Position> positions = new ArrayList<>();
             while (rs.next()) {
-                Category c = new Category();
-                c.setCategoryID(rs.getInt("ИДКатегория"));
-                c.setCategoryName(rs.getString("Категория"));
-                c.setCategoryNote(rs.getString("Примечание"));
-                categories.add(c);
+            	Position p = new Position();
+                p.setID(rs.getInt("ИДДолжность"));
+                p.setName(rs.getString("Должность"));
+                positions.add(p);
             }
-            return categories;
+            return positions;
         } catch (SQLException e) {
             System.err.println(e);
             return null;

@@ -56,8 +56,6 @@ public class OrderController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = defaultURL;
         
-        System.out.println("In doGet with request URI = " + requestURI);
-        
         if (requestURI.endsWith("/showCart")) {
             url = showCart(request, response);
         } else if (requestURI.endsWith("/checkUser")) {

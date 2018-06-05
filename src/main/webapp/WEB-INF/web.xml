@@ -38,6 +38,10 @@
         <url-pattern>/catalog</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CatalogController</servlet-name>
+        <url-pattern>/index</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>OrderController</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
@@ -65,8 +69,7 @@
 
     <!-- define the welcome files -->
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>index</welcome-file>
     </welcome-file-list>
 
     <!-- Enable the custom error pages -->

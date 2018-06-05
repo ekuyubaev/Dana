@@ -2,6 +2,9 @@ package kz.foodmaster.filial.data;
 
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import kz.foodmaster.filial.business.*;
 
 public class EmployeeDB {
@@ -13,19 +16,19 @@ public class EmployeeDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO ��������� (�����������, ������������, ������������, �������, ����������) "
+                = "INSERT INTO Сотрудник (ФИОСотрудник, ИДДолжность, ДатаРождения, Телефон, Примечание) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, emp.getPositionId());
-            ps.setString(2, emp.getEmployeeName());
+            
+            ps.setString(1, emp.getEmployeeName());
+            ps.setInt(2, emp.getPositionId());
             ps.setDate(3, (Date) emp.getEmployeeBirthDate());
             ps.setString(4, emp.getEmployeePhone());
             ps.setString(5, emp.getEmployeeNotes());
             
             ps.executeUpdate();
             
-            //Get the user ID from the last INSERT statement.
             String identityQuery = "SELECT @@IDENTITY AS IDENTITY";
             Statement identityStatement = connection.createStatement();
             ResultSet identityResultSet = identityStatement.executeQuery(identityQuery);
@@ -51,17 +54,18 @@ public class EmployeeDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE ��������� SET "
-                + "����������� = ?, "
-        		+ "������������ = ?, "
-                + "������������ = ?, "
-                + "������� = ?, "
-                + "���������� = ? "
-                + "WHERE ����������� = ?";
+        String query = "UPDATE Сотрудник SET "
+                + "ФИОСотрудник = ?, "
+        		+ "ИДДолжность = ?, "
+                + "ДатаРождения = ?, "
+                + "Телефон = ?, "
+                + "Примечание = ? "
+                + "WHERE ИДСотрудник = ?";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, emp.getPositionId());
-            ps.setString(2, emp.getEmployeeName());
+            
+            ps.setString(1, emp.getEmployeeName());
+            ps.setInt(2, emp.getPositionId());
             ps.setDate(3, (Date) emp.getEmployeeBirthDate() );
             ps.setString(4, emp.getEmployeePhone());
             ps.setString(5, emp.getEmployeeNotes());
@@ -110,27 +114,62 @@ public class EmployeeDB {
         }
     }
     
-    public static boolean employeeExists(int empID) {
+    
+    public static List<Employee> selectEmployees() {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT ����������� FROM ��������� "
-                + "WHERE ����������� = ?";
+        String query = "SELECT * FROM Сотрудник";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, empID);
             rs = ps.executeQuery();
-            return rs.next();
+            List<Employee> employees = new ArrayList<>();
+            while (rs.next()) {
+            	Employee emp = new Employee();
+            	emp.setEmployeeId(rs.getInt("ИДСотрудник"));
+            	emp.setPositionId(rs.getInt("ИДДолжность"));
+            	emp.setEmployeeName(rs.getString("ФИОСотрудник"));
+            	emp.setEmployeePhone(rs.getString("Телефон"));
+            	emp.setEmployeeNotes(rs.getString("Примечание"));
+            	emp.setEmployeeBirthDate(rs.getDate("ДатаРождения"));
+            	employees.add(emp);
+            }
+            return employees;
         } catch (SQLException e) {
             System.err.println(e);
-            return false;
+            return null;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
             pool.freeConnection(connection);
         }
-    }    
+    }
+    
+    
+    public static void delete(int ID) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "Delete From Сотрудник "
+                + "WHERE ИДСотрудник = ?";
+        try {
+            ps = connection.prepareStatement(query);
+            
+            ps.setInt(1, ID);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e);
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
 }
 

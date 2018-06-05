@@ -17,7 +17,7 @@ public class MeasureDB {
 	        PreparedStatement ps = null;
 	        ResultSet rs = null;
 
-	        String query = "SELECT * FROM ЕдиницаИзмерения";
+	        String query = "SELECT * FROM Р•РґРёРЅРёС†Р°РР·РјРµСЂРµРЅРёСЏ";
 	        try {
 	            ps = connection.prepareStatement(query);
 	            rs = ps.executeQuery();
@@ -26,9 +26,9 @@ public class MeasureDB {
 	            
 	            while (rs.next()) {
 	            	Measure m = new Measure();
-	                m.setMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-	                m.setMeasureName(rs.getString("ЕдиницаИзмерения"));
-	                m.setMeasureSymbol(rs.getString("Обозначение"));
+	                m.setMeasureID(rs.getInt("РР”Р•РґРёРЅРёС†Р°РР·РјРµСЂРµРЅРёСЏ"));
+	                m.setMeasureName(rs.getString("Р•РґРёРЅРёС†Р°РР·РјРµСЂРµРЅРёСЏ"));
+	                m.setMeasureSymbol(rs.getString("РћР±РѕР·РЅР°С‡РµРЅРёРµ"));
 	                measures.add(m);
 	            }
 	            

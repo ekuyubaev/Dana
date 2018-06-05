@@ -250,6 +250,10 @@ th, td {
     width: 700px;
 }
 
+#edit {
+    width: 700px;
+}
+
 #admin form {
     margin-top: .5em;
 }
