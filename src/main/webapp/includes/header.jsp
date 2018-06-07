@@ -22,15 +22,17 @@
         <ul>
         	<li><a href="<c:url value='/login' />">
                     Вход в систему</a></li>
-            <li><a href="<c:url value=''/>">
+            <li><a href="<c:url value='/userController/register'/>">
                     Регистрация</a></li>
             <li><a href="<c:url value='/order/showCart'/>">
                     Показать корзину</a></li>
             <li><a href="<c:url value='/forum'/>">
                     Форум</a></li>
-            <li><a href="<c:url value='/order/showCart'/>">
+            <li><a href="<c:url value='/userController/showCabinet'/>">
                     Личный кабинет</a></li>
-            <li><a href="<c:url value='/adminController'/>">
+            <li><a href="<c:url value='/admin/index.jsp'/>">
                     Администрирование</a></li>
+            <li><a href="<c:url value='/adminController/breakSession'/>">
+                    Выйти</a></li>
         </ul>
     </nav>

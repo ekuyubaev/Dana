@@ -53,6 +53,7 @@ public class ClientDB {
             	client.setClientMail(rs.getString("Почта"));
             	client.setClientPhone(rs.getString("Телефон"));
             	client.setClientLogin(rs.getString("Логин"));
+            	client.setClientAdress(rs.getString("Адрес"));
             }
             
             return client;
@@ -159,6 +160,7 @@ public class ClientDB {
             	client.setClientPhone(rs.getString("Телефон"));
             	client.setClientNotes(rs.getString("Примечание"));
             	client.setClientBirthDate(rs.getDate("ДатаРождения"));
+            	client.setClientAdress(rs.getString("Адрес"));
             }
             return client;
         } catch (SQLException e) {
@@ -170,5 +172,11 @@ public class ClientDB {
             pool.freeConnection(connection);
         }
     }
+
+
+	public static Client selectClient(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

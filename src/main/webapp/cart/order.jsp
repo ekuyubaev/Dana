@@ -14,7 +14,7 @@
     <td colspan=2>${order.orderDateDefaultFormat}</td>
   </tr>
   <tr>
-      <th class="top">Ship To</th>
+      <th class="top">Клиент </th>
     <td colspan=2>${client.clientAdressHTMLFormat}</td>
   </tr>
   <tr>

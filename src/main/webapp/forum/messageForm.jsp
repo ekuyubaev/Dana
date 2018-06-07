@@ -30,9 +30,7 @@
 	            </caption>            
 	            <tr>
 	                <td>
-	                    <textarea rows="20" cols="60" name="text">
-	                    	<c:if test="${message != null}">${message.text}</c:if>
-	                    </textarea> 
+	                    <textarea rows="20" cols="60" name="text"><c:if test="${message != null}">${message.text}</c:if></textarea> 
 	                </td>
 	            </tr>
 	            <tr>

@@ -55,6 +55,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserController</servlet-name>
+        <url-pattern>/userController/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
         <url-pattern>/forum</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

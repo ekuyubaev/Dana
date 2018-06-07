@@ -21,6 +21,7 @@ public class Client implements Serializable {
     	clientMail = "";
     	clientPhone = "";
     	clientNotes = "";
+    	clientAdress = "";
     }
 
 	public String getClientAdress() {

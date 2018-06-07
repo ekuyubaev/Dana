@@ -1,30 +1,39 @@
 package kz.foodmaster.filial.controller;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
+import org.apache.poi.hwpf.HWPFDocument;
+
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Message;
+import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.Topic;
 import kz.foodmaster.filial.business.User;
+import kz.foodmaster.filial.data.ClientDB;
 import kz.foodmaster.filial.data.MessageDB;
+import kz.foodmaster.filial.data.OrderDB;
+import kz.foodmaster.filial.data.RoleDB;
 import kz.foodmaster.filial.data.TopicDB;
 import kz.foodmaster.filial.data.UserDB;
 
 public class UserController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException, ServletException {
-    	
-    	System.out.println("In doGet with request url = " + request.getRequestURL());
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     	
         String requestURI = request.getRequestURI();
+        System.out.println("In doGet with URI = " + requestURI);
         String url = "";
         if (requestURI.endsWith("/forum")) {
             url = showForum(request, response);
@@ -34,6 +43,14 @@ public class UserController extends HttpServlet {
             url = addMessage(request, response);
         } else if (requestURI.endsWith("/editMessage")) {
             url = editMessage(request, response);
+        }  else if (requestURI.endsWith("/register")) {
+            url = "/login/user.jsp";
+        }  else if (requestURI.endsWith("/orders")) {
+            url = displayClientOrders(request, response);
+        }  else if (requestURI.endsWith("/showCabinet")) {
+            url = "/cabinet/index.jsp";
+        }  else if (requestURI.endsWith("/displayClientOrder")) {
+            url = displayClientOrder(request, response);
         }
         
         getServletContext()
@@ -41,14 +58,12 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
     @Override
-    public void doPost(HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException, ServletException {
-
-    	System.out.println("In doPost with request url = " + request.getRequestURL());
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     	
         String requestURI = request.getRequestURI();
+        System.out.println("In doPost with URI = " + requestURI);
         String url = "";
         
         if (requestURI.endsWith("/insertMessage")) {
@@ -57,6 +72,18 @@ public class UserController extends HttpServlet {
             url = updateMessage(request, response);
         } else if (requestURI.endsWith("/enterTopic")) {
             url = showTopic(request, response);
+        }  else if (requestURI.endsWith("/addClient")) {
+        	url = addClient(request, response);
+        }  else if (requestURI.endsWith("/register")) {
+            url = "/login/user.jsp";
+        }  else if (requestURI.endsWith("/cancelOrder")) {
+            url = cancelOrder(request, response);
+        }  else if (requestURI.endsWith("/orders")) {
+            url = displayClientOrders(request, response);
+        }  else if (requestURI.endsWith("/printContract")) {
+            printContract(request, response);
+        }  else if (requestURI.endsWith("/displayClientOrder")) {
+            url = displayClientOrder(request, response);
         }
         
         getServletContext()
@@ -64,8 +91,8 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
-    private String showForum(HttpServletRequest request,
-            HttpServletResponse response) {
+    
+    private String showForum(HttpServletRequest request, HttpServletResponse response) {
 
     	List<Topic> topics = TopicDB.selectTopics();
     	request.setAttribute("topics", topics);
@@ -73,13 +100,11 @@ public class UserController extends HttpServlet {
         return "/forum/forum.jsp";
     }
     
-    private String showTopic(HttpServletRequest request,
-            HttpServletResponse response) {
+    
+    private String showTopic(HttpServletRequest request, HttpServletResponse response) {
 
     	int topicID = Integer.parseInt(request.getParameter("topicID"));
-    	
-    	System.out.println("Topic ID = " + topicID);
-    	
+
     	Topic topic = TopicDB.selectTopic(topicID);
     	request.setAttribute("topic", topic);
     	
@@ -87,8 +112,7 @@ public class UserController extends HttpServlet {
     }
     
     
-    private String addMessage(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addMessage(HttpServletRequest request, HttpServletResponse response) {
 
     	HttpSession session = request.getSession();
     	Client client = (Client)session.getAttribute("client");
@@ -106,8 +130,7 @@ public class UserController extends HttpServlet {
     }
     
     
-    private String editMessage(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editMessage(HttpServletRequest request, HttpServletResponse response) {
 
     	int messageID = Integer.parseInt(request.getParameter("messageID"));
     	Message message = MessageDB.selectMessage(messageID);
@@ -116,18 +139,17 @@ public class UserController extends HttpServlet {
     	HttpSession session = request.getSession();
     	Client client = (Client)session.getAttribute("client");
     	String info = "";
+    	
     	if (client == null) {
     		info = "Вы не авторизованы. Авторизуйтесь в системе, чтобы оставлять сообщения";
     		request.setAttribute("info", info);
-    		return "/forumController/enterTopic";
+    		return "/forumController/enterTopic?topicID=" + message.getTopicID();
     	}
     	
-    	
-    	
-    	if (client.getClientLogin() != message.getUserLogin()) {
+    	if (!client.getClientLogin().equals(message.getUserLogin())) {
     		info = "Вы не можете редактировать чужие сообщения.";
     		request.setAttribute("info", info);
-    		return "/forumController/enterTopic";
+    		return "/forumController/enterTopic?topicID=" + message.getTopicID();
     	}
     	
     	request.setAttribute("message", message);
@@ -136,8 +158,7 @@ public class UserController extends HttpServlet {
     }
     
     
-    private String insertMessage(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String insertMessage(HttpServletRequest request, HttpServletResponse response) {
     	
     	int topicID = Integer.parseInt(request.getParameter("topicID"));
     	String text = request.getParameter("text");
@@ -155,11 +176,10 @@ public class UserController extends HttpServlet {
         return "/forumController/enterTopic";
     }
     
-    private String updateMessage(HttpServletRequest request,
-            HttpServletResponse response) {
+    
+    private String updateMessage(HttpServletRequest request, HttpServletResponse response) {
 
     	int messageID = Integer.parseInt(request.getParameter("messageID"));
-    	int topicID = Integer.parseInt(request.getParameter("topicID"));
     	String text = request.getParameter("text");
     	
     	Message message = new Message();
@@ -168,41 +188,147 @@ public class UserController extends HttpServlet {
     	
     	MessageDB.update(message);
     	
-    	System.out.println("Update message with Topic ID = " + topicID);
-    	
-    	Topic topic = TopicDB.selectTopic(message.getTopicID());
-    	
         return "/forumController/enterTopic";
     }
+    
+    
+    private String addClient(HttpServletRequest request, HttpServletResponse response) {
 
-    private String subscribeToLogin(HttpServletRequest request,
-            HttpServletResponse response) {
+		HttpSession session = request.getSession();
+		
+		String clientName = request.getParameter("clientName");
+		String clientBirthDate = request.getParameter("clientBirthDate");
+		String clientMail = request.getParameter("clientMail");
+		String clientPhone = request.getParameter("clientPhone");
+		String clientAdress = request.getParameter("clientAdress");	
+		String clientLogin = request.getParameter("clientLogin");
+		String password = request.getParameter("password");
+		String passwordConfirmation = request.getParameter("passwordConfirmation"); 
+		
+		Client client = new Client();
+		
+		client.setClientName(clientName);
+		client.setClientBirthDate(Date.valueOf(clientBirthDate));
+		client.setClientMail(clientMail);
+		client.setClientPhone(clientPhone);
+		client.setClientAdress(clientAdress);
+		client.setClientLogin(clientLogin);
+		
+		String message = "";
+		
+		if (ClientDB.clientExists(clientLogin)) {
+			client.setClientLogin("");
+			request.setAttribute("client", client);
+		    request.setAttribute("password", password);
+		    request.setAttribute("passwordConfirmation", passwordConfirmation);  
+		    message = "Клиент с таким логином уже существует. Выберите другой логин.";
+		    request.setAttribute("message", message);
+		    
+		    return "/userController/register";
+		} else if (!password.equals(passwordConfirmation)) {
+			request.setAttribute("client", client);  
+		    message = "Пароли не совпадают.";
+		    request.setAttribute("message", message);
+		    
+		    return "/userController/register";
+		} else {
+		    User user = new User();
+		    user.setUserLogin(clientLogin);
+		    user.setUserPass(password);
+		    UserDB.insert(user);
+		    session.setAttribute("user", user);
+		    
+		    ClientDB.insert(client);
+		    session.setAttribute("client", ClientDB.selectClient(clientLogin));
+		    
+		    RoleDB.insertRole("guest", clientLogin);
+		}
+		
+		String url = "/login/thanks.jsp";
+		return url;
+    } 
+    
+    
+    private String displayClientOrders(HttpServletRequest request, HttpServletResponse response) {
 
-        String login = request.getParameter("login");
-        String pass = request.getParameter("pass");
-        String roleID = request.getParameter("roleID");
-
-        User user = new User();
-        user.setUserLogin(login);
-        user.setUserPass(pass);
-        user.setUserRoleId(Integer.parseInt(roleID));
-
-        request.setAttribute("user", user);
-
-        String url;
-        String message;
-        //check that email address doesn't already exist
-        if (UserDB.loginExists(login)) {
-            message = "This login already exists. <br>"
-                    + "Please enter another login.";
-            request.setAttribute("message", message);
-            url = "/login/index.jsp";
-        } else {
-            UserDB.insert(user);
-            message = "";
-            request.setAttribute("message", message);
-            url = "/login/thanks.jsp";
+        HttpSession session = request.getSession();
+        Client client = (Client)session.getAttribute("client");
+        
+        if (client == null) {
+        	String message = "Вы не авторизованы.";
+        	request.setAttribute("message", message);
+        	return "/cabinet/index.jsp";
         }
-        return url;
+    	
+    	int clientID = client.getClientId();
+        
+    	List<Order> orders = null;
+    	String orderFilter = request.getParameter("orderFilter");
+    	if (orderFilter == null) orderFilter = "4"; 
+    		
+    	orders = OrderDB.selectClientOrders(clientID, Integer.parseInt(orderFilter));
+        
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderFilter", orderFilter);
+        
+        return "/cabinet/clientOrders.jsp";
+    }
+    
+    
+    private String displayClientOrder(HttpServletRequest request, HttpServletResponse response) {
+
+    	String orderID = request.getParameter("orderID");
+    		
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+        
+        request.setAttribute("order", order);
+        
+        return "/cabinet/clientOrder.jsp";
+    }
+    
+    
+    private String cancelOrder(HttpServletRequest request, HttpServletResponse response) {
+
+    	String orderID = request.getParameter("orderID");
+    		
+    	OrderDB.cancelOrder(Integer.parseInt(orderID));
+        
+        return "/userController/orders";
+    }
+    
+    
+    private void printContract(HttpServletRequest request, HttpServletResponse response) {
+
+    	String orderID = request.getParameter("orderID");
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	String path = classLoader.getResource("templates/Dogovor_na_postavku.dot").getFile();
+    	String [] pathParts = path.split("/");
+    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+    	System.out.println(fileName);
+    	HWPFDocument doc = null;
+		OutputStream out = null;
+    	
+    	try {
+			doc = new HWPFDocument(new FileInputStream(path));
+			
+			response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+			out = response.getOutputStream();
+			doc.write(out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	
+        //return "/userController/displayClientOrder";
     }
 }

@@ -40,13 +40,11 @@ public class AdminController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException, ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String requestURI = request.getRequestURI();
-        System.out.println("The " + requestURI + " was got in doPost.");
         String url = "/admin";
+        
         if (requestURI.endsWith("/updateCategory")) {
             url = updateCategory(request, response);
         } else if (requestURI.endsWith("/insertCategory")) {
@@ -106,13 +104,11 @@ public class AdminController extends HttpServlet {
 
     
     @Override
-    public void doGet(HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException, ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String requestURI = request.getRequestURI();
-        System.out.println("The " + requestURI + " was got in doGet.");
         String url = "/admin";
+        
         if (requestURI.endsWith("/displayCategories")) {
             url = displayCategories(request, response);
         } else if (requestURI.endsWith("/editCategory")) {
@@ -173,6 +169,8 @@ public class AdminController extends HttpServlet {
             url = editNews(request, response);
         }   else if (requestURI.endsWith("/deleteNews")) {
             url = deleteNews(request, response);
+        }   else if (requestURI.endsWith("/breakSession")) {
+            url = breakSession(request, response);
         }
 
         getServletContext()
@@ -181,8 +179,7 @@ public class AdminController extends HttpServlet {
     }
 
     
-    private String displayCategories(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayCategories(HttpServletRequest request, HttpServletResponse response) {
 
         List<Category> categories = CategoryDB.selectCategories();
         
@@ -200,8 +197,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editCategory(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editCategory(HttpServletRequest request, HttpServletResponse response) {
 
         String categoryID = request.getParameter("categoryID");
         
@@ -213,8 +209,8 @@ public class AdminController extends HttpServlet {
     }
 
     
-    private String updateCategory(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String updateCategory(HttpServletRequest request, HttpServletResponse response)
+    {
         int categoryID = Integer.parseInt(request.getParameter("categoryID"));
         String categoryName = request.getParameter("categoryName");
         String categoryNote = request.getParameter("categoryNote");
@@ -227,8 +223,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String insertCategory(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertCategory(HttpServletRequest request, HttpServletResponse response) {
     	
         Category category = new Category();
         category.setCategoryName(request.getParameter("categoryName"));
@@ -240,15 +235,13 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addCategory(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addCategory(HttpServletRequest request, HttpServletResponse response) {
 
         return "/admin/CategoryForm.jsp";
     }
     
     
-    private String deleteCategory(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteCategory(HttpServletRequest request, HttpServletResponse response) {
 
     	int categoryID = Integer.parseInt(request.getParameter("categoryID"));
     	CategoryDB.deleteCategory(categoryID);
@@ -256,8 +249,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayProducts(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayProducts(HttpServletRequest request, HttpServletResponse response) {
 
         List<Product> products = ProductDB.selectProducts();
         List<Category> categories = CategoryDB.selectCategories();
@@ -279,8 +271,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editProduct(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editProduct(HttpServletRequest request, HttpServletResponse response) {
 
         String productID = request.getParameter("productID");
         
@@ -296,8 +287,8 @@ public class AdminController extends HttpServlet {
         return "/admin/ProductForm.jsp";
     }
 
-    private String updateProduct(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    
+    private String updateProduct(HttpServletRequest request, HttpServletResponse response) {
         
     	int productID = Integer.parseInt(request.getParameter("productID"));
         String productName = request.getParameter("productName");
@@ -323,8 +314,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addProduct(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addProduct(HttpServletRequest request, HttpServletResponse response) {
     	
     	List<Category> categories = CategoryDB.selectCategories();
         List<Measure> measures = MeasureDB.selectMeasures();
@@ -337,8 +327,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String insertProduct(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertProduct(HttpServletRequest request, HttpServletResponse response) {
     	
         String productName = request.getParameter("productName");
         
@@ -371,8 +360,7 @@ public class AdminController extends HttpServlet {
     }
     
         
-    private String deleteProduct(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteProduct(HttpServletRequest request, HttpServletResponse response) {
 
     	int productID = Integer.parseInt(request.getParameter("productID"));
     	ProductDB.deleteProduct(productID);
@@ -380,8 +368,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayDiscounts(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayDiscounts(HttpServletRequest request, HttpServletResponse response) {
 
         List<Discount> discounts = DiscountDB.selectDiscounts();
         
@@ -400,8 +387,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editDiscount(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editDiscount(HttpServletRequest request, HttpServletResponse response) {
 
         String discountID = request.getParameter("discountID");
         
@@ -412,8 +398,8 @@ public class AdminController extends HttpServlet {
         return "/admin/DiscountForm.jsp";
     }
 
-    private String updateDiscount(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    
+    private String updateDiscount(HttpServletRequest request, HttpServletResponse response) {
         
     	int discountID = Integer.parseInt(request.getParameter("discountID"));
         String discountName = request.getParameter("discountName");
@@ -435,15 +421,13 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addDiscount(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addDiscount(HttpServletRequest request, HttpServletResponse response) {
     	
         return "/admin/DiscountForm.jsp";
     }
     
     
-    private String insertDiscount(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertDiscount(HttpServletRequest request, HttpServletResponse response) {
     	
         String discountName = request.getParameter("discountName");       
         float discountAmount = Float.parseFloat(request.getParameter("discountAmount"));  
@@ -463,8 +447,7 @@ public class AdminController extends HttpServlet {
     }
     
         
-    private String deleteDiscount(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteDiscount(HttpServletRequest request, HttpServletResponse response) {
 
     	int discountID = Integer.parseInt(request.getParameter("discountID"));
     	DiscountDB.deleteDiscount(discountID);
@@ -472,8 +455,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayOrders(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String displayOrders(HttpServletRequest request, HttpServletResponse response) {
 
         int filter = 1;
         String filterStr = request.getParameter("orderFilter");
@@ -488,8 +470,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayOrder(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String displayOrder(HttpServletRequest request, HttpServletResponse response) {
 
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         Order order = OrderDB.selectOrder(orderID);
@@ -500,8 +481,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String confirmOrder(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String confirmOrder(HttpServletRequest request, HttpServletResponse response) {
         
     	int orderID = Integer.parseInt(request.getParameter("orderID"));
 
@@ -511,8 +491,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String cancelOrder(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String cancelOrder(HttpServletRequest request, HttpServletResponse response) {
         
     	int orderID = Integer.parseInt(request.getParameter("orderID"));
 
@@ -522,8 +501,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String completeOrder(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String completeOrder(HttpServletRequest request, HttpServletResponse response) {
         
     	int orderID = Integer.parseInt(request.getParameter("orderID"));
 
@@ -533,8 +511,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayTopics(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayTopics(HttpServletRequest request, HttpServletResponse response) {
         
     	List<Topic> topics = TopicDB.selectTopics();
     	request.setAttribute("topics", topics);
@@ -543,14 +520,13 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addTopic(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addTopic(HttpServletRequest request, HttpServletResponse response) {
 
         return "/admin/TopicForm.jsp";
     }
     
-    private String editTopic(HttpServletRequest request,
-            HttpServletResponse response) {
+    
+    private String editTopic(HttpServletRequest request, HttpServletResponse response) {
 
         int topicID = Integer.parseInt(request.getParameter("topicID"));  
         
@@ -562,9 +538,9 @@ public class AdminController extends HttpServlet {
     }
 
     
-    private String updateTopic(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
-        int topicID = Integer.parseInt(request.getParameter("topicID"));
+    private String updateTopic(HttpServletRequest request, HttpServletResponse response) {
+        
+    	int topicID = Integer.parseInt(request.getParameter("topicID"));
         String topicName = request.getParameter("topicName");
         
         Topic topic = new Topic();
@@ -578,8 +554,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String insertTopic(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertTopic(HttpServletRequest request, HttpServletResponse response) {
     	
         Topic topic = new Topic();
         topic.setName(request.getParameter("topicName"));
@@ -590,8 +565,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String deleteTopic(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteTopic(HttpServletRequest request, HttpServletResponse response) {
 
     	int topicID = Integer.parseInt(request.getParameter("topicID"));
     	TopicDB.deleteTopic(topicID);
@@ -599,8 +573,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayEmployees(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayEmployees(HttpServletRequest request, HttpServletResponse response) {
 
         List<Employee> employees = EmployeeDB.selectEmployees();
         List<Position> positions = PositionDB.selectPositions();
@@ -615,8 +588,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editEmployee(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editEmployee(HttpServletRequest request, HttpServletResponse response) {
 
         int ID = Integer.parseInt(request.getParameter("ID"));
         
@@ -630,8 +602,8 @@ public class AdminController extends HttpServlet {
         return "/admin/EmployeeForm.jsp";
     }
 
-    private String updateEmployee(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    
+    private String updateEmployee(HttpServletRequest request, HttpServletResponse response) {
         
     	int ID = Integer.parseInt(request.getParameter("ID"));
         String name = request.getParameter("name");
@@ -655,8 +627,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addEmployee(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addEmployee(HttpServletRequest request, HttpServletResponse response) {
     	
     	List<Position> positions = PositionDB.selectPositions();
         request.removeAttribute("positions");
@@ -666,8 +637,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String insertEmployee(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertEmployee(HttpServletRequest request, HttpServletResponse response) {
     	
         String name = request.getParameter("name");
         
@@ -694,8 +664,7 @@ public class AdminController extends HttpServlet {
     }
     
         
-    private String deleteEmployee(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteEmployee(HttpServletRequest request, HttpServletResponse response) {
 
     	int ID = Integer.parseInt(request.getParameter("ID"));
     	EmployeeDB.delete(ID);
@@ -703,8 +672,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayTransports(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayTransports(HttpServletRequest request, HttpServletResponse response) {
 
         List<Transport> transports = TransportDB.selectTransports();
         
@@ -717,8 +685,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editTransport(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editTransport(HttpServletRequest request, HttpServletResponse response) {
 
         int ID = Integer.parseInt(request.getParameter("ID"));
         
@@ -730,8 +697,7 @@ public class AdminController extends HttpServlet {
     }
     
 
-    private String updateTransport(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String updateTransport(HttpServletRequest request, HttpServletResponse response) {
         
     	int ID = Integer.parseInt(request.getParameter("ID"));
         String model = request.getParameter("model");
@@ -756,15 +722,13 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String addTransport(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String addTransport(HttpServletRequest request, HttpServletResponse response) {
     	
         return "/admin/TransportForm.jsp";
     }
     
     
-    private String insertTransport(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertTransport(HttpServletRequest request, HttpServletResponse response) {
     	
         String model = request.getParameter("model");
         String number = request.getParameter("number");
@@ -787,8 +751,7 @@ public class AdminController extends HttpServlet {
     }
     
         
-    private String deleteTransport(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteTransport(HttpServletRequest request, HttpServletResponse response) {
 
     	int ID = Integer.parseInt(request.getParameter("ID"));
     	TransportDB.delete(ID);
@@ -796,8 +759,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayNews(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String displayNews(HttpServletRequest request, HttpServletResponse response) {
 
         List<News> newsList = NewsDB.selectNewsList();
         
@@ -810,8 +772,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String editNews(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String editNews(HttpServletRequest request, HttpServletResponse response) {
 
         int ID = Integer.parseInt(request.getParameter("ID"));
         
@@ -823,8 +784,7 @@ public class AdminController extends HttpServlet {
     }
 
     
-    private String updateNews(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String updateNews(HttpServletRequest request, HttpServletResponse response) {
         
     	int ID = Integer.parseInt(request.getParameter("ID"));
         String title = request.getParameter("title");
@@ -847,8 +807,7 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String insertNews(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    private String insertNews(HttpServletRequest request, HttpServletResponse response) {
     	
         String title = request.getParameter("title");
         String text = request.getParameter("text");
@@ -875,11 +834,21 @@ public class AdminController extends HttpServlet {
     }
     
         
-    private String deleteNews(HttpServletRequest request,
-            HttpServletResponse response) {
+    private String deleteNews(HttpServletRequest request, HttpServletResponse response) {
 
     	int ID = Integer.parseInt(request.getParameter("ID"));
     	NewsDB.delete(ID);
         return "/adminController/displayNews";
+    }
+    
+    
+    private String breakSession(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	HttpSession session = request.getSession();
+    	
+    	if (session != null) session.invalidate();
+    	request.getSession(true);
+    	
+    	return "/index";
     }
 }

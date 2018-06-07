@@ -26,7 +26,7 @@ CREATE TABLE `должность` (
   `ИДДолжность` int(11) NOT NULL AUTO_INCREMENT,
   `Должность` varchar(256) NOT NULL,
   PRIMARY KEY (`ИДДолжность`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -35,6 +35,7 @@ CREATE TABLE `должность` (
 
 LOCK TABLES `должность` WRITE;
 /*!40000 ALTER TABLE `должность` DISABLE KEYS */;
+INSERT INTO `должность` VALUES (1,'водитель');
 /*!40000 ALTER TABLE `должность` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -78,12 +79,14 @@ CREATE TABLE `заказ` (
   `ИДИсполнитель` int(11) DEFAULT NULL,
   `ДатаИсполнения` datetime DEFAULT NULL,
   `Выполнен` tinyint(4) NOT NULL DEFAULT '0',
+  `Подтвержден` tinyint(4) DEFAULT '0',
+  `Отменен` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`ИДЗаказ`),
   KEY `fk_Заказ_Клиент1_idx` (`ИДКлиент`),
   KEY `fk_Заказ_Сотрудник2_idx` (`ИДИсполнитель`),
   CONSTRAINT `fk_Заказ_Клиент1` FOREIGN KEY (`ИДКлиент`) REFERENCES `клиент` (`ИДКлиент`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Заказ_Сотрудник2` FOREIGN KEY (`ИДИсполнитель`) REFERENCES `сотрудник` (`ИДСотрудник`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +95,7 @@ CREATE TABLE `заказ` (
 
 LOCK TABLES `заказ` WRITE;
 /*!40000 ALTER TABLE `заказ` DISABLE KEYS */;
-INSERT INTO `заказ` VALUES (12,1,'2018-05-29 18:15:22',500.00,NULL,NULL,0);
+INSERT INTO `заказ` VALUES (12,1,'2018-05-29 18:15:22',500.00,NULL,'2018-05-31 18:22:54',1,1,0),(13,1,'2018-06-04 11:44:25',1000.00,NULL,NULL,0,0,1),(14,1,'2018-06-06 15:52:05',1400.00,NULL,NULL,0,1,0);
 /*!40000 ALTER TABLE `заказ` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,6 +139,7 @@ CREATE TABLE `клиент` (
   `Телефон` varchar(45) NOT NULL,
   `Примечание` longtext,
   `Логин` varchar(64) DEFAULT NULL,
+  `Адрес` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`ИДКлиент`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -146,7 +150,7 @@ CREATE TABLE `клиент` (
 
 LOCK TABLES `клиент` WRITE;
 /*!40000 ALTER TABLE `клиент` DISABLE KEYS */;
-INSERT INTO `клиент` VALUES (1,'Дана Жанкушикова','1990-11-11 00:00:00','dana@mail.ru','87773334422',NULL,'Dana'),(2,'Николай Николаев','1991-12-12 00:00:00','nikolo@gmail.com','87772221111',NULL,NULL);
+INSERT INTO `клиент` VALUES (1,'Дана Жанкушикова','1990-11-11 00:00:00','dana@mail.ru','87773334422',NULL,'Dana',NULL),(2,'Николай Николаев','1991-12-12 00:00:00','nikolo@gmail.com','87772221111',NULL,'Nikolo',NULL);
 /*!40000 ALTER TABLE `клиент` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -168,7 +172,7 @@ CREATE TABLE `корзина` (
   KEY `fk_Корзина_Заказ1_idx` (`ИДЗаказ`),
   CONSTRAINT `fk_Корзина_Заказ1` FOREIGN KEY (`ИДЗаказ`) REFERENCES `заказ` (`ИДЗаказ`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Корзина_Продукт1` FOREIGN KEY (`ИДПродукт`) REFERENCES `продукт` (`ИДПродукт`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -177,7 +181,7 @@ CREATE TABLE `корзина` (
 
 LOCK TABLES `корзина` WRITE;
 /*!40000 ALTER TABLE `корзина` DISABLE KEYS */;
-INSERT INTO `корзина` VALUES (7,12,8,100.00,2),(8,12,9,100.00,3);
+INSERT INTO `корзина` VALUES (7,12,8,100.00,2),(8,12,9,100.00,3),(9,13,8,100.00,10),(10,14,8,100.00,14);
 /*!40000 ALTER TABLE `корзина` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,7 +230,7 @@ CREATE TABLE `новость` (
   `Текст` longtext NOT NULL,
   `Логин` varchar(64) NOT NULL,
   PRIMARY KEY (`ИДНовость`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -235,6 +239,7 @@ CREATE TABLE `новость` (
 
 LOCK TABLES `новость` WRITE;
 /*!40000 ALTER TABLE `новость` DISABLE KEYS */;
+INSERT INTO `новость` VALUES (1,'Тема 2','2018-06-05 11:04:27','                    	                    	\r\nТекст 2             \r\n                    ','dana'),(2,'Заголовок 1','2018-06-05 11:20:25','                    	\r\n      Текст 1              ','dana');
 /*!40000 ALTER TABLE `новость` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,7 +263,7 @@ CREATE TABLE `пользователь` (
 
 LOCK TABLES `пользователь` WRITE;
 /*!40000 ALTER TABLE `пользователь` DISABLE KEYS */;
-INSERT INTO `пользователь` VALUES ('Dana','danak'),('Nikolo','123');
+INSERT INTO `пользователь` VALUES ('Dana','danak'),('Nikolo','123'),('Николай','123');
 /*!40000 ALTER TABLE `пользователь` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,7 +349,7 @@ CREATE TABLE `роль` (
 
 LOCK TABLES `роль` WRITE;
 /*!40000 ALTER TABLE `роль` DISABLE KEYS */;
-INSERT INTO `роль` VALUES ('Dana','admin'),('Nikolo','guest');
+INSERT INTO `роль` VALUES ('Dana','admin'),('Nikolo','guest'),('Николай','guest');
 /*!40000 ALTER TABLE `роль` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -391,7 +396,7 @@ CREATE TABLE `сообщение` (
   PRIMARY KEY (`ИДСообщение`),
   KEY `fk_Сообщение_Тема2_idx` (`ИДТема`),
   CONSTRAINT `fk_Сообщение_Тема2` FOREIGN KEY (`ИДТема`) REFERENCES `тема` (`ИДТема`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -400,6 +405,7 @@ CREATE TABLE `сообщение` (
 
 LOCK TABLES `сообщение` WRITE;
 /*!40000 ALTER TABLE `сообщение` DISABLE KEYS */;
+INSERT INTO `сообщение` VALUES (1,'Dana',1,'2018-06-01 17:14:22','Тестовое сообщение 1'),(2,'Dana',1,'2018-06-01 17:17:18','Тестовое сообщение 2'),(3,'Dana',1,'2018-06-01 17:23:15','Тестовое сообщение 3'),(4,'Dana',1,'2018-06-01 18:16:16','Тестовое сообщение 4'),(5,'Nikolo',1,'2018-06-01 18:37:47','Тестовое сообщение 21              '),(6,'Dana',1,'2018-06-06 15:52:28','Сообщение 12'),(7,'Dana',2,'2018-06-06 16:27:27','Test message 1');
 /*!40000 ALTER TABLE `сообщение` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -420,7 +426,7 @@ CREATE TABLE `сотрудник` (
   PRIMARY KEY (`ИДСотрудник`),
   KEY `fk_Сотрудник_Должность1_idx` (`ИДДолжность`),
   CONSTRAINT `fk_Сотрудник_Должность1` FOREIGN KEY (`ИДДолжность`) REFERENCES `должность` (`ИДДолжность`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -429,6 +435,7 @@ CREATE TABLE `сотрудник` (
 
 LOCK TABLES `сотрудник` WRITE;
 /*!40000 ALTER TABLE `сотрудник` DISABLE KEYS */;
+INSERT INTO `сотрудник` VALUES (4,1,'Иванов Иван Иванович','1983-11-11 00:00:00','+77475272192','Тест'),(5,1,'Котов Кот Котович','1973-02-22 00:00:00','(771) 201-6797','Тест 2');
 /*!40000 ALTER TABLE `сотрудник` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -443,7 +450,7 @@ CREATE TABLE `тема` (
   `ИДТема` int(11) NOT NULL AUTO_INCREMENT,
   `Тема` varchar(256) NOT NULL,
   PRIMARY KEY (`ИДТема`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -452,7 +459,36 @@ CREATE TABLE `тема` (
 
 LOCK TABLES `тема` WRITE;
 /*!40000 ALTER TABLE `тема` DISABLE KEYS */;
+INSERT INTO `тема` VALUES (1,'Test 1'),(2,'Test 2');
 /*!40000 ALTER TABLE `тема` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `транспорт`
+--
+
+DROP TABLE IF EXISTS `транспорт`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `транспорт` (
+  `ИДТранспорт` int(11) NOT NULL AUTO_INCREMENT,
+  `Номер` varchar(45) DEFAULT NULL,
+  `Модель` varchar(45) DEFAULT NULL,
+  `Грузоподъемность` int(11) DEFAULT NULL,
+  `Холодильная` tinyint(4) DEFAULT NULL,
+  `Примечание` longtext,
+  PRIMARY KEY (`ИДТранспорт`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `транспорт`
+--
+
+LOCK TABLES `транспорт` WRITE;
+/*!40000 ALTER TABLE `транспорт` DISABLE KEYS */;
+INSERT INTO `транспорт` VALUES (3,'1111','Модель 1',4000,1,'Тест 1'),(4,'4444','Модель 4',4000,0,'Тест 4'),(5,'5555','Модель 5',4000,0,'Тест 5'),(6,'666','Модель 6',4000,1,'Тест 6');
+/*!40000 ALTER TABLE `транспорт` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -464,4 +500,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-29 18:21:29
+-- Dump completed on 2018-06-07 18:20:20

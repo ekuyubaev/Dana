@@ -25,12 +25,11 @@ public class CatalogController extends HttpServlet {
     	
     	String categoryCode = request.getParameter("categoryID");
         String action = request.getRequestURI();
-
         String url = null;
         
         if (action.endsWith("/catalog")) {
         	url = showProductsByCategory(request, response, categoryCode);
-        } else if (action.endsWith("/")) {
+        } else if (action.endsWith("/") || action.endsWith("/index")) {
         	url = showMainPage(request, response, categoryCode);
         }
  
@@ -44,6 +43,7 @@ public class CatalogController extends HttpServlet {
     	
     	doGet(request, response);
     }
+    
     
     private String showProduct(HttpServletRequest request, HttpServletResponse response) {   	
     	
@@ -76,74 +76,4 @@ public class CatalogController extends HttpServlet {
     	
         return "/index.jsp";
     }
-  
-    /*private String registerUser(HttpServletRequest request,
-            HttpServletResponse response) {
-
-        HttpSession session = request.getSession();
-        String clientName = request.getParameter("clientName");
-        String clientPhone = request.getParameter("clientPhone");
-        String clientMail = request.getParameter("clientMail");
-        String clientNotes = request.getParameter("clientNotes");
-        String clientBirthDate = request.getParameter("clientBirthDate");
-        String login = request.getParameter("login");
-        String pass = request.getParameter("pass");
-        String roleIDString = request.getParameter("roleID"); 
-
-        User user;
-        if (UserDB.loginExists(login)) {
-            user = UserDB.selectUser(login);
-            user.setUserPass(pass);
-            
-            Client client = new Client();
-            client.setClientId(user.getClient().getClientId());
-            client.setClientName(clientName);
-            try {
-	            DateFormat format = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault());
-	            Date birthDate = format.parse(clientBirthDate);
-	            client.setClientBirthDate(birthDate);
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-            client.setClientMail(clientMail);
-            client.setClientPhone(clientPhone);
-            client.setClientNotes(clientNotes);
-            user.setClient(client); 
-            
-            UserDB.update(user);
-        } else {
-            user = new User();
-            user.setUserLogin(login);
-            user.setUserPass(pass);
-            if (roleIDString != null)
-            	user.setUserRoleId(Integer.parseInt(roleIDString));  
-            
-            Client client = new Client();
-            client.setClientName(clientName);
-            try {
-	            DateFormat format = new SimpleDateFormat("dd.mm.yyyy", Locale.getDefault());
-	            Date birthDate = format.parse(clientBirthDate);
-	            client.setClientBirthDate(birthDate);
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-            client.setClientMail(clientMail);
-            client.setClientPhone(clientPhone);
-            client.setClientNotes(clientNotes);
-            user.setClient(client); 
-            
-            UserDB.insert(user);
-        }
-
-        session.setAttribute("user", user);
-
-        Cookie loginCookie = new Cookie("loginCookie", login);
-        loginCookie.setMaxAge(60 * 60 * 24 * 365 * 2);
-        loginCookie.setPath("/");
-        response.addCookie(loginCookie);
-        
-        Product product = (Product) session.getAttribute("product");
-        String url = "/catalog/" + product.getProductId() + "/sound.jsp";
-        return url;
-    }   */ 
 }

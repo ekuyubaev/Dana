@@ -37,5 +37,4 @@ public class Topic  implements Serializable {
 	public void setMessages(List<Message> messages) {
 		this.messages = messages;
 	}
-
 }

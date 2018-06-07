@@ -26,7 +26,6 @@ public class Cart implements Serializable {
     }
 
     public void addItem(LineItem item) {
-        //If the item already exists in the cart, only the quantity is changed.
         int code = item.getProduct().getProductID();
         int quantity = item.getQuantity();
         for (LineItem lineItem : items) {

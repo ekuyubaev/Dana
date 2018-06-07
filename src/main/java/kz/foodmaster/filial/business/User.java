@@ -6,8 +6,6 @@ import java.io.Serializable;
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private int userID;
-    private int userRoleId;
     private String userLogin;
     private String userPass;
     
@@ -16,22 +14,6 @@ public class User implements Serializable {
     	userLogin = "";
     	userPass = "";
     }
-	
-	public int getUserID() {
-		return userID;
-	}
-
-	public void setUserID(int userID) {
-		this.userID = userID;
-	}
-
-	public int getUserRoleId() {
-		return userRoleId;
-	}
-
-	public void setUserRoleId(int userRoleId) {
-		this.userRoleId = userRoleId;
-	}
 
 	public String getUserLogin() {
 		return userLogin;
