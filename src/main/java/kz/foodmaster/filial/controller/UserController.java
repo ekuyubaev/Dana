@@ -1,18 +1,38 @@
 package kz.foodmaster.filial.controller;
 
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.usermodel.CharacterRun;
+import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.hwpf.usermodel.Section;
+import org.apache.poi.hwpf.usermodel.Table;
+import org.apache.poi.hwpf.usermodel.TableCell;
+import org.apache.poi.hwpf.usermodel.TableRow;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
 
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Message;
@@ -298,23 +318,77 @@ public class UserController extends HttpServlet {
     
     
     private void printContract(HttpServletRequest request, HttpServletResponse response) {
-
+    	
     	String orderID = request.getParameter("orderID");
     	ClassLoader classLoader = getClass().getClassLoader();
     	String path = classLoader.getResource("templates/Dogovor_na_postavku.dot").getFile();
     	String [] pathParts = path.split("/");
     	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
-    	System.out.println(fileName);
+
     	HWPFDocument doc = null;
-		OutputStream out = null;
+    	OutputStream  out = null;
+    	
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(order.getOrderDate());
     	
     	try {
 			doc = new HWPFDocument(new FileInputStream(path));
-			
-			response.setContentType("application/msword");
+			//XWPFTable tbl = doc.getTableArray(1);
+			replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+	        int numParas = 0;
+	        ArrayList tables = null; 
+	        Paragraph para = null;
+	        boolean inTable = false;
+	        Range range = null; 
+	        int numRowsInTable = 0; 
+	        int numCellsInRow = 0; 
+	        
+	        range = doc.getRange(); 
+	        numParas = range.numParagraphs();
+	        tables = new ArrayList();
+	        
+	        for(int i = 0; i < numParas; i++) { 
+	        	para = range.getParagraph(i); 
+	        	if(para.isInTable()) { 
+	        		if(!inTable) { 
+	        			tables.add(range.getTable(para)); 
+	        		    inTable = true; 
+	        		} 
+	        	} 
+	        	else { 
+	        		inTable = false; 
+	        	} 
+	        } 
+	        Table table;
+	        TableRow row = null; 
+	        TableCell cell = null; 
+
+        	table = (Table)tables.get(1);
+        	row = new TableRow();
+            //numRowsInTable = table.numRows(); 
+                //row = table.getRow(1); 
+                numCellsInRow = row.numCells(); 
+                for(int k = 0; k < numCellsInRow; k++) { 
+                    cell = row.getCell(k); 
+                    cell.getParagraph(0).insertBefore("test");
+                    
+                } 
+
+	               
+	        response.setContentType("application/msword");
 	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-			out = response.getOutputStream();
-			doc.write(out);
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -322,7 +396,7 @@ public class UserController extends HttpServlet {
 		} finally {
 			try {
 				doc.close();
-				out.close();
+				//out.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -330,5 +404,24 @@ public class UserController extends HttpServlet {
 		}
     	
         //return "/userController/displayClientOrder";
+    }
+    
+    
+    private HWPFDocument replaceText(HWPFDocument doc, String findText, String replaceText) {
+        Range r = doc.getRange();
+        for (int i = 0; i < r.numSections(); ++i) {
+            Section s = r.getSection(i);
+            for (int j = 0; j < s.numParagraphs(); j++) {
+                Paragraph p = s.getParagraph(j);
+                for (int k = 0; k < p.numCharacterRuns(); k++) {
+                    CharacterRun run = p.getCharacterRun(k);
+                    String text = run.text();
+                    if (text.contains(findText)) {
+                        run.replaceText(findText, replaceText);
+                    }
+                }
+            }
+        }
+        return doc;
     }
 }
