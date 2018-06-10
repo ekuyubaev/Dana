@@ -21,6 +21,7 @@
 	        <th>Размер</th>
 	        <th>Начало</th>
 	        <th>Окончание</th>
+	        <th>Продукт</th>
 	        <th>Действия</th>        
 	    </tr>
 	    <c:forEach items="${discounts}" var="discount" varStatus="status">
@@ -32,6 +33,13 @@
 	        </td>
 	        <td>
 	        	<fmt:formatDate value="${discount.discountEnd}" pattern="dd.MM.yyyy" />
+	        </td>
+	        <td>
+	        	<c:forEach var="product" items="${products}">
+					<c:if test="${product.productID == discount.productID}">
+						${product.productName}
+					</c:if>
+				</c:forEach>
 	        </td>
 	        <td>
 	            <a href="<c:url value='/adminController/editDiscount?discountID=${discount.discountID}' />">Редактировать</a>

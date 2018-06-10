@@ -149,28 +149,32 @@ public class AdminController extends HttpServlet {
             url = displayEmployees(request, response);
         } else if (requestURI.endsWith("/addEmployee")) {
             url = addEmployee(request, response);
-        }  else if (requestURI.endsWith("/editEmployee")) {
+        } else if (requestURI.endsWith("/editEmployee")) {
             url = editEmployee(request, response);
-        }   else if (requestURI.endsWith("/deleteEmployee")) {
+        } else if (requestURI.endsWith("/deleteEmployee")) {
             url = deleteEmployee(request, response);
         } else if (requestURI.endsWith("/displayTransports")) {
             url = displayTransports(request, response);
         } else if (requestURI.endsWith("/addTransport")) {
             url = addTransport(request, response);
-        }  else if (requestURI.endsWith("/editTransport")) {
+        } else if (requestURI.endsWith("/editTransport")) {
             url = editTransport(request, response);
-        }   else if (requestURI.endsWith("/deleteTransport")) {
+        } else if (requestURI.endsWith("/deleteTransport")) {
             url = deleteTransport(request, response);
         } else if (requestURI.endsWith("/displayNews")) {
             url = displayNews(request, response);
         } else if (requestURI.endsWith("/addNews")) {
             url = addNews(request, response);
-        }  else if (requestURI.endsWith("/editNews")) {
+        } else if (requestURI.endsWith("/editNews")) {
             url = editNews(request, response);
-        }   else if (requestURI.endsWith("/deleteNews")) {
+        } else if (requestURI.endsWith("/deleteNews")) {
             url = deleteNews(request, response);
-        }   else if (requestURI.endsWith("/breakSession")) {
+        } else if (requestURI.endsWith("/breakSession")) {
             url = breakSession(request, response);
+        } else if (requestURI.endsWith("/displayPlan")) {
+            url = "/admin/plan.jsp";
+        } else if (requestURI.endsWith("/displayReports")) {
+            url = "/admin/reports.jsp";
         }
 
         getServletContext()
@@ -381,6 +385,9 @@ public class AdminController extends HttpServlet {
         
         request.setAttribute("discounts", discounts);
         
+        List<Product> products = ProductDB.selectProducts();
+        request.setAttribute("products", products);
+        
         url = "/admin/discounts.jsp";
         
         return url;
@@ -392,8 +399,10 @@ public class AdminController extends HttpServlet {
         String discountID = request.getParameter("discountID");
         
         Discount discount = DiscountDB.selectDiscount(discountID);
-
         request.setAttribute("discount", discount);
+        
+        List<Product> products = ProductDB.selectProducts();
+        request.setAttribute("products", products);
         
         return "/admin/DiscountForm.jsp";
     }
@@ -406,6 +415,12 @@ public class AdminController extends HttpServlet {
         float discountAmount = Float.parseFloat(request.getParameter("discountAmount"));
         Date discountStart = Date.valueOf(request.getParameter("discountStart"));
         Date discountEnd = Date.valueOf(request.getParameter("discountEnd"));
+        int productID = 0;
+        if (request.getParameter("productID") != null)
+        	productID = Integer.parseInt(request.getParameter("productID"));
+        int categoryID = 0;
+        if (request.getParameter("categoryID") != null)
+        	productID = Integer.parseInt(request.getParameter("categoryID"));
         
         Discount discount= new Discount();
         
@@ -414,6 +429,8 @@ public class AdminController extends HttpServlet {
         discount.setDiscountAmount(discountAmount);
         discount.setDiscountStart(discountStart);
         discount.setDiscountEnd(discountEnd);
+        discount.setProductID(productID);
+        discount.setCategoryID(categoryID);
 
         DiscountDB.updateDiscount(discount);
 
@@ -433,13 +450,17 @@ public class AdminController extends HttpServlet {
         float discountAmount = Float.parseFloat(request.getParameter("discountAmount"));  
         Date discountStart = Date.valueOf(request.getParameter("discountStart"));
         Date discountEnd = Date.valueOf(request.getParameter("discountEnd"));
+        int productID = 0;
+        if (request.getParameter("productID") != null) 
+        	productID = Integer.parseInt(request.getParameter("productID"));
         
         Discount discount = new Discount();
         
-        discount.setDiscountName(discountName);;
-        discount.setDiscountAmount(discountAmount);;
-        discount.setDiscountStart(discountStart);;
-        discount.setDiscountEnd(discountEnd);;
+        discount.setDiscountName(discountName);
+        discount.setDiscountAmount(discountAmount);
+        discount.setDiscountStart(discountStart);
+        discount.setDiscountEnd(discountEnd);
+        discount.setProductID(productID);
 
         DiscountDB.insertDiscount(discount);
 

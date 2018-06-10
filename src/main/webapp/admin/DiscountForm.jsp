@@ -57,6 +57,21 @@
                 </td>
             </tr>
             <tr>
+                <th>Продукт: </th>
+                <td>
+                    <select name="productID">
+					    <c:forEach var="product" items="${products}">
+				    		<c:if test="${product.productID == discount.productID}">
+				    			<option value="${product.productID}" selected>${product.productName}</option>
+				    		</c:if>
+				    		<c:if test="${product.productID != discount.productID}">
+				    			<option value="${product.productID}">${product.productName}</option>
+				    		</c:if>
+					    </c:forEach>
+					</select>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2" align="center">
                     <input type="submit" value="Сохранить" />
                 </td>

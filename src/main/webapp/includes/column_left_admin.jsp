@@ -11,6 +11,7 @@
           <li><a href="<c:url value='/adminController/displayTransports' />">Транспортные средства</a></li>
       	  <li><a href="<c:url value='/adminController/displayNews' />">Новости</a></li>
       	  <li><a href="<c:url value='/adminController/displayTopics' />">Темы форума</a></li>
+      	  <li><a href="<c:url value='/adminController/displayPlan' />">План поставок</a></li>
       	  <li><a href="<c:url value='/adminController/displayReports' />">Отчетные документы</a></li>
       </ul>
     </nav>

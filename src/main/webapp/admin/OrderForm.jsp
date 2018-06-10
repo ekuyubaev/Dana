@@ -58,7 +58,7 @@
 	<input type="hidden" name="orderID" value="${order.orderID}">
      <input type="submit" value="Подтвердить">
 </form>
-<form action="cancelOrder" method="post">
+<form action="cancelOrder" method="post"  id="float_left">
 	<input type="hidden" name="orderID" value="${order.orderID}">
      <input type="submit" value="Отменить">
 </form>
@@ -68,11 +68,21 @@
 	<input type="hidden" name="orderID" value="${order.orderID}">
      <input type="submit" value="Выполнен">
 </form>
-<form action="cancelOrder" method="post">
+<form action="cancelOrder" method="post"  id="float_left">
 	<input type="hidden" name="orderID" value="${order.orderID}">
      <input type="submit" value="Отменить">
 </form>
 </c:if>
+
+<form action="nakladnaia" method="post"  id="float_left">
+	<input type="hidden" name="orderID" value="${order.orderID}">
+    <input type="submit" value="Товарная накладная">
+</form>
+
+<form action="akt" method="post"  id="float_left">
+	<input type="hidden" name="orderID" value="${order.orderID}">
+    <input type="submit" value="Акт выполненных работ">
+</form>
 
 </section>
 

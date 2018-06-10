@@ -71,7 +71,16 @@ public class Order implements Serializable {
 
     public String getOrderTotalCurrencyFormat() {
         NumberFormat currency = NumberFormat.getCurrencyInstance();
+        if (currency instanceof DecimalFormat) {
+            DecimalFormat df = (DecimalFormat) currency;
+            // use local/default decimal symbols with original currency symbol
+            DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+            dfs.setCurrencySymbol("тенге");
+            df.setDecimalFormatSymbols(dfs);
+        }
         String formattedTotal = currency.format(this.getOrderTotal());
+        System.out.println(this.getOrderTotal());
+        System.out.println(formattedTotal);
         return formattedTotal;
     }
 

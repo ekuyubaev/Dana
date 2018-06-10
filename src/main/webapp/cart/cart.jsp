@@ -18,6 +18,7 @@
             <th>Количество</th>
             <th>Наименование</th>
             <th>Цена</th>
+           	<th>Скидка</th>
             <th>Стоимость</th>
             <th>Действия</th>
          </tr>
@@ -34,7 +35,8 @@
               </td>
               <td>${item.product.productName}</td>
               <td>${item.product.productPrice}</td>
-              <td>${item.total}</td>
+              <td>${item.discountAmount}</td>
+              <td>${item.totalCurrencyFormat}</td>
               <td>
                 <form action="<c:url value='/order/removeItem'/>" method="post">
                   <input type="hidden" name="productID" 
@@ -45,7 +47,7 @@
             </tr>
           </c:forEach>
             <tr>
-              <td colspan="5">
+              <td colspan="6">
                 <p><b>Чтобы изменить количество продукта</b>, введите новое количество и нажмите Обновить.</p>
                 <p><b>Чтобы удалить продукт из корзины</b>, нажмите кнопку Удалить.</p>
               </td>

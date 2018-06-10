@@ -11,18 +11,19 @@
 <table>
   <tr>
     <th>Дата</th>
-    <td colspan=2>${order.orderDateDefaultFormat}</td>
+    <td colspan=3>${order.orderDateDefaultFormat}</td>
   </tr>
   <tr>
       <th class="top">Клиент </th>
-    <td colspan=2>${client.clientAdressHTMLFormat}</td>
+    <td colspan=3>${client.clientAdressHTMLFormat}</td>
   </tr>
   <tr>
-      <td colspan="3"><hr></td>
+      <td colspan="4"><hr></td>
   </tr>
   <tr>
       <th>Количество</th>
       <th>Описание</th>
+      <th>Скидка</th>
       <th>Стоимость</th>
   </tr>
 
@@ -30,12 +31,14 @@
   <tr>
     <td>${item.quantity}</td>
     <td>${item.product.productName}</td>
+    <td>${item.discountAmount}</td>
     <td>${item.totalCurrencyFormat}</td>
   </tr>
   </c:forEach>
 
   <tr>
     <th>Итого:</th>
+    <td></td>
     <td></td>
     <td>${order.orderTotalCurrencyFormat}</td>
   </tr>

@@ -1,11 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <aside id="sidebarB">
 	<c:forEach items="${newsList}" var="news" varStatus="status">
 	    <tr>
-	        <td><fmt:formatDate value="${news.time}" pattern="dd.MM.yyyy HH:mm" /></td>
-	        <td>${news.title}</td>
 	        <td>
-	            <a href="<c:url value='/adminController/editNews?ID=${news.ID}' />">Ghjxbnfnm</a>                    
+	        	<h4><a href="<c:url value='/userController/showNews?ID=${news.ID}' />">${news.title}</a></h4>
+				<p>${news.text}</p>                  
             </td>
 	    </tr>
 	    </c:forEach>

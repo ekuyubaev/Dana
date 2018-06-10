@@ -134,6 +134,8 @@ public class OrderController extends HttpServlet {
         if (product != null) {
             LineItem lineItem = new LineItem();
             lineItem.setProduct(product);
+            float discountAmount = DiscountDB.selectDiscountForProduct(Integer.parseInt(productID));
+            lineItem.setDiscountAmount(discountAmount);
             cart.addItem(lineItem);
         }
         session.setAttribute("cart", cart);

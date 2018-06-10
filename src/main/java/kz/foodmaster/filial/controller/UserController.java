@@ -373,15 +373,27 @@ public class UserController extends HttpServlet {
 	        TableCell cell = null; 
 
         	table = (Table)tables.get(1);
-        	row = new TableRow();
-            //numRowsInTable = table.numRows(); 
-                //row = table.getRow(1); 
-                numCellsInRow = row.numCells(); 
-                for(int k = 0; k < numCellsInRow; k++) { 
-                    cell = row.getCell(k); 
-                    cell.getParagraph(0).insertBefore("test");
-                    
-                } 
+        	//row = new TableRow();
+        	int curRow =1;
+        	for(int i=0; i < order.getLineItems().size(); i++) {
+        		row = table.getRow(curRow);
+        		cell = row.getCell(0);
+        		cell.getParagraph(0).insertBefore(String.valueOf(i+1));
+        		cell = row.getCell(1);
+        		cell.getParagraph(0).insertBefore(order.getLineItems().get(i).getProduct().getProductName());
+        		cell = row.getCell(2);
+        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		cell = row.getCell(3);
+        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        		cell = row.getCell(4);
+        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        		curRow++;
+        	}
+        	
+            numRowsInTable = table.numRows();
+            for(int i=numRowsInTable-1; i >= numRowsInTable; i--) {
+            	table.getRow(i).delete();
+            }
 
 	               
 	        response.setContentType("application/msword");
