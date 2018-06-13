@@ -6,8 +6,6 @@
                   На главную</a></li>
           <li><a href="<c:url value='/userController/orders' />">
                   Мои заказы</a></li>
-          <li><a href="<c:url value='/userController/editUser' />">
-                  Настройки профиля</a></li>
       </ul>
     </nav>
 </aside>

@@ -43,7 +43,7 @@
 	    <tr>
 	        <td>${order.orderDate}</td>
 	        <td>${order.client.clientName}</td>
-	        <td>${order.orderTotalCurrencyFormat}</td>
+	        <td>${order.sumCurrencyFormat}</td>
 	        <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
 	        <td><input type="checkbox"<c:if test="${order.processed}"> checked</c:if> disabled></td>
 	        <td>${order.processedDate}</td>

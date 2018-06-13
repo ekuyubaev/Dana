@@ -47,7 +47,7 @@
 	<tr>
 	  <th>Итого:</th>
 	  <td></td>
-	  <td>${order.orderTotalCurrencyFormat}</td>
+	  <td>${order.sumCurrencyFormat}</td>
 	</tr>
 </table>
 

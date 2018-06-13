@@ -394,4 +394,14 @@ i {
 	width: 70%;
 }
 
+.plan input[type="text"] {
+    width: auto;
+}
 
+.plan {
+	width: 700px;
+}
+
+.plan table {
+	width: 100%;
+}

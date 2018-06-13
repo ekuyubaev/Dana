@@ -2,6 +2,9 @@ package kz.foodmaster.filial.data;
 
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import kz.foodmaster.filial.business.*;
 
 public class ClientDB {
@@ -75,15 +78,17 @@ public class ClientDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO ������ (���������, ������������, �����, �������, ����������) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                = "INSERT INTO Клиент (ФИОКлиент, ДатаРождения, Почта, Телефон, Логин, Адрес, Примечание) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, client.getClientName());
             ps.setDate(2, (Date) client.getClientBirthDate());
             ps.setString(3, client.getClientMail());
             ps.setString(4, client.getClientPhone());
-            ps.setString(5, client.getClientNotes());
+            ps.setString(5, client.getClientLogin());
+            ps.setString(6, client.getClientAdress());
+            ps.setString(7, client.getClientNotes());
             
             ps.executeUpdate();
             
@@ -113,13 +118,14 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE ������ SET "
-                + "��������� = ?, "
-                + "������������ = ?, "
-                + "����� = ?, "
-                + "������� = ?, "
-                + "���������� = ? "
-                + "WHERE �������� = ?";
+        String query = "UPDATE Клиент SET "
+                + "ФИОКлиент = ?, "
+                + "ДатаРождения = ?, "
+                + "Почта = ?, "
+                + "Телефон = ?, "
+                + "Примечание = ? "
+                + "Логин = ? "
+                + "WHERE ИДКлиент = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, client.getClientName());
@@ -127,7 +133,8 @@ public class ClientDB {
             ps.setString(3, client.getClientMail());
             ps.setString(4, client.getClientPhone());
             ps.setString(5, client.getClientNotes());
-            ps.setInt(6, client.getClientId());
+            ps.setString(6, client.getClientLogin());
+            ps.setInt(7, client.getClientId());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -161,6 +168,7 @@ public class ClientDB {
             	client.setClientNotes(rs.getString("Примечание"));
             	client.setClientBirthDate(rs.getDate("ДатаРождения"));
             	client.setClientAdress(rs.getString("Адрес"));
+            	client.setClientLogin(rs.getString("Логин"));
             }
             return client;
         } catch (SQLException e) {
@@ -172,11 +180,75 @@ public class ClientDB {
             pool.freeConnection(connection);
         }
     }
-
-
-	public static Client selectClient(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
     
+    
+    public static List<Client> selectClients() {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT * FROM Клиент";
+        try {
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            List<Client> clients = new ArrayList<>();
+            while (rs.next()) {
+            	Client client = new Client();
+            	client.setClientId(rs.getInt("ИДКлиент"));
+            	client.setClientName(rs.getString("ФИОКлиент"));
+            	client.setClientMail(rs.getString("Почта"));
+            	client.setClientPhone(rs.getString("Телефон"));
+            	client.setClientNotes(rs.getString("Примечание"));
+            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
+            	client.setClientAdress(rs.getString("Адрес"));
+            	client.setClientLogin(rs.getString("Логин"));
+            	clients.add(client);
+            }
+            return clients;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }  
+    
+    
+    public static Client selectClient(String login) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT * FROM Клиент "
+                + "WHERE Логин = ?";
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setString(1, login);
+            rs = ps.executeQuery();
+            Client client = null;
+            if (rs.next()) {
+            	client = new Client();
+            	client.setClientId(rs.getInt("ИДКлиент"));
+            	client.setClientName(rs.getString("ФИОКлиент"));
+            	client.setClientMail(rs.getString("Почта"));
+            	client.setClientPhone(rs.getString("Телефон"));
+            	client.setClientNotes(rs.getString("Примечание"));
+            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
+            	client.setClientAdress(rs.getString("Адрес"));
+            	client.setClientLogin(rs.getString("Логин"));
+            }
+            return client;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
 }

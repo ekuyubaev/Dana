@@ -1,7 +1,9 @@
 package kz.foodmaster.filial.data;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 import kz.foodmaster.filial.business.*;
 
@@ -105,6 +107,55 @@ public class OrderDB {
                 order.setCancelled(rs.getBoolean("Отменен"));
                 order.setOrderDate(rs.getDate("ДатаЗаказа"));
                 order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setSum(rs.getBigDecimal("Сумма"));
+
+                orders.add(order);
+            }
+            return orders;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+    
+    
+    public static ArrayList<Order> selectOrders(String date) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        System.out.println(date);
+        
+		String query = "SELECT * "
+                + "FROM Заказ "
+                + "WHERE Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
+                +"and DATE_FORMAT(ДатаЗаказа,'%y-%m-%d') < '" + date + "' "  
+                +"ORDER BY ДатаЗаказа";
+        	
+        try {
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            ArrayList<Order> orders = new ArrayList<>();
+            while (rs.next()) {
+                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+
+                int orderID = rs.getInt("ИДЗаказ");
+                List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
+
+                Order order = new Order();
+                order.setOrderID(orderID);
+                order.setClient(client);
+                order.setLineItems(lineItems);
+                order.setProcessed(rs.getBoolean("Выполнен"));
+                order.setConfirmed(rs.getBoolean("Подтвержден"));
+                order.setCancelled(rs.getBoolean("Отменен"));
+                order.setOrderDate(rs.getDate("ДатаЗаказа"));
+                order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setSum(rs.getBigDecimal("Сумма"));
 
                 orders.add(order);
             }
@@ -150,6 +201,7 @@ public class OrderDB {
                 order.setCancelled(rs.getBoolean("Отменен"));
                 order.setOrderDate(rs.getDate("ДатаЗаказа"));
                 order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setSum(rs.getBigDecimal("Сумма"));
             }
             return order;
         } catch (SQLException e) {
@@ -295,6 +347,7 @@ public class OrderDB {
                 order.setCancelled(rs.getBoolean("Отменен"));
                 order.setOrderDate(rs.getDate("ДатаЗаказа"));
                 order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setSum(rs.getBigDecimal("Сумма"));
 
                 orders.add(order);
             }

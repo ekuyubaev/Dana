@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +17,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import kz.foodmaster.filial.business.Category;
+import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Discount;
 import kz.foodmaster.filial.business.Employee;
 import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.News;
 import kz.foodmaster.filial.business.Order;
+import kz.foodmaster.filial.business.Plan;
 import kz.foodmaster.filial.business.Position;
 import kz.foodmaster.filial.business.Product;
 import kz.foodmaster.filial.business.Topic;
 import kz.foodmaster.filial.business.Transport;
 import kz.foodmaster.filial.business.User;
 import kz.foodmaster.filial.data.CategoryDB;
+import kz.foodmaster.filial.data.ClientDB;
 import kz.foodmaster.filial.data.DiscountDB;
 import kz.foodmaster.filial.data.EmployeeDB;
 import kz.foodmaster.filial.data.MeasureDB;
@@ -95,6 +100,10 @@ public class AdminController extends HttpServlet {
             url = insertNews(request, response);
         } else if (requestURI.endsWith("/displayNews")) {
         	url = displayNews(request, response);
+        } else if (requestURI.endsWith("/findOrders")) {
+        	url = findOrders(request, response);
+        } else if (requestURI.endsWith("/calcPlan")) {
+        	url = calcPlan(request, response);
         }
 
         getServletContext()
@@ -175,6 +184,8 @@ public class AdminController extends HttpServlet {
             url = "/admin/plan.jsp";
         } else if (requestURI.endsWith("/displayReports")) {
             url = "/admin/reports.jsp";
+        } else if (requestURI.endsWith("/displayClients")) {
+            url = displayClients(request, response);
         }
 
         getServletContext()
@@ -439,7 +450,8 @@ public class AdminController extends HttpServlet {
     
     
     private String addDiscount(HttpServletRequest request, HttpServletResponse response) {
-    	
+    	List<Product> products = ProductDB.selectProducts();
+    	request.setAttribute("products", products);
         return "/admin/DiscountForm.jsp";
     }
     
@@ -871,5 +883,71 @@ public class AdminController extends HttpServlet {
     	request.getSession(true);
     	
     	return "/index";
+    }
+    
+    
+    private String findOrders(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String ordersDateStr = request.getParameter("ordersDate");
+    	SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+    	java.util.Date date = new java.util.Date();
+		try {
+			date = in.parse(ordersDateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	List<Order> orders = OrderDB.selectOrders(in.format(date));
+    	request.setAttribute("date", date);
+    	List<Client> clients = Plan.getClientsList(orders);
+    	String [][] matrix = new String[clients.size()+2][clients.size()+2];
+    	matrix[0][1] = "Склад";
+		for (int j=1; j<= clients.size(); j++) {
+			matrix[0][j+1] = clients.get(j-1).getClientName(); 
+		}
+		matrix[1][0] = "Склад";
+		for (int i=1; i<= clients.size(); i++) {
+			matrix[i+1][0] = clients.get(i-1).getClientName(); 
+		}
+		request.setAttribute("matrix", matrix);
+		request.setAttribute("clients", clients);
+    	
+    	return "/admin/plan.jsp";
+    }
+    
+    private String calcPlan(HttpServletRequest request, HttpServletResponse response) {	
+    	String date = request.getParameter("date");
+    	String plainPlan = request.getParameter("plainPlan");
+    	System.out.println(plainPlan);
+
+    	List<Order> orders = OrderDB.selectOrders(date);
+    	List<Client> clients = Plan.getClientsList(orders);
+    	Plan plan = new Plan();
+    	plan.setClients(orders);
+    	for(int i=1; i<=clients.size()+1; i++) {
+			for(int j=1; j<=clients.size()+1; j++) {
+				String paramName = "cell"+i+j;
+				if (request.getParameter(paramName)!=null && !request.getParameter(paramName).isEmpty()) 
+					plan.setEl(i-1, j-1, Integer.parseInt(request.getParameter(paramName)));
+				else plan.setEl(i-1, j-1, 0);
+			}
+    	}
+    	
+    	clients.clear();
+    	clients = plan.getPlan();
+    	request.setAttribute("clients", clients);
+    	request.setAttribute("orders", orders);
+    			
+    	
+    	return "/admin/resultPlan.jsp";
+    }
+    
+    
+    private String displayClients(HttpServletRequest request, HttpServletResponse response) {	
+
+    	List<Client> clients = ClientDB.selectClients();
+    	request.setAttribute("clients", clients);
+    			
+    	
+    	return "/admin/clients.jsp";
     }
 }

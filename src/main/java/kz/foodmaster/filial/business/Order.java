@@ -17,10 +17,31 @@ public class Order implements Serializable {
     private boolean processed;
     private boolean confirmed;
     private boolean cancelled;
+    private BigDecimal sum;
 
-    public Order() {
+	public Order() {
     	processedDate = null;
     }
+	
+    public String getSumCurrencyFormat() {
+    	NumberFormat currency = NumberFormat.getCurrencyInstance();
+        if (currency instanceof DecimalFormat) {
+            DecimalFormat df = (DecimalFormat) currency;
+            DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+            dfs.setCurrencySymbol("тенге");
+            df.setDecimalFormatSymbols(dfs);
+        }
+        String formattedSum = currency.format(this.getSum());
+		return formattedSum;
+	}
+
+	public BigDecimal getSum() {
+		return sum;
+	}
+
+	public void setSum(BigDecimal sum) {
+		this.sum = sum;
+	}
 
 	public Client getClient() {
 		return client;
@@ -79,8 +100,6 @@ public class Order implements Serializable {
             df.setDecimalFormatSymbols(dfs);
         }
         String formattedTotal = currency.format(this.getOrderTotal());
-        System.out.println(this.getOrderTotal());
-        System.out.println(formattedTotal);
         return formattedTotal;
     }
 

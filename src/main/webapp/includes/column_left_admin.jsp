@@ -3,6 +3,7 @@
     <nav>
       <ul>
           <li><a href="<c:url value='/' />">На главную</a></li>
+          <li><a href="<c:url value='/adminController/displayClients' />">Клиенты</a></li>
           <li><a href="<c:url value='/adminController/displayCategories' />">Категории продукции</a></li>
           <li><a href="<c:url value='/adminController/displayProducts' />">Продукция</a></li>
           <li><a href="<c:url value='/adminController/displayDiscounts' />">Скидки</a></li>
