@@ -41,7 +41,7 @@
 	    </tr>
 	    <c:forEach items="${orders}" var="order" varStatus="status">
 	    <tr>
-	        <td>${order.orderDate}</td>
+	        <td>${order.orderDateDefaultFormat}</td>
 	        <td>${order.client.clientName}</td>
 	        <td>${order.sumCurrencyFormat}</td>
 	        <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>

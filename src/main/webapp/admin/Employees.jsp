@@ -33,7 +33,7 @@
 					</c:if>
 				</c:forEach>
 	        </td>
-	        <td>${employee.employeeBirthDate}</td>
+	        <td>${employee.employeeBirthDateDefaultFormat}</td>
 	        <td>${employee.employeePhone}</td>
 	        <td>${employee.employeeNotes}</td>
 	        <td>

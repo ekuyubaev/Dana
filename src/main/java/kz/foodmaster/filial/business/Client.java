@@ -1,6 +1,7 @@
 package kz.foodmaster.filial.business;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Client implements Serializable {
@@ -68,6 +69,13 @@ public class Client implements Serializable {
 
 	public Date getClientBirthDate() {
 		return clientBirthDate;
+	}
+	
+	public String getClientBirthDateDefaultFormat() {
+		SimpleDateFormat ft = 
+			      new SimpleDateFormat ("dd.MM.yyyy");
+		String clientBirthDateFormatted = ft.format(clientBirthDate);
+		return clientBirthDateFormatted;
 	}
 
 	public void setClientBirthDate(Date clientBirthDate) {

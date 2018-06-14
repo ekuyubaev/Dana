@@ -20,9 +20,15 @@
 	    <c:forEach items="${products}" var="product" varStatus="status">
 	    <tr>
 	        <td>${product.productName}</td>
-	        <td>${product.productMeasureID}</td>
+	        <td>
+				<c:forEach var="measure" items="${measures}">
+					<c:if test="${measure.measureID == product.productMeasureID}">
+						${measure.measureSymbol}
+					</c:if>
+				</c:forEach>
+			</td>
 	        <td>${product.productQuantity}</td>
-	        <td>${product.productPrice}</td>
+	        <td>${product.priceCurrencyFormat}</td>
 	        <td>
 	        	<a href="<c:url value='/order/addItem?productID=${product.productID}&categoryID=${product.productCategoryID}'/>">
                     Добавить</a>

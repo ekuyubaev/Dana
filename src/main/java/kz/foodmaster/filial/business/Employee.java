@@ -1,5 +1,6 @@
 package kz.foodmaster.filial.business;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Employee {
@@ -43,6 +44,13 @@ public class Employee {
 
 	public Date getEmployeeBirthDate() {
 		return employeeBirthDate;
+	}
+	
+	public String getEmployeeBirthDateDefaultFormat() {
+		SimpleDateFormat ft = 
+			      new SimpleDateFormat ("dd.MM.yyyy");
+		String employeeBirthDateFormatted = ft.format(employeeBirthDate);
+		return employeeBirthDateFormatted;
 	}
 
 	public void setEmployeeBirthDate(Date employeeBirthDate) {

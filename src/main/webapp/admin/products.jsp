@@ -42,7 +42,7 @@
 				</c:forEach>
 			</td>
 	        <td>${product.productQuantity}</td>
-	        <td>${product.productPrice}</td>
+	        <td>${product.priceCurrencyFormat}</td>
 	        <td>${product.productNote}</td>
 	        <td>
 	            <a href="<c:url value='/adminController/editProduct?productID=${product.productID}' />">Редактировать</a>

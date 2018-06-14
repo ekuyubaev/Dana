@@ -22,7 +22,7 @@
 	    <c:forEach items="${clients}" var="client" varStatus="status">
 	    <tr>
 	        <td>${client.clientName}</td>
-	        <td>${client.clientBirthDate}</td>
+	        <td>${client.clientBirthDateDefaultFormat}</td>
 	        <td>${client.clientMail}</td>
 	        <td>${client.clientPhone}</td>
 	        <td>${client.clientAdress}</td>

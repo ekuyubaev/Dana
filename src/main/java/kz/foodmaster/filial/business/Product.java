@@ -3,6 +3,8 @@ package kz.foodmaster.filial.business;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 
 public class Product implements Serializable {
@@ -81,7 +83,14 @@ public class Product implements Serializable {
 	}
 
 	public String getPriceCurrencyFormat() {
-        NumberFormat currency = NumberFormat.getCurrencyInstance();
-        return currency.format(productPrice);
+		NumberFormat currency = NumberFormat.getCurrencyInstance();
+        if (currency instanceof DecimalFormat) {
+            DecimalFormat df = (DecimalFormat) currency;
+            DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+            dfs.setCurrencySymbol("тенге");
+            df.setDecimalFormatSymbols(dfs);
+        }
+        String formattedPrice = currency.format(this.productPrice);
+        return formattedPrice;
     }
 }
