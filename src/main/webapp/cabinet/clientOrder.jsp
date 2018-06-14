@@ -18,7 +18,7 @@
 	    <th>Отменен</th>       
 	</tr>
 	<tr>
-	    <td>${order.orderDate}</td>
+	    <td>${order.orderDateDefaultFormat}</td>
 	    <td>${order.client.clientAdress}</td>
 	    <td>${order.client.clientPhone}</td>
 	    <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
@@ -51,10 +51,12 @@
 	</tr>
 </table>
 
+<c:if test="${order.confirmed && !order.cancelled}">
 <form action="printContract" method="post">
 	<input type="hidden" name="orderID" value="${order.orderID}">
      <input type="submit" value="Договор на поставку">
 </form>
+</c:if>
 
 <c:if test="${!order.confirmed && !order.cancelled && !order.processed}"> 
 <form action="cancelOrder" method="post">

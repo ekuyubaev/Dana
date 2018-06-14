@@ -19,7 +19,7 @@
 	    <th>Отменен</th>       
 	</tr>
 	<tr>
-	    <td>${order.orderDate}</td>
+	    <td>${order.orderDateDefaultFormat}</td>
 	    <td>${order.client.clientName}</td>
 	    <td>${order.client.clientAdress}</td>
 	    <td>${order.client.clientPhone}</td>

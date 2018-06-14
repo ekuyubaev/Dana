@@ -18,14 +18,14 @@
 	<p>Вы можете заполнить только элементы выше главной диагонали, если расстояние одинаковое в обеих направлениях.</p>
 	<form action="calcPlan" method="post">
 		<input type="hidden" value="${date}" name="date">
-		<label><input id="checkBox" type="checkbox" name="plainPlan"> Составить простой план</label>
+		<label><input id="checkBox" type="checkbox" name="plainPlan" size="50"> Составить простой план</label>
 		<table>
 		<c:forEach var="row" items="${matrix}" varStatus="rownum" >
 			<tr>
 		    <c:forEach var="col" items="${row}"  varStatus="colnum">
 		    	<td>
 		    	<c:if test="${rownum.index>0 && colnum.index>0 && rownum.index != colnum.index}">
-		    		<input type="text" name="cell${rownum.index}${colnum.index}" size="10">
+		    		<input type="text" name="cell${rownum.index}${colnum.index}" value="${col}" size="10">
 		    	</c:if>
 		    	<c:if test="${rownum.index==0 || colnum.index==0}">
 			        <c:if test="${rownum.index==0 && colnum.index==1}">

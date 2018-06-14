@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import kz.foodmaster.filial.business.Category;
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Discount;
+import kz.foodmaster.filial.business.Distance;
 import kz.foodmaster.filial.business.Employee;
 import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.News;
@@ -32,6 +33,7 @@ import kz.foodmaster.filial.business.User;
 import kz.foodmaster.filial.data.CategoryDB;
 import kz.foodmaster.filial.data.ClientDB;
 import kz.foodmaster.filial.data.DiscountDB;
+import kz.foodmaster.filial.data.DistanceDB;
 import kz.foodmaster.filial.data.EmployeeDB;
 import kz.foodmaster.filial.data.MeasureDB;
 import kz.foodmaster.filial.data.NewsDB;
@@ -908,6 +910,33 @@ public class AdminController extends HttpServlet {
 		for (int i=1; i<= clients.size(); i++) {
 			matrix[i+1][0] = clients.get(i-1).getClientName(); 
 		}
+		
+		for (int i=1; i<=clients.size()+1; i++) {
+			for(int j=1; j<= clients.size()+1; j++)
+			{
+				if (i==1 && j==1) matrix[i][j] = String.valueOf(0);
+				else if (i == 1 && j != 1) {
+					Distance d = DistanceDB.haveDistance(0, clients.get(j-2).getClientId());
+					if (d != null) matrix[i][j] = String.valueOf(d.getValue());
+				} else if (i != 1 && j == 1) {
+					Distance d = DistanceDB.haveDistance(clients.get(i-2).getClientId(), 0);
+					if (d != null) matrix[i][j] = String.valueOf(d.getValue());
+				} else {
+					Distance d = DistanceDB.haveDistance(clients.get(i-2).getClientId(), clients.get(j-2).getClientId());
+					if (d != null) matrix[i][j] = String.valueOf(d.getValue());
+				}
+			}
+		}
+		
+		System.out.println("--------After reading from database------------");
+		for (int i=1; i <= clients.size()+1; i++) {
+			for (int j=1; j <= clients.size()+1; j++) {
+				System.out.print(matrix[i][j] + " ");
+			}
+			System.out.println("");
+		}
+		System.out.println("-----------------------------------------");
+		
 		request.setAttribute("matrix", matrix);
 		request.setAttribute("clients", clients);
     	
@@ -923,13 +952,45 @@ public class AdminController extends HttpServlet {
     	List<Client> clients = Plan.getClientsList(orders);
     	Plan plan = new Plan();
     	plan.setClients(orders);
-    	for(int i=1; i<=clients.size()+1; i++) {
-			for(int j=1; j<=clients.size()+1; j++) {
-				String paramName = "cell"+i+j;
-				if (request.getParameter(paramName)!=null && !request.getParameter(paramName).isEmpty()) 
-					plan.setEl(i-1, j-1, Integer.parseInt(request.getParameter(paramName)));
-				else plan.setEl(i-1, j-1, 0);
-			}
+    	
+    	if (plainPlan != null && plainPlan.equals("on")) {
+    		for(int i=1; i<=clients.size()+1; i++) 
+    			for(int j=1; j<=clients.size()+1; j++) 
+    				plan.setEl(i-1, j-1, 1);
+    	}
+    	else {
+	    	for(int i=1; i<=clients.size()+1; i++) {
+				for(int j=1; j<=clients.size()+1; j++) {
+					String paramName = "cell"+i+j;
+					if (request.getParameter(paramName)!=null && !request.getParameter(paramName).isEmpty()) { 
+						float value = Float.parseFloat(request.getParameter(paramName)); 
+						plan.setEl(i-1, j-1, value);
+						if (i == 1 && j == 1) continue;
+						else if (i == 1 && j != 1) {
+							Distance d = DistanceDB.haveDistance(0, clients.get(j-2).getClientId());
+							if (d == null) 
+								DistanceDB.insertDistance(0, clients.get(j-2).getClientId(), value);
+							else if (d.getValue() != value) 
+								DistanceDB.updateDistance(0, clients.get(j-2).getClientId(), value);
+						} else if (i != 1 && j == 1) {
+							Distance d = DistanceDB.haveDistance(clients.get(i-2).getClientId(), 0);
+							if (d == null) 
+								DistanceDB.insertDistance(clients.get(i-2).getClientId(), 0, value);
+							else if (d.getValue() != value) 
+								DistanceDB.updateDistance(clients.get(i-2).getClientId(), 0, value);
+						} else {
+							Distance d = DistanceDB.haveDistance(clients.get(i-2).getClientId(), clients.get(j-2).getClientId());
+							if (d == null) 
+								DistanceDB.insertDistance(clients.get(i-2).getClientId(), clients.get(j-2).getClientId(), value);
+							else if (d.getValue() != value) 
+								DistanceDB.updateDistance(clients.get(i-2).getClientId(), clients.get(j-2).getClientId(), value);
+						}
+					}
+					else {
+						plan.setEl(i-1, j-1, 0);
+					}
+				}
+	    	}
     	}
     	
     	clients.clear();
