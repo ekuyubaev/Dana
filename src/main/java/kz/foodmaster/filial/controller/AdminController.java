@@ -679,7 +679,9 @@ public class AdminController extends HttpServlet {
         if (positionIDString != null)
         	positionID = Integer.parseInt(positionIDString);       
         
-        Date birthDate = Date.valueOf(request.getParameter("birthDate"));
+        Date birthDate = java.sql.Date.valueOf("1900-12-01");
+        if (request.getParameter("birthDate") != null && !request.getParameter("birthDate").isEmpty())
+        	birthDate = Date.valueOf(request.getParameter("birthDate"));
         String phone = request.getParameter("phone");
         String notes = request.getParameter("notes");
         

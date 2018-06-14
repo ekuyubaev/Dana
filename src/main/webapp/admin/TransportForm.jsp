@@ -41,7 +41,7 @@
                 </td>
             </tr>
             <tr>
-                <th>Грузоподъемность ТС: </th>
+                <th>Грузоподъемность ТС, кг: </th>
                 <td>
                     <input type="text" name="capacity" size="45"
                             value="<c:out value='${transport.capacity}' />"/>
