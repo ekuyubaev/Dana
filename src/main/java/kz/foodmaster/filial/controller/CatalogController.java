@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import kz.foodmaster.filial.business.Category;
+import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.News;
 import kz.foodmaster.filial.business.Product;
 import kz.foodmaster.filial.data.CategoryDB;
+import kz.foodmaster.filial.data.MeasureDB;
 import kz.foodmaster.filial.data.NewsDB;
 import kz.foodmaster.filial.data.ProductDB;
 
@@ -63,8 +65,10 @@ public class CatalogController extends HttpServlet {
             session.setAttribute("products", products);       
         } 
     	
+    	List<Measure> measures = MeasureDB.selectMeasures();
+        request.setAttribute("measures", measures);
         List<Category> categories = CategoryDB.selectCategories();
-        session.setAttribute("categories", categories);
+        request.setAttribute("categories", categories);
         return "/catalog/index.jsp";
     }
   

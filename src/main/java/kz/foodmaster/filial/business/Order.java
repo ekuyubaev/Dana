@@ -68,8 +68,9 @@ public class Order implements Serializable {
 	}
 
 	public String getOrderDateDefaultFormat() {
-        DateFormat dateFormat = DateFormat.getDateInstance();
-        String invoiceDateFormatted = dateFormat.format(orderDate);
+		SimpleDateFormat ft = 
+			      new SimpleDateFormat ("dd.MM.yyyy HH:mm:ss");
+        String invoiceDateFormatted = ft.format(orderDate);
         return invoiceDateFormatted;
     }
 

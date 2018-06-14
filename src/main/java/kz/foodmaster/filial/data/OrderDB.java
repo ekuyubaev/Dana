@@ -105,8 +105,8 @@ public class OrderDB {
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getDate("ДатаЗаказа"));
-                order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
+                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
                 order.setSum(rs.getBigDecimal("Сумма"));
 
                 orders.add(order);
@@ -153,8 +153,8 @@ public class OrderDB {
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getDate("ДатаЗаказа"));
-                order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
+                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
                 order.setSum(rs.getBigDecimal("Сумма"));
 
                 orders.add(order);
@@ -199,8 +199,8 @@ public class OrderDB {
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getDate("ДатаЗаказа"));
-                order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
+                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
                 order.setSum(rs.getBigDecimal("Сумма"));
             }
             return order;
@@ -345,8 +345,8 @@ public class OrderDB {
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getDate("ДатаЗаказа"));
-                order.setProcessedDate(rs.getDate("ДатаИсполнения"));
+                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
+                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
                 order.setSum(rs.getBigDecimal("Сумма"));
 
                 orders.add(order);
