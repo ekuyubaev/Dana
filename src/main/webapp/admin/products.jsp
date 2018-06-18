@@ -17,9 +17,9 @@
     <table>
 	    <tr>
 	        <th>Наименование продукции</th>
-	        <th>Единица измерения</th>
 	        <th>Категория</th>
 	        <th>Количество</th>
+	        <th>Ед. измерения</th>
 	        <th>Стоимость</th>
 	        <th>Примечание</th>
 	        <th>Действия</th>        
@@ -28,13 +28,6 @@
 	    <tr>
 	        <td>${product.productName}</td>
 	        <td>
-	        	<c:forEach var="measure" items="${measures}">
-					<c:if test="${measure.measureID == product.productMeasureID}">
-						${measure.measureSymbol}
-					</c:if>
-				</c:forEach>
-			</td>
-	        <td>
 				<c:forEach var="category" items="${categories}">
 					<c:if test="${category.categoryID == product.productCategoryID}">
 						${category.categoryName}
@@ -42,6 +35,13 @@
 				</c:forEach>
 			</td>
 	        <td>${product.productQuantity}</td>
+	        <td>
+	        	<c:forEach var="measure" items="${measures}">
+					<c:if test="${measure.measureID == product.productMeasureID}">
+						${measure.measureSymbol}
+					</c:if>
+				</c:forEach>
+			</td>
 	        <td>${product.priceCurrencyFormat}</td>
 	        <td>${product.productNote}</td>
 	        <td>

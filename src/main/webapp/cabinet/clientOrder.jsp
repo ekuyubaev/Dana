@@ -33,6 +33,7 @@
 	<tr>
 	    <th>Описание</th>
 	    <th>Количество</th>
+	    <th>Ед. измерения</th>
 	    <th>Стоимость</th>
 	</tr>
 
@@ -40,12 +41,20 @@
 		 <tr>
 		   <td>${item.product.productName}</td>
 		   <td>${item.quantity}</td> 
+		   <td>
+		   		<c:forEach var="measure" items="${measures}">
+					<c:if test="${measure.measureID == item.product.productMeasureID}">
+						${measure.measureSymbol}
+					</c:if>
+				</c:forEach>
+		   </td>
 		   <td>${item.totalCurrencyFormat}</td>
 		 </tr>
 	 </c:forEach>
 
 	<tr>
 	  <th>Итого:</th>
+	  <td></td>
 	  <td></td>
 	  <td>${order.sumCurrencyFormat}</td>
 	</tr>

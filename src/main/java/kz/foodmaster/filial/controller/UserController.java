@@ -34,9 +34,11 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import kz.foodmaster.filial.business.Client;
+import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.User;
 import kz.foodmaster.filial.data.ClientDB;
+import kz.foodmaster.filial.data.MeasureDB;
 import kz.foodmaster.filial.data.OrderDB;
 import kz.foodmaster.filial.data.RoleDB;
 import kz.foodmaster.filial.data.UserDB;
@@ -181,9 +183,11 @@ public class UserController extends HttpServlet {
 
     	String orderID = request.getParameter("orderID");
     		
-    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
-        
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));     
         request.setAttribute("order", order);
+        
+        List<Measure> measures = MeasureDB.selectMeasures();
+        request.setAttribute("measures", measures);
         
         return "/cabinet/clientOrder.jsp";
     }
