@@ -44,7 +44,7 @@
 		   <td>
 		   		<c:forEach var="measure" items="${measures}">
 					<c:if test="${measure.measureID == item.product.productMeasureID}">
-						${measure.measureSymbol}
+						${measure.measureName}
 					</c:if>
 				</c:forEach>
 		   </td>

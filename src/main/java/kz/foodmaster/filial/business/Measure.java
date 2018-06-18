@@ -7,7 +7,6 @@ public class Measure implements Serializable {
 	
 	private int measureID;
 	private String measureName;
-	private String measureSymbol;
 	
 	public Measure() {
 	}
@@ -26,17 +25,5 @@ public class Measure implements Serializable {
 	
 	public void setMeasureName(String measureName) {
 		this.measureName = measureName;
-	}
-	
-	public String getMeasureSymbol() {
-		return measureSymbol;
-	}
-	
-	public void setMeasureSymbol(String measureSymbol) {
-		this.measureSymbol = measureSymbol;
-	}
-	
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 }

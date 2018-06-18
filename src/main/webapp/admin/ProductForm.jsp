@@ -39,10 +39,10 @@
                     <select name="productMeasureID">
 					    <c:forEach var="measure" items="${measures}">
 				    		<c:if test="${measure.measureID == product.productMeasureID}">
-				    			<option value="${measure.measureID}" selected>${measure.measureSymbol}</option>
+				    			<option value="${measure.measureID}" selected>${measure.measureName}</option>
 				    		</c:if>
 				    		<c:if test="${measure.measureID != product.productMeasureID}">
-				    			<option value="${measure.measureID}">${measure.measureSymbol}</option>
+				    			<option value="${measure.measureID}">${measure.measureName}</option>
 				    		</c:if>
 					    </c:forEach>
 					</select>

@@ -42,7 +42,13 @@ public class AdminController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = "/admin";
         
-        if (requestURI.endsWith("/updateCategory")) {
+        if (requestURI.endsWith("/updateMeasure")) {
+            url = updateMeasure(request, response);
+        } else if (requestURI.endsWith("/insertMeasure")) {
+            url = insertMeasure(request, response);
+        } else if (requestURI.endsWith("/displayMeasures")) {
+        	url = displayMeasures(request, response);
+        } else if (requestURI.endsWith("/updateCategory")) {
             url = updateCategory(request, response);
         } else if (requestURI.endsWith("/insertCategory")) {
             url = insertCategory(request, response);
@@ -92,7 +98,15 @@ public class AdminController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = "/admin";
         
-        if (requestURI.endsWith("/displayCategories")) {
+        if (requestURI.endsWith("/displayMeasures")) {
+            url = displayMeasures(request, response);
+        } else if (requestURI.endsWith("/editMeasure")) {
+            url = editMeasure(request, response);
+        } else if (requestURI.endsWith("/addMeasure")) {
+            url = addMeasure(request, response);
+        } else if (requestURI.endsWith("/deleteMeasure")) {
+            url = deleteMeasure(request, response);
+        } else if (requestURI.endsWith("/displayCategories")) {
             url = displayCategories(request, response);
         } else if (requestURI.endsWith("/editCategory")) {
             url = editCategory(request, response);
@@ -143,6 +157,76 @@ public class AdminController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
+    private String displayMeasures(HttpServletRequest request, HttpServletResponse response) {
+
+        List<Measure> measures = MeasureDB.selectMeasures();
+        
+        String url;
+        if (measures != null) {
+            if (measures.size() <= 0) {
+            	measures = null;
+            }
+        }
+        
+        HttpSession session = request.getSession();
+        session.setAttribute("measures", measures);
+        url = "/admin/Measures.jsp";
+        return url;
+    }
+    
+    
+    private String editMeasure(HttpServletRequest request, HttpServletResponse response) {
+
+        String measureID = request.getParameter("measureID");
+        
+        Measure measure = MeasureDB.selectMeasure(measureID);
+
+        request.setAttribute("measure", measure);
+
+        return "/admin/MeasureForm.jsp";
+    }
+
+    
+    private String updateMeasure(HttpServletRequest request, HttpServletResponse response)
+    {
+        int measureID = Integer.parseInt(request.getParameter("measureID"));
+        String measureName = request.getParameter("measureName");
+        
+        Measure measure = new Measure();
+        measure.setMeasureID(measureID);
+        measure.setMeasureName(measureName);
+
+        MeasureDB.updateMeasure(measure);
+
+        return "/adminController/displayMeasures";
+    }
+    
+    
+    private String insertMeasure(HttpServletRequest request, HttpServletResponse response) {
+    	
+        Measure measure = new Measure();
+        measure.setMeasureName(request.getParameter("measureName"));
+
+        MeasureDB.insertMeasure(measure);
+
+        return "/adminController/displayMeasures";
+    }
+    
+    
+    private String addMeasure(HttpServletRequest request, HttpServletResponse response) {
+
+        return "/admin/MeasureForm.jsp";
+    }
+    
+    
+    private String deleteMeasure(HttpServletRequest request, HttpServletResponse response) {
+
+    	int measureID = Integer.parseInt(request.getParameter("measureID"));
+    	MeasureDB.deleteMeasure(measureID);
+        return "/adminController/displayMeasures";
+    }
+    
     
     private String displayCategories(HttpServletRequest request, HttpServletResponse response) {
 
