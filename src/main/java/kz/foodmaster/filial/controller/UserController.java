@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -29,10 +33,13 @@ import org.apache.poi.hwpf.usermodel.Section;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.hwpf.usermodel.TableCell;
 import org.apache.poi.hwpf.usermodel.TableRow;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Message;
@@ -321,11 +328,11 @@ public class UserController extends HttpServlet {
     	
     	String orderID = request.getParameter("orderID");
     	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/Dogovor_na_postavku.dot").getFile();
+    	String path = classLoader.getResource("templates/Dogovor_na_postavku.docx").getFile();
     	String [] pathParts = path.split("/");
     	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
 
-    	HWPFDocument doc = null;
+    	XWPFDocument  doc = null;
     	OutputStream  out = null;
     	
     	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
@@ -333,8 +340,8 @@ public class UserController extends HttpServlet {
     	cal.setTime(order.getOrderDate());
     	
     	try {
-			doc = new HWPFDocument(new FileInputStream(path));
-			//XWPFTable tbl = doc.getTableArray(1);
+			doc = new XWPFDocument (new FileInputStream(path));
+
 			replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
 			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
 			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
@@ -344,7 +351,29 @@ public class UserController extends HttpServlet {
 			replaceText(doc, "adress", order.getClient().getClientAdress());
 			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
 
-	        int numParas = 0;
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}
+	        /*int numParas = 0;
 	        ArrayList tables = null; 
 	        Paragraph para = null;
 	        boolean inTable = false;
@@ -393,7 +422,7 @@ public class UserController extends HttpServlet {
             numRowsInTable = table.numRows();
             for(int i=numRowsInTable-1; i >= numRowsInTable; i--) {
             	table.getRow(i).delete();
-            }
+            }*/
 
 	               
 	        response.setContentType("application/msword");
@@ -408,7 +437,7 @@ public class UserController extends HttpServlet {
 		} finally {
 			try {
 				doc.close();
-				//out.close();
+				out.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -419,21 +448,34 @@ public class UserController extends HttpServlet {
     }
     
     
-    private HWPFDocument replaceText(HWPFDocument doc, String findText, String replaceText) {
-        Range r = doc.getRange();
-        for (int i = 0; i < r.numSections(); ++i) {
-            Section s = r.getSection(i);
-            for (int j = 0; j < s.numParagraphs(); j++) {
-                Paragraph p = s.getParagraph(j);
-                for (int k = 0; k < p.numCharacterRuns(); k++) {
-                    CharacterRun run = p.getCharacterRun(k);
-                    String text = run.text();
-                    if (text.contains(findText)) {
-                        run.replaceText(findText, replaceText);
-                    }
-                }
-            }
-        }
-        return doc;
+    private void replaceText(XWPFDocument doc, String findText, String replaceText) {
+    	for (XWPFParagraph p : doc.getParagraphs()) {
+    	    List<XWPFRun> runs = p.getRuns();
+    	    if (runs != null) {
+    	        for (XWPFRun r : runs) {
+    	            String text = r.getText(0);
+    	            if (text != null && text.contains(findText)) {
+    	                text = text.replace(findText, replaceText);
+    	                r.setText(text, 0);
+    	            }
+    	        }
+    	    }
+    	}
+    	
+    	for (XWPFTable tbl : doc.getTables()) {
+    		   for (XWPFTableRow row : tbl.getRows()) {
+    		      for (XWPFTableCell cell : row.getTableCells()) {
+    		         for (XWPFParagraph p : cell.getParagraphs()) {
+    		            for (XWPFRun r : p.getRuns()) {
+    		              String text = r.getText(0);
+    		              if (text != null && text.contains(findText)) {
+    		                text = text.replace(findText, replaceText);
+    		                r.setText(text,0);
+    		              }
+    		            }
+    		         }
+    		      }
+    		   }
+    		}
     }
 }
