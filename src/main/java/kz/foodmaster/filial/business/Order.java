@@ -23,6 +23,7 @@ public class Order implements Serializable {
     	processedDate = null;
     }
 	
+	
     public String getSumCurrencyFormat() {
     	NumberFormat currency = NumberFormat.getCurrencyInstance();
         if (currency instanceof DecimalFormat) {
