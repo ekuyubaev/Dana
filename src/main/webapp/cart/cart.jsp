@@ -13,10 +13,12 @@
       </c:when>
       <c:otherwise>
       	<p><i>${message}</i></p>
-        <table>
+        <table id="cartTable">
            <tr>
-            <th>Количество</th>
             <th>Наименование</th>
+            <th>Упаковка</th>
+            <th>Ед. измерения</th>
+            <th>Количество</th>
             <th>Цена</th>
            	<th>Скидка</th>
             <th>Стоимость</th>
@@ -24,6 +26,21 @@
          </tr>
           <c:forEach var="item" items="${cart.items}">
             <tr class="cart_row">
+              <td>${item.product.productName}</td>
+              <td>
+			   		<c:forEach var="p" items="${packages}">
+						<c:if test="${p.ID == item.product.productPackagingID}">
+							${p.name}
+						</c:if>
+					</c:forEach>
+			  </td>
+              <td>
+		   		<c:forEach var="measure" items="${measures}">
+					<c:if test="${measure.measureID == item.product.productMeasureID}">
+						${measure.measureName}
+					</c:if>
+				</c:forEach>
+			  </td>
               <td>
                 <form action="<c:url value='/order/updateItem'/>" method="post">
                   <input type="hidden" name="productID" 
@@ -33,7 +50,6 @@
                   <input type="submit" value="Обновить">
                 </form>                  
               </td>
-              <td>${item.product.productName}</td>
               <td>${item.product.productPrice}</td>
               <td>${item.discountAmount}</td>
               <td>${item.totalCurrencyFormat}</td>
@@ -47,7 +63,7 @@
             </tr>
           </c:forEach>
             <tr>
-              <td colspan="6">
+              <td colspan="8">
                 <p><b>Чтобы изменить количество продукта</b>, введите новое количество и нажмите Обновить.</p>
                 <p><b>Чтобы удалить продукт из корзины</b>, нажмите кнопку Удалить.</p>
               </td>

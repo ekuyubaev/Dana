@@ -17,6 +17,7 @@ public class Product implements Serializable {
     private BigDecimal productPrice;
     private float productQuantity;
     private String productNote;
+    private int productPackagingID;
 
     public Product() {
     	productName = null;
@@ -26,7 +27,17 @@ public class Product implements Serializable {
     }
 
     
-    public int getProductID() {
+    public int getProductPackagingID() {
+		return productPackagingID;
+	}
+
+
+	public void setProductPackagingID(int productPackagingID) {
+		this.productPackagingID = productPackagingID;
+	}
+
+
+	public int getProductID() {
 		return productID;
 	}
 

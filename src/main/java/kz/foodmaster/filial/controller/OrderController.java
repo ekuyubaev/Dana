@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.mail.MessagingException;
@@ -117,6 +118,13 @@ public class OrderController extends HttpServlet {
         } else {
             request.getSession().setAttribute("cart", cart);
         }
+
+        List<Measure> measures = MeasureDB.selectMeasures();
+        List<Packaging> packages = PackageDB.selectPackages();
+        
+        request.setAttribute("measures", measures);
+        request.setAttribute("packages", packages);
+        
         return "/cart/cart.jsp";
     }
     

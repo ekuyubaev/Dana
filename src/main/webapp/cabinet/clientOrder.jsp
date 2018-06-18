@@ -34,6 +34,7 @@
 	    <th>Описание</th>
 	    <th>Количество</th>
 	    <th>Ед. измерения</th>
+	    <th>Упаковка</th>
 	    <th>Стоимость</th>
 	</tr>
 
@@ -48,12 +49,20 @@
 					</c:if>
 				</c:forEach>
 		   </td>
+		   <td>
+		   		<c:forEach var="p" items="${packages}">
+					<c:if test="${p.ID == item.product.productPackagingID}">
+						${p.name}
+					</c:if>
+				</c:forEach>
+		   </td>
 		   <td>${item.totalCurrencyFormat}</td>
 		 </tr>
 	 </c:forEach>
 
 	<tr>
 	  <th>Итого:</th>
+	  <td></td>
 	  <td></td>
 	  <td></td>
 	  <td>${order.sumCurrencyFormat}</td>

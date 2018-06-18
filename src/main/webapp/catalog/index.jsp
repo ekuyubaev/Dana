@@ -14,6 +14,7 @@
 	        <th>Наименование</th>
 	        <th>Количество</th>
 	        <th>Ед. измерения</th>
+	        <th>Упаковка</th>
 	        <th>Стоимость</th>
 	        <th>Действия</th>
 	    </tr>
@@ -28,6 +29,13 @@
 					</c:if>
 				</c:forEach>
 			</td>
+            <td>
+			    <c:forEach var="p" items="${packages}">
+		    		<c:if test="${p.ID == product.productPackagingID}">
+						${p.name}
+		    		</c:if>
+			    </c:forEach>
+            </td>
 	        <td>${product.priceCurrencyFormat}</td>
 	        <td>
 	        	<a href="<c:url value='/order/addItem?productID=${product.productID}&categoryID=${product.productCategoryID}'/>">

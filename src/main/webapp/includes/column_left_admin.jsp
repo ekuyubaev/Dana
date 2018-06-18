@@ -4,8 +4,9 @@
       <ul>
           <li><a href="<c:url value='/' />">На главную</a></li>
           <li><a href="<c:url value='/adminController/displayClients' />">Клиенты</a></li>
-          <li><a href="<c:url value='/adminController/displayCategories' />">Категории продукции</a></li>
           <li><a href="<c:url value='/adminController/displayMeasures' />">Единицы измерения</a></li>
+          <li><a href="<c:url value='/adminController/displayPackages' />">Виды упаковок</a></li>
+          <li><a href="<c:url value='/adminController/displayCategories' />">Категории продукции</a></li>       
           <li><a href="<c:url value='/adminController/displayProducts' />">Продукция</a></li>
           <li><a href="<c:url value='/adminController/displayDiscounts' />">Скидки</a></li>
           <li><a href="<c:url value='/adminController/displayOrders' />">Заказы</a></li>

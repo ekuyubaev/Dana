@@ -20,6 +20,7 @@
 	        <th>Категория</th>
 	        <th>Количество</th>
 	        <th>Ед. измерения</th>
+	        <th>Упаковка</th>
 	        <th>Стоимость</th>
 	        <th>Примечание</th>
 	        <th>Действия</th>        
@@ -39,6 +40,13 @@
 	        	<c:forEach var="measure" items="${measures}">
 					<c:if test="${measure.measureID == product.productMeasureID}">
 						${measure.measureName}
+					</c:if>
+				</c:forEach>
+			</td>
+			<td>
+	        	<c:forEach var="p" items="${packages}">
+					<c:if test="${p.ID == product.productPackagingID}">
+						${p.name}
 					</c:if>
 				</c:forEach>
 			</td>

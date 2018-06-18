@@ -21,6 +21,7 @@ import kz.foodmaster.filial.business.Discount;
 import kz.foodmaster.filial.business.Distance;
 import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.Order;
+import kz.foodmaster.filial.business.Packaging;
 import kz.foodmaster.filial.business.Plan;
 import kz.foodmaster.filial.business.Product;
 import kz.foodmaster.filial.business.Transport;
@@ -30,6 +31,7 @@ import kz.foodmaster.filial.data.DiscountDB;
 import kz.foodmaster.filial.data.DistanceDB;
 import kz.foodmaster.filial.data.MeasureDB;
 import kz.foodmaster.filial.data.OrderDB;
+import kz.foodmaster.filial.data.PackageDB;
 import kz.foodmaster.filial.data.ProductDB;
 import kz.foodmaster.filial.data.TransportDB;
 
@@ -42,7 +44,13 @@ public class AdminController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = "/admin";
         
-        if (requestURI.endsWith("/updateMeasure")) {
+        if (requestURI.endsWith("/updatePackage")) {
+            url = updatePackage(request, response);
+        } else if (requestURI.endsWith("/insertPackage")) {
+            url = insertPackage(request, response);
+        } else if (requestURI.endsWith("/displayPackages")) {
+        	url = displayPackages(request, response);
+        } else if (requestURI.endsWith("/updateMeasure")) {
             url = updateMeasure(request, response);
         } else if (requestURI.endsWith("/insertMeasure")) {
             url = insertMeasure(request, response);
@@ -98,7 +106,15 @@ public class AdminController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = "/admin";
         
-        if (requestURI.endsWith("/displayMeasures")) {
+        if (requestURI.endsWith("/displayPackages")) {
+            url = displayPackages(request, response);
+        } else if (requestURI.endsWith("/editPackage")) {
+            url = editPackage(request, response);
+        } else if (requestURI.endsWith("/addPackage")) {
+            url = addPackage(request, response);
+        } else if (requestURI.endsWith("/deletePackage")) {
+            url = deletePackage(request, response);
+        } else if (requestURI.endsWith("/displayMeasures")) {
             url = displayMeasures(request, response);
         } else if (requestURI.endsWith("/editMeasure")) {
             url = editMeasure(request, response);
@@ -157,6 +173,74 @@ public class AdminController extends HttpServlet {
                 .forward(request, response);
     }
 
+    private String displayPackages(HttpServletRequest request, HttpServletResponse response) {
+
+        List<Packaging> packages = PackageDB.selectPackages();
+        
+        String url;
+        if (packages != null) {
+            if (packages.size() <= 0) {
+            	packages = null;
+            }
+        }
+        
+        request.setAttribute("packages", packages);
+        url = "/admin/Packages.jsp";
+        return url;
+    }
+    
+    
+    private String editPackage(HttpServletRequest request, HttpServletResponse response) {
+
+        String ID = request.getParameter("ID");
+        
+        Packaging p = PackageDB.selectPackage(ID);
+
+        request.setAttribute("p", p);
+
+        return "/admin/PackageForm.jsp";
+    }
+
+    
+    private String updatePackage(HttpServletRequest request, HttpServletResponse response)
+    {
+        int ID = Integer.parseInt(request.getParameter("ID"));
+        String name = request.getParameter("name");
+        
+        Packaging p = new Packaging();
+        p.setID(ID);
+        p.setName(name);
+
+        PackageDB.updatePackage(p);
+
+        return "/adminController/displayPackages";
+    }
+    
+    
+    private String insertPackage(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	Packaging p = new Packaging();
+    	p.setName(request.getParameter("name"));
+
+        PackageDB.insertPackage(p);
+
+        return "/adminController/displayPackages";
+    }
+    
+    
+    private String addPackage(HttpServletRequest request, HttpServletResponse response) {
+
+        return "/admin/PackageForm.jsp";
+    }
+    
+    
+    private String deletePackage(HttpServletRequest request, HttpServletResponse response) {
+
+    	int ID = Integer.parseInt(request.getParameter("ID"));
+    	PackageDB.deletePackage(ID);
+        return "/adminController/displayPackages";
+    }
+    
     
     private String displayMeasures(HttpServletRequest request, HttpServletResponse response) {
 
@@ -169,8 +253,7 @@ public class AdminController extends HttpServlet {
             }
         }
         
-        HttpSession session = request.getSession();
-        session.setAttribute("measures", measures);
+        request.setAttribute("measures", measures);
         url = "/admin/Measures.jsp";
         return url;
     }
@@ -303,6 +386,7 @@ public class AdminController extends HttpServlet {
         List<Product> products = ProductDB.selectProducts();
         List<Category> categories = CategoryDB.selectCategories();
         List<Measure> measures = MeasureDB.selectMeasures();
+        List<Packaging> packages = PackageDB.selectPackages();
         
         String url;
         if (products != null) {
@@ -314,6 +398,7 @@ public class AdminController extends HttpServlet {
         request.setAttribute("categories", categories);
         request.setAttribute("products", products);
         request.setAttribute("measures", measures);
+        request.setAttribute("packages", packages);
         
         url = "/admin/products.jsp";
         return url;
@@ -330,8 +415,10 @@ public class AdminController extends HttpServlet {
         
         List<Category> categories = CategoryDB.selectCategories();
         List<Measure> measures = MeasureDB.selectMeasures();
+        List<Packaging> packages = PackageDB.selectPackages();
         request.setAttribute("categories", categories);
         request.setAttribute("measures", measures);
+        request.setAttribute("packages", packages);
         
         return "/admin/ProductForm.jsp";
     }
@@ -346,6 +433,7 @@ public class AdminController extends HttpServlet {
         float productQuantity = Float.parseFloat(request.getParameter("productQuantity"));
         BigDecimal productPrice = BigDecimal.valueOf(Float.parseFloat(request.getParameter("productPrice")));
         String productNote = request.getParameter("productNote");
+        int productPackagingID = Integer.parseInt(request.getParameter("productPackagingID"));
         
         Product product = new Product();
         
@@ -356,6 +444,7 @@ public class AdminController extends HttpServlet {
         product.setProductQuantity(productQuantity);
         product.setProductPrice(productPrice);
         product.setProductNote(productNote);
+        product.setProductPackagingID(productPackagingID);
 
         ProductDB.updateProduct(product);
 
@@ -367,10 +456,10 @@ public class AdminController extends HttpServlet {
     	
     	List<Category> categories = CategoryDB.selectCategories();
         List<Measure> measures = MeasureDB.selectMeasures();
-        request.removeAttribute("categories");
+        List<Packaging> packages = PackageDB.selectPackages();
         request.setAttribute("categories", categories);
-        request.removeAttribute("measures");
         request.setAttribute("measures", measures);
+        request.setAttribute("packages", packages);
     	
         return "/admin/ProductForm.jsp";
     }
@@ -394,6 +483,11 @@ public class AdminController extends HttpServlet {
         BigDecimal productPrice = BigDecimal.valueOf(Float.parseFloat(request.getParameter("productPrice")));
         String productNote = request.getParameter("productNote");
         
+        String productPackagingIDString = request.getParameter("productPackagingID");
+        int productPackagingID = 0;
+        if (productPackagingIDString != null)
+        	productPackagingID = Integer.parseInt(productPackagingIDString);
+        
         Product product = new Product();
         
         product.setProductName(productName);
@@ -402,6 +496,7 @@ public class AdminController extends HttpServlet {
         product.setProductQuantity(productQuantity);
         product.setProductPrice(productPrice);
         product.setProductNote(productNote);
+        product.setProductPackagingID(productPackagingID);
 
         ProductDB.insertProduct(product);
 

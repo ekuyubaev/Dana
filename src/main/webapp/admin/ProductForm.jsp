@@ -34,21 +34,6 @@
                 </td>
             </tr>
             <tr>
-                <th>Единица измерения: </th>
-                <td>
-                    <select name="productMeasureID">
-					    <c:forEach var="measure" items="${measures}">
-				    		<c:if test="${measure.measureID == product.productMeasureID}">
-				    			<option value="${measure.measureID}" selected>${measure.measureName}</option>
-				    		</c:if>
-				    		<c:if test="${measure.measureID != product.productMeasureID}">
-				    			<option value="${measure.measureID}">${measure.measureName}</option>
-				    		</c:if>
-					    </c:forEach>
-					</select>
-                </td>
-            </tr>
-            <tr>
                 <th>Категория: </th>
                 <td>
                     <select name="productCategoryID">
@@ -69,6 +54,36 @@
                     <input type="text" name="productQuantity" size="45"
                             value="<c:out value='${product.productQuantity}' />"
                     />
+                </td>
+            </tr>
+            <tr>
+                <th>Единица измерения: </th>
+                <td>
+                    <select name="productMeasureID">
+					    <c:forEach var="measure" items="${measures}">
+				    		<c:if test="${measure.measureID == product.productMeasureID}">
+				    			<option value="${measure.measureID}" selected>${measure.measureName}</option>
+				    		</c:if>
+				    		<c:if test="${measure.measureID != product.productMeasureID}">
+				    			<option value="${measure.measureID}">${measure.measureName}</option>
+				    		</c:if>
+					    </c:forEach>
+					</select>
+                </td>
+            </tr>
+            <tr>
+                <th>Упаковка: </th>
+                <td>
+                    <select name="productPackagingID">
+					    <c:forEach var="p" items="${packages}">
+				    		<c:if test="${p.ID == product.productPackagingID}">
+				    			<option value="${p.ID}" selected>${p.name}</option>
+				    		</c:if>
+				    		<c:if test="${p.ID != product.productPackagingID}">
+				    			<option value="${p.ID}">${p.name}</option>
+				    		</c:if>
+					    </c:forEach>
+					</select>
                 </td>
             </tr>
             <tr>

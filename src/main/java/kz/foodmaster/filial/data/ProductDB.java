@@ -29,6 +29,7 @@ public class ProductDB {
                 p.setProductNote(rs.getString("Примечание"));
                 p.setProductPrice(rs.getBigDecimal("Стоимость"));
                 p.setProductQuantity(rs.getFloat("Количество"));
+                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
                 return p;
             } else {
                 return null;
@@ -64,6 +65,7 @@ public class ProductDB {
                 p.setProductNote(rs.getString("Примечание"));
                 p.setProductPrice(rs.getBigDecimal("Стоимость"));
                 p.setProductQuantity(rs.getFloat("Количество"));
+                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
                 products.add(p);
             }
             return products;
@@ -100,6 +102,7 @@ public class ProductDB {
                 p.setProductNote(rs.getString("Примечание"));
                 p.setProductPrice(rs.getBigDecimal("Стоимость"));
                 p.setProductQuantity(rs.getFloat("Количество"));
+                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
                 products.add(p);
             }
             return products;
@@ -122,7 +125,7 @@ public class ProductDB {
 
         String query = "Update Продукт Set Продукт = ?, ИДЕдиницаИзмерения = ?, "
         		+ "ИДКатегория = ?, Количество = ?, "
-        		+ "Стоимость = ?, Примечание = ? "
+        		+ "Стоимость = ?, Примечание = ?, ИДУпаковка = ? "
                 + "WHERE ИДПродукт = ?";
         try {
             ps = connection.prepareStatement(query);
@@ -133,7 +136,8 @@ public class ProductDB {
             ps.setFloat(4, product.getProductQuantity());
             ps.setBigDecimal(5, product.getProductPrice());
             ps.setString(6, product.getProductNote());
-            ps.setInt(7, product.getProductID());
+            ps.setInt(7, product.getProductPackagingID());
+            ps.setInt(8, product.getProductID());
             
             return ps.executeUpdate() > 0;      
         } catch (SQLException e) {
@@ -154,8 +158,8 @@ public class ProductDB {
         ResultSet rs = null;
 
         String query = "Insert Into Продукт (Продукт, ИДЕдиницаИзмерения, " + 
-        		"ИДКатегория, Количество, Стоимость, Примечание) " +
-        		"Values (?, ?, ?, ?, ?, ?)";
+        		"ИДКатегория, Количество, Стоимость, Примечание, ИДУпаковка) " +
+        		"Values (?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
             
@@ -165,6 +169,7 @@ public class ProductDB {
             ps.setFloat(4, product.getProductQuantity());
             ps.setBigDecimal(5, product.getProductPrice());
             ps.setString(6, product.getProductNote());
+            ps.setInt(7, product.getProductPackagingID());
             
             return ps.executeUpdate() > 0;      
         } catch (SQLException e) {

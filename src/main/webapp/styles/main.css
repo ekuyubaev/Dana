@@ -385,6 +385,10 @@ i {
 	width: 100%;
 }
 
+#cartTable {
+	font-size: 90%;
+}
+
 #forum th {
 	text-align: center;
 }
