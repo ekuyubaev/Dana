@@ -20,25 +20,18 @@ import kz.foodmaster.filial.business.Category;
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Discount;
 import kz.foodmaster.filial.business.Distance;
-import kz.foodmaster.filial.business.Employee;
 import kz.foodmaster.filial.business.Measure;
-import kz.foodmaster.filial.business.News;
 import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.Plan;
-import kz.foodmaster.filial.business.Position;
 import kz.foodmaster.filial.business.Product;
 import kz.foodmaster.filial.business.Topic;
 import kz.foodmaster.filial.business.Transport;
-import kz.foodmaster.filial.business.User;
 import kz.foodmaster.filial.data.CategoryDB;
 import kz.foodmaster.filial.data.ClientDB;
 import kz.foodmaster.filial.data.DiscountDB;
 import kz.foodmaster.filial.data.DistanceDB;
-import kz.foodmaster.filial.data.EmployeeDB;
 import kz.foodmaster.filial.data.MeasureDB;
-import kz.foodmaster.filial.data.NewsDB;
 import kz.foodmaster.filial.data.OrderDB;
-import kz.foodmaster.filial.data.PositionDB;
 import kz.foodmaster.filial.data.ProductDB;
 import kz.foodmaster.filial.data.TopicDB;
 import kz.foodmaster.filial.data.TransportDB;
@@ -84,24 +77,12 @@ public class AdminController extends HttpServlet {
             url = insertTopic(request, response);
         } else if (requestURI.endsWith("/displayTopics")) {
         	url = displayTopics(request, response);
-        } else if (requestURI.endsWith("/updateEmployee")) {
-            url = updateEmployee(request, response);
-        } else if (requestURI.endsWith("/insertEmployee")) {
-            url = insertEmployee(request, response);
-        } else if (requestURI.endsWith("/displayEmployees")) {
-        	url = displayEmployees(request, response);
         } else if (requestURI.endsWith("/updateTransport")) {
             url = updateTransport(request, response);
         } else if (requestURI.endsWith("/insertTransport")) {
             url = insertTransport(request, response);
         } else if (requestURI.endsWith("/displayTransports")) {
         	url = displayTransports(request, response);
-        } else if (requestURI.endsWith("/updateNews")) {
-            url = updateNews(request, response);
-        } else if (requestURI.endsWith("/insertNews")) {
-            url = insertNews(request, response);
-        } else if (requestURI.endsWith("/displayNews")) {
-        	url = displayNews(request, response);
         } else if (requestURI.endsWith("/findOrders")) {
         	url = findOrders(request, response);
         } else if (requestURI.endsWith("/calcPlan")) {
@@ -156,14 +137,6 @@ public class AdminController extends HttpServlet {
             url = editTopic(request, response);
         }   else if (requestURI.endsWith("/deleteTopic")) {
             url = deleteTopic(request, response);
-        } else if (requestURI.endsWith("/displayEmployees")) {
-            url = displayEmployees(request, response);
-        } else if (requestURI.endsWith("/addEmployee")) {
-            url = addEmployee(request, response);
-        } else if (requestURI.endsWith("/editEmployee")) {
-            url = editEmployee(request, response);
-        } else if (requestURI.endsWith("/deleteEmployee")) {
-            url = deleteEmployee(request, response);
         } else if (requestURI.endsWith("/displayTransports")) {
             url = displayTransports(request, response);
         } else if (requestURI.endsWith("/addTransport")) {
@@ -172,14 +145,6 @@ public class AdminController extends HttpServlet {
             url = editTransport(request, response);
         } else if (requestURI.endsWith("/deleteTransport")) {
             url = deleteTransport(request, response);
-        } else if (requestURI.endsWith("/displayNews")) {
-            url = displayNews(request, response);
-        } else if (requestURI.endsWith("/addNews")) {
-            url = addNews(request, response);
-        } else if (requestURI.endsWith("/editNews")) {
-            url = editNews(request, response);
-        } else if (requestURI.endsWith("/deleteNews")) {
-            url = deleteNews(request, response);
         } else if (requestURI.endsWith("/breakSession")) {
             url = breakSession(request, response);
         } else if (requestURI.endsWith("/displayPlan")) {
@@ -608,107 +573,6 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String displayEmployees(HttpServletRequest request, HttpServletResponse response) {
-
-        List<Employee> employees = EmployeeDB.selectEmployees();
-        List<Position> positions = PositionDB.selectPositions();
-        
-        String url;
-        
-        request.setAttribute("employees", employees);
-        request.setAttribute("positions", positions);
-        
-        url = "/admin/Employees.jsp";
-        return url;
-    }
-    
-    
-    private String editEmployee(HttpServletRequest request, HttpServletResponse response) {
-
-        int ID = Integer.parseInt(request.getParameter("ID"));
-        
-        Employee employee = EmployeeDB.selectEmployee(ID);
-
-        request.setAttribute("employee", employee);
-        
-        List<Position> positions = PositionDB.selectPositions();
-        request.setAttribute("positions", positions);
-        
-        return "/admin/EmployeeForm.jsp";
-    }
-
-    
-    private String updateEmployee(HttpServletRequest request, HttpServletResponse response) {
-        
-    	int ID = Integer.parseInt(request.getParameter("ID"));
-        String name = request.getParameter("name");
-        int positionID = Integer.parseInt(request.getParameter("positionID"));
-        Date birthDate = Date.valueOf(request.getParameter("birthDate"));
-        String phone = request.getParameter("phone");
-        String notes = request.getParameter("notes");
-        
-        Employee employee = new Employee();
-        
-        employee.setEmployeeId(ID);
-        employee.setEmployeeName(name);
-        employee.setPositionId(positionID);
-        employee.setEmployeeBirthDate(birthDate);
-        employee.setEmployeePhone(phone);
-        employee.setEmployeeNotes(notes);
-
-        EmployeeDB.update(employee);
-
-        return "/adminController/displayEmployees";
-    }
-    
-    
-    private String addEmployee(HttpServletRequest request, HttpServletResponse response) {
-    	
-    	List<Position> positions = PositionDB.selectPositions();
-        request.removeAttribute("positions");
-        request.setAttribute("positions", positions);
-    	
-        return "/admin/EmployeeForm.jsp";
-    }
-    
-    
-    private String insertEmployee(HttpServletRequest request, HttpServletResponse response) {
-    	
-        String name = request.getParameter("name");
-        
-        String positionIDString = request.getParameter("positionID");
-        int positionID = 0;
-        if (positionIDString != null)
-        	positionID = Integer.parseInt(positionIDString);       
-        
-        Date birthDate = java.sql.Date.valueOf("1900-12-01");
-        if (request.getParameter("birthDate") != null && !request.getParameter("birthDate").isEmpty())
-        	birthDate = Date.valueOf(request.getParameter("birthDate"));
-        String phone = request.getParameter("phone");
-        String notes = request.getParameter("notes");
-        
-        Employee employee = new Employee();
-        
-        employee.setEmployeeName(name);
-        employee.setPositionId(positionID);
-        employee.setEmployeeBirthDate(birthDate);
-        employee.setEmployeePhone(phone);
-        employee.setEmployeeNotes(notes);
-
-        EmployeeDB.insert(employee);
-
-        return "/adminController/displayEmployees";
-    }
-    
-        
-    private String deleteEmployee(HttpServletRequest request, HttpServletResponse response) {
-
-    	int ID = Integer.parseInt(request.getParameter("ID"));
-    	EmployeeDB.delete(ID);
-        return "/adminController/displayEmployees";
-    }
-    
-    
     private String displayTransports(HttpServletRequest request, HttpServletResponse response) {
 
         List<Transport> transports = TransportDB.selectTransports();
@@ -793,89 +657,6 @@ public class AdminController extends HttpServlet {
     	int ID = Integer.parseInt(request.getParameter("ID"));
     	TransportDB.delete(ID);
         return "/adminController/displayTransports";
-    }
-    
-    
-    private String displayNews(HttpServletRequest request, HttpServletResponse response) {
-
-        List<News> newsList = NewsDB.selectNewsList();
-        
-        String url;
-        
-        request.setAttribute("newsList", newsList);
-        
-        url = "/admin/News.jsp";
-        return url;
-    }
-    
-    
-    private String editNews(HttpServletRequest request, HttpServletResponse response) {
-
-        int ID = Integer.parseInt(request.getParameter("ID"));
-        
-        News news = NewsDB.selectNews(ID);
-
-        request.setAttribute("news", news);
-        
-        return "/admin/NewsForm.jsp";
-    }
-
-    
-    private String updateNews(HttpServletRequest request, HttpServletResponse response) {
-        
-    	int ID = Integer.parseInt(request.getParameter("ID"));
-        String title = request.getParameter("title");
-        String text = request.getParameter("text");
-        
-        News news = new News();
-        
-        news.setID(ID);
-        news.setTitle(title);
-        news.setText(text);
-        
-        NewsDB.update(news);
-
-        return "/adminController/displayNews";
-    }
-    
-    
-    private String addNews(HttpServletRequest request, HttpServletResponse response) {
-        return "/admin/NewsForm.jsp";
-    }
-    
-    
-    private String insertNews(HttpServletRequest request, HttpServletResponse response) {
-    	
-        String title = request.getParameter("title");
-        String text = request.getParameter("text");
-        HttpSession session = request.getSession();
-        Principal p = (Principal)request.getUserPrincipal();
-        String message = null;
-        String author = p.getName();
-        
-        if (p == null || author == null) {
-        	message = "Вы не авторизованы в системе.";
-        	request.setAttribute("message", message);
-        	return "/adminController/addNews";
-        }
-          
-        News news = new News();
-        
-        news.setTitle(title);
-        news.setText(text);
-        news.setAuthor(author);
-
-        NewsDB.insert(news);
-
-        return "/adminController/displayNews";
-    }
-    
-        
-    private String deleteNews(HttpServletRequest request, HttpServletResponse response) {
-
-    	int ID = Integer.parseInt(request.getParameter("ID"));
-    	NewsDB.delete(ID);
-        return "/adminController/displayNews";
     }
     
     

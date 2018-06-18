@@ -12,7 +12,6 @@ public class Order implements Serializable {
 	private Client client;
     private List<LineItem> lineItems;
     private Date orderDate;
-    private Employee executor;
     private Date processedDate;
     private boolean processed;
     private boolean confirmed;
@@ -104,14 +103,6 @@ public class Order implements Serializable {
         String formattedTotal = currency.format(this.getOrderTotal());
         return formattedTotal;
     }
-
-	public Employee getExecutor() {
-		return executor;
-	}
-
-	public void setExecutor(Employee executor) {
-		this.executor = executor;
-	}
 
 	public Date getProcessedDate() {
 		return processedDate;

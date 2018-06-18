@@ -41,5 +41,4 @@
 
 <!-- end the middle column -->
 
-<jsp:include page="/includes/column_right_news.jsp" flush="true" />
 <jsp:include page="/includes/footer.jsp" />

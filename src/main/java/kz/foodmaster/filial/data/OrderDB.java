@@ -1,11 +1,15 @@
 package kz.foodmaster.filial.data;
 
-import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date;
-
-import kz.foodmaster.filial.business.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import kz.foodmaster.filial.business.Client;
+import kz.foodmaster.filial.business.LineItem;
+import kz.foodmaster.filial.business.Order;
 
 public class OrderDB {
 
@@ -89,8 +93,6 @@ public class OrderDB {
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
                 Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
-                //user.setClient(client);
-                Employee executor = EmployeeDB.selectEmployee(rs.getInt("ИДИсполнитель"));
 
                 //Get line items
                 int orderID = rs.getInt("ИДЗаказ");
@@ -100,7 +102,6 @@ public class OrderDB {
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
-                order.setExecutor(executor);
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
@@ -188,13 +189,11 @@ public class OrderDB {
             if (rs.next()) {
             	order = new Order();
                 Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
-                Employee executor = EmployeeDB.selectEmployee(rs.getInt("ИДИсполнитель"));
 
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 order.setOrderID(orderID);
                 order.setClient(client);
-                order.setExecutor(executor);
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
@@ -332,7 +331,6 @@ public class OrderDB {
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
                 Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
-                Employee executor = EmployeeDB.selectEmployee(rs.getInt("ИДИсполнитель"));
 
                 int orderID = rs.getInt("ИДЗаказ");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
@@ -340,7 +338,6 @@ public class OrderDB {
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
-                order.setExecutor(executor);
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
