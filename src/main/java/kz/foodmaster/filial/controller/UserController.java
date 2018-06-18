@@ -25,14 +25,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.usermodel.CharacterRun;
-import org.apache.poi.hwpf.usermodel.Paragraph;
-import org.apache.poi.hwpf.usermodel.Range;
-import org.apache.poi.hwpf.usermodel.Section;
-import org.apache.poi.hwpf.usermodel.Table;
-import org.apache.poi.hwpf.usermodel.TableCell;
-import org.apache.poi.hwpf.usermodel.TableRow;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -42,15 +34,11 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import kz.foodmaster.filial.business.Client;
-import kz.foodmaster.filial.business.Message;
 import kz.foodmaster.filial.business.Order;
-import kz.foodmaster.filial.business.Topic;
 import kz.foodmaster.filial.business.User;
 import kz.foodmaster.filial.data.ClientDB;
-import kz.foodmaster.filial.data.MessageDB;
 import kz.foodmaster.filial.data.OrderDB;
 import kz.foodmaster.filial.data.RoleDB;
-import kz.foodmaster.filial.data.TopicDB;
 import kz.foodmaster.filial.data.UserDB;
 
 public class UserController extends HttpServlet {
@@ -62,15 +50,8 @@ public class UserController extends HttpServlet {
         String requestURI = request.getRequestURI();
         System.out.println("In doGet with URI = " + requestURI);
         String url = "";
-        if (requestURI.endsWith("/forum")) {
-            url = showForum(request, response);
-        } else if (requestURI.endsWith("/enterTopic")) {
-            url = showTopic(request, response);
-        } else if (requestURI.endsWith("/addMessage")) {
-            url = addMessage(request, response);
-        } else if (requestURI.endsWith("/editMessage")) {
-            url = editMessage(request, response);
-        }  else if (requestURI.endsWith("/register")) {
+        
+        if (requestURI.endsWith("/register")) {
             url = "/login/user.jsp";
         }  else if (requestURI.endsWith("/orders")) {
             url = displayClientOrders(request, response);
@@ -93,13 +74,7 @@ public class UserController extends HttpServlet {
         System.out.println("In doPost with URI = " + requestURI);
         String url = "";
         
-        if (requestURI.endsWith("/insertMessage")) {
-            url = insertMessage(request, response);
-        } else if (requestURI.endsWith("/updateMessage")) {
-            url = updateMessage(request, response);
-        } else if (requestURI.endsWith("/enterTopic")) {
-            url = showTopic(request, response);
-        }  else if (requestURI.endsWith("/addClient")) {
+        if (requestURI.endsWith("/addClient")) {
         	url = addClient(request, response);
         }  else if (requestURI.endsWith("/register")) {
             url = "/login/user.jsp";
@@ -118,106 +93,6 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
-    
-    private String showForum(HttpServletRequest request, HttpServletResponse response) {
-
-    	List<Topic> topics = TopicDB.selectTopics();
-    	request.setAttribute("topics", topics);
-    	
-        return "/forum/forum.jsp";
-    }
-    
-    
-    private String showTopic(HttpServletRequest request, HttpServletResponse response) {
-
-    	int topicID = Integer.parseInt(request.getParameter("topicID"));
-
-    	Topic topic = TopicDB.selectTopic(topicID);
-    	request.setAttribute("topic", topic);
-    	
-        return "/forum/topic.jsp";
-    }
-    
-    
-    private String addMessage(HttpServletRequest request, HttpServletResponse response) {
-
-    	HttpSession session = request.getSession();
-    	Client client = (Client)session.getAttribute("client");
-    	String info = "";
-    	if (client == null) {
-    		info = "Вы не авторизованы. Авторизуйтесь в системе, чтобы оставлять сообщения";
-    		request.setAttribute("info", info);
-    		return "/forumController/enterTopic";
-    	}
-    	
-    	String topicID = request.getParameter("topicID");
-    	request.setAttribute("topicID", topicID);
-    	
-        return "/forum/messageForm.jsp";
-    }
-    
-    
-    private String editMessage(HttpServletRequest request, HttpServletResponse response) {
-
-    	int messageID = Integer.parseInt(request.getParameter("messageID"));
-    	Message message = MessageDB.selectMessage(messageID);
-    	request.setAttribute("topicID", message.getTopicID());
-    	
-    	HttpSession session = request.getSession();
-    	Client client = (Client)session.getAttribute("client");
-    	String info = "";
-    	
-    	if (client == null) {
-    		info = "Вы не авторизованы. Авторизуйтесь в системе, чтобы оставлять сообщения";
-    		request.setAttribute("info", info);
-    		return "/forumController/enterTopic?topicID=" + message.getTopicID();
-    	}
-    	
-    	if (!client.getClientLogin().equals(message.getUserLogin())) {
-    		info = "Вы не можете редактировать чужие сообщения.";
-    		request.setAttribute("info", info);
-    		return "/forumController/enterTopic?topicID=" + message.getTopicID();
-    	}
-    	
-    	request.setAttribute("message", message);
-    	
-        return "/forum/messageForm.jsp";
-    }
-    
-    
-    private String insertMessage(HttpServletRequest request, HttpServletResponse response) {
-    	
-    	int topicID = Integer.parseInt(request.getParameter("topicID"));
-    	String text = request.getParameter("text");
-    	
-    	HttpSession session = request.getSession();
-    	Client client = (Client)session.getAttribute("client");
-    	
-    	Message message = new Message();
-    	message.setUserLogin(client.getClientLogin());
-    	message.setTopicID(topicID);
-    	message.setText(text);
-    	
-    	MessageDB.insert(message);
-    	
-        return "/forumController/enterTopic";
-    }
-    
-    
-    private String updateMessage(HttpServletRequest request, HttpServletResponse response) {
-
-    	int messageID = Integer.parseInt(request.getParameter("messageID"));
-    	String text = request.getParameter("text");
-    	
-    	Message message = new Message();
-    	message.setID(messageID);
-    	message.setText(text);
-    	
-    	MessageDB.update(message);
-    	
-        return "/forumController/enterTopic";
-    }
-    
     
     private String addClient(HttpServletRequest request, HttpServletResponse response) {
 
@@ -373,57 +248,6 @@ public class UserController extends HttpServlet {
         		tbl.getRow(i+1).getCell(3).setText(priceStr);
         		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
         	}
-	        /*int numParas = 0;
-	        ArrayList tables = null; 
-	        Paragraph para = null;
-	        boolean inTable = false;
-	        Range range = null; 
-	        int numRowsInTable = 0; 
-	        int numCellsInRow = 0; 
-	        
-	        range = doc.getRange(); 
-	        numParas = range.numParagraphs();
-	        tables = new ArrayList();
-	        
-	        for(int i = 0; i < numParas; i++) { 
-	        	para = range.getParagraph(i); 
-	        	if(para.isInTable()) { 
-	        		if(!inTable) { 
-	        			tables.add(range.getTable(para)); 
-	        		    inTable = true; 
-	        		} 
-	        	} 
-	        	else { 
-	        		inTable = false; 
-	        	} 
-	        } 
-	        Table table;
-	        TableRow row = null; 
-	        TableCell cell = null; 
-
-        	table = (Table)tables.get(1);
-        	//row = new TableRow();
-        	int curRow =1;
-        	for(int i=0; i < order.getLineItems().size(); i++) {
-        		row = table.getRow(curRow);
-        		cell = row.getCell(0);
-        		cell.getParagraph(0).insertBefore(String.valueOf(i+1));
-        		cell = row.getCell(1);
-        		cell.getParagraph(0).insertBefore(order.getLineItems().get(i).getProduct().getProductName());
-        		cell = row.getCell(2);
-        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getQuantity()));
-        		cell = row.getCell(3);
-        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
-        		cell = row.getCell(4);
-        		cell.getParagraph(0).insertBefore(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
-        		curRow++;
-        	}
-        	
-            numRowsInTable = table.numRows();
-            for(int i=numRowsInTable-1; i >= numRowsInTable; i--) {
-            	table.getRow(i).delete();
-            }*/
-
 	               
 	        response.setContentType("application/msword");
 	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);

@@ -3,7 +3,6 @@ package kz.foodmaster.filial.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +23,6 @@ import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.Plan;
 import kz.foodmaster.filial.business.Product;
-import kz.foodmaster.filial.business.Topic;
 import kz.foodmaster.filial.business.Transport;
 import kz.foodmaster.filial.data.CategoryDB;
 import kz.foodmaster.filial.data.ClientDB;
@@ -33,7 +31,6 @@ import kz.foodmaster.filial.data.DistanceDB;
 import kz.foodmaster.filial.data.MeasureDB;
 import kz.foodmaster.filial.data.OrderDB;
 import kz.foodmaster.filial.data.ProductDB;
-import kz.foodmaster.filial.data.TopicDB;
 import kz.foodmaster.filial.data.TransportDB;
 
 public class AdminController extends HttpServlet {
@@ -71,12 +68,6 @@ public class AdminController extends HttpServlet {
         	url = displayOrders(request, response);
         }   else if (requestURI.endsWith("/completeOrder")) {
         	url = completeOrder(request, response);
-        } else if (requestURI.endsWith("/updateTopic")) {
-            url = updateTopic(request, response);
-        } else if (requestURI.endsWith("/insertTopic")) {
-            url = insertTopic(request, response);
-        } else if (requestURI.endsWith("/displayTopics")) {
-        	url = displayTopics(request, response);
         } else if (requestURI.endsWith("/updateTransport")) {
             url = updateTransport(request, response);
         } else if (requestURI.endsWith("/insertTransport")) {
@@ -129,14 +120,6 @@ public class AdminController extends HttpServlet {
             url = displayOrders(request, response);
         } else if (requestURI.endsWith("/displayOrder")) {
             url = displayOrder(request, response);
-        } else if (requestURI.endsWith("/displayTopics")) {
-            url = displayTopics(request, response);
-        } else if (requestURI.endsWith("/addTopic")) {
-            url = addTopic(request, response);
-        }  else if (requestURI.endsWith("/editTopic")) {
-            url = editTopic(request, response);
-        }   else if (requestURI.endsWith("/deleteTopic")) {
-            url = deleteTopic(request, response);
         } else if (requestURI.endsWith("/displayTransports")) {
             url = displayTransports(request, response);
         } else if (requestURI.endsWith("/addTransport")) {
@@ -508,68 +491,6 @@ public class AdminController extends HttpServlet {
         OrderDB.finishOrder(orderID);
 
         return "/adminController/displayOrders";
-    }
-    
-    
-    private String displayTopics(HttpServletRequest request, HttpServletResponse response) {
-        
-    	List<Topic> topics = TopicDB.selectTopics();
-    	request.setAttribute("topics", topics);
-
-        return "/admin/topics.jsp";
-    }
-    
-    
-    private String addTopic(HttpServletRequest request, HttpServletResponse response) {
-
-        return "/admin/TopicForm.jsp";
-    }
-    
-    
-    private String editTopic(HttpServletRequest request, HttpServletResponse response) {
-
-        int topicID = Integer.parseInt(request.getParameter("topicID"));  
-        
-        Topic topic = TopicDB.selectTopic(topicID);
-
-        request.setAttribute("topic", topic);
-
-        return "/admin/TopicForm.jsp";
-    }
-
-    
-    private String updateTopic(HttpServletRequest request, HttpServletResponse response) {
-        
-    	int topicID = Integer.parseInt(request.getParameter("topicID"));
-        String topicName = request.getParameter("topicName");
-        
-        Topic topic = new Topic();
-        
-        topic.setID(topicID);
-        topic.setName(topicName);
-
-        TopicDB.updateTopic(topic);
-
-        return "/adminController/displayTopics";
-    }
-    
-    
-    private String insertTopic(HttpServletRequest request, HttpServletResponse response) {
-    	
-        Topic topic = new Topic();
-        topic.setName(request.getParameter("topicName"));
-
-        TopicDB.insertTopic(topic);
-
-        return "/adminController/displayTopics";
-    }
-    
-    
-    private String deleteTopic(HttpServletRequest request, HttpServletResponse response) {
-
-    	int topicID = Integer.parseInt(request.getParameter("topicID"));
-    	TopicDB.deleteTopic(topicID);
-        return "/adminController/displayTopics";
     }
     
     
