@@ -7,7 +7,7 @@
 <section id="admin">
 <h1>Страница отчетов</h1>
 
-<form method="post">
+<form action="salesReport" method="post">
 <table>
 <tr>
 	<td width="30%"><label>Начальная дата: <input type="date" name="startDate"></label></td>
@@ -18,7 +18,7 @@
 </form>
 <br>
 <br>
-<form method="post">
+<form action="monthReport" method="post">
 <table>
 <tr>
 	<td width="30%"><label>Год: <input type="number" value="2018"></label></td>

@@ -129,7 +129,6 @@ public class OrderDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        System.out.println(date);
         
 		String query = "SELECT * "
                 + "FROM Заказ "
@@ -164,6 +163,32 @@ public class OrderDB {
         } catch (SQLException e) {
             System.err.println(e);
             return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+    
+    
+    public static boolean selectNotExecutedOrders() {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+		String query = "SELECT * "
+                + "FROM Заказ "
+                + "WHERE (Подтвержден = 0 or Выполнен = 0) and Отменен != 1 "
+                +"ORDER BY ДатаЗаказа";
+        	
+        try {
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);

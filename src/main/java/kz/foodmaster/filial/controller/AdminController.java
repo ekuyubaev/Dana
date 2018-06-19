@@ -1,12 +1,19 @@
 package kz.foodmaster.filial.controller;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,6 +21,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import kz.foodmaster.filial.business.Category;
 import kz.foodmaster.filial.business.Client;
@@ -92,6 +106,14 @@ public class AdminController extends HttpServlet {
         	url = findOrders(request, response);
         } else if (requestURI.endsWith("/calcPlan")) {
         	url = calcPlan(request, response);
+        } else if (requestURI.endsWith("/akt")) {
+        	printAkt(request, response);
+        } else if (requestURI.endsWith("/nakladnaia")) {
+        	printNakladnaia(request, response);
+        } else if (requestURI.endsWith("/salesReport")) {
+        	salesReport(request, response);
+        } else if (requestURI.endsWith("/monthReport")) {
+        	monthReport(request, response);
         }
 
         getServletContext()
@@ -166,6 +188,8 @@ public class AdminController extends HttpServlet {
             url = "/admin/reports.jsp";
         } else if (requestURI.endsWith("/displayClients")) {
             url = displayClients(request, response);
+        } else if (requestURI.endsWith("/startPage")) {
+            url = startPage(request, response);
         }
 
         getServletContext()
@@ -173,6 +197,18 @@ public class AdminController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
+    private String startPage(HttpServletRequest request, HttpServletResponse response) {
+
+        if (OrderDB.selectNotExecutedOrders()) {
+        	String message = "Имеются не выполненные и/или новые заказы. Вы можете просмотреть их на странице заказов.";
+        	request.setAttribute("message", message);
+        }
+
+        return "/admin/index.jsp";
+    }
+    
+    
     private String displayPackages(HttpServletRequest request, HttpServletResponse response) {
 
         List<Packaging> packages = PackageDB.selectPackages();
@@ -893,5 +929,325 @@ public class AdminController extends HttpServlet {
     			
     	
     	return "/admin/clients.jsp";
+    }
+    
+    
+    private void printAkt(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String orderID = request.getParameter("orderID");
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	String path = classLoader.getResource("templates/AKT.docx").getFile();
+    	String [] pathParts = path.split("/");
+    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(order.getOrderDate());
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+
+			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}*/
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	
+        //return "/userController/displayClientOrder";
+    }
+    
+    
+    private void printNakladnaia(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String orderID = request.getParameter("orderID");
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	String path = classLoader.getResource("templates/Nakladnaia.docx").getFile();
+    	String [] pathParts = path.split("/");
+    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(order.getOrderDate());
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+
+			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}*/
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	
+        //return "/userController/displayClientOrder";
+    }
+    
+    
+    private void salesReport(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String orderID = request.getParameter("orderID");
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	String path = classLoader.getResource("templates/OtchetPoProdazham.docx").getFile();
+    	String [] pathParts = path.split("/");
+    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".docx";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	//Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	//Calendar cal = Calendar.getInstance();
+    	//cal.setTime(order.getOrderDate());
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+
+			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}*/
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    }
+
+    
+    private void monthReport(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String orderID = request.getParameter("orderID");
+    	ClassLoader classLoader = getClass().getClassLoader();
+    	String path = classLoader.getResource("templates/Ezhemeciachnyi_otchet.docx").getFile();
+    	String [] pathParts = path.split("/");
+    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	//Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	//Calendar cal = Calendar.getInstance();
+    	//cal.setTime(order.getOrderDate());
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+
+			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}*/
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    }
+    	
+    
+    private void replaceText(XWPFDocument doc, String findText, String replaceText) {
+    	for (XWPFParagraph p : doc.getParagraphs()) {
+    	    List<XWPFRun> runs = p.getRuns();
+    	    if (runs != null) {
+    	        for (XWPFRun r : runs) {
+    	            String text = r.getText(0);
+    	            if (text != null && text.contains(findText)) {
+    	                text = text.replace(findText, replaceText);
+    	                r.setText(text, 0);
+    	            }
+    	        }
+    	    }
+    	}
+    	
+    	for (XWPFTable tbl : doc.getTables()) {
+    		   for (XWPFTableRow row : tbl.getRows()) {
+    		      for (XWPFTableCell cell : row.getTableCells()) {
+    		         for (XWPFParagraph p : cell.getParagraphs()) {
+    		            for (XWPFRun r : p.getRuns()) {
+    		              String text = r.getText(0);
+    		              if (text != null && text.contains(findText)) {
+    		                text = text.replace(findText, replaceText);
+    		                r.setText(text,0);
+    		              }
+    		            }
+    		         }
+    		      }
+    		   }
+    		}
     }
 }

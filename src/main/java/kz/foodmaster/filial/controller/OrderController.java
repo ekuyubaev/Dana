@@ -7,8 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -176,6 +180,13 @@ public class OrderController extends HttpServlet {
             else
                 cart.removeItem(lineItem);
         }
+        
+        List<Measure> measures = MeasureDB.selectMeasures();
+        List<Packaging> packages = PackageDB.selectPackages();
+        
+        request.setAttribute("measures", measures);
+        request.setAttribute("packages", packages);
+        
         return "/cart/cart.jsp";
     }
     
@@ -263,10 +274,37 @@ public class OrderController extends HttpServlet {
         String message = "";
 
         if (OrderDB.insert(order)) {
-        	message = "Ваш заказ был принят в обработку. " +
-        				"В течение дня с Вами свяжется наш экспедитор, чтобы подтвердить Ваш заказ.";
-            session.setAttribute("cart", null);
-        }
+        	session.setAttribute("cart", null);
+        	
+        	message = "Ваш заказ принят. Наш экспедитор получил письменное уведомление о Вашем заказе."
+        			+ " В течение 8 рабочих часов он свяжется с Вами, чтобы подтвердить Ваш заказ.";
+        	
+        	
+        	final String fromEmail = "foodmasterfilial@gmail.com"; //requires valid gmail id
+    		final String password = "fD47mrtQ"; // correct password for gmail id
+    		final String toEmail = "ekuyubaev@gmail.com"; // can be any email id 
+    		String mailBody = "Новый заказ. " + ".\n\n" +
+    				"Дата: " + order.getOrderDateDefaultFormat() + ". \n\n" +
+    				"На сумму: " + order.getOrderTotalCurrencyFormat() + ". \n\n" +
+    				"От клиента: " + order.getClient().getClientName() + ". \n\n" +
+    				"Телефон: " + order.getClient().getClientPhone();
+    		Properties props = new Properties();
+    		props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+    		props.put("mail.smtp.port", "587"); //TLS Port
+    		props.put("mail.smtp.auth", "true"); //enable authentication
+    		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+    		
+                    //create Authenticator object to pass in Session.getInstance argument
+    		Authenticator auth = new Authenticator() {
+    			//override the getPasswordAuthentication method
+    			protected PasswordAuthentication getPasswordAuthentication() {
+    				return new PasswordAuthentication(fromEmail, password);
+    			}
+    		};
+    		javax.mail.Session mailSession = javax.mail.Session.getInstance(props, auth);
+    		
+    		EmailUtil.sendEmail(mailSession, toEmail,"Новый заказ", mailBody);	
+    	}
         else message = "В процессе оформления заказа произошла ошибка. Проверьте данные и попробуйте снова.";
 
         request.setAttribute("message", message);

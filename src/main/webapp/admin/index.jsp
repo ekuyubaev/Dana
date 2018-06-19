@@ -7,7 +7,7 @@
 <section id="admin">
 
 <h1>Меню администратора</h1>
-
+<i>${message}</i>
 </section>
 
 <!-- end middle column -->

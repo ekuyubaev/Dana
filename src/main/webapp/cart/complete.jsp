@@ -11,8 +11,6 @@
 
 <p>${message}</p>
 <br>
-<p>Если у Вас есть какие-либо вопросы, Вы можете связаться с нами по адресу:  
-<a href="mailto:${custServEmail}">${custServEmail}</a></p>
 
 </section>
 
