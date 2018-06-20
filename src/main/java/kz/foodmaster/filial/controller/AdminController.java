@@ -945,28 +945,29 @@ public class AdminController extends HttpServlet {
     	
     	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
     	Calendar cal = Calendar.getInstance();
-    	cal.setTime(order.getOrderDate());
     	
     	try {
 			doc = new XWPFDocument (new FileInputStream(path));
 
-			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "number", String.valueOf(order.getOrderID()));
 			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
 			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
 			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
 			System.out.println(order.getClient().getClientName());
 			replaceText(doc, "client", order.getClient().getClientName());
-			replaceText(doc, "adress", order.getClient().getClientAdress());
-			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+			replaceText(doc, "expeditor", "Иванов Иван Иванович (поменять)");
+			replaceText(doc, "money", order.num2str(false));
 
 			XWPFTable tbl = doc.getTables().get(1);
 			
 			for(int i=0; i < order.getLineItems().size(); i++) {
-				XWPFTableRow row =tbl.createRow();
+				tbl.createRow();
 				//tbl.addRow(row);
         		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
         		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
-        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		Measure m = MeasureDB.selectMeasure(String.valueOf(order.getLineItems().get(i).getProduct().getProductMeasureID()));
+        		tbl.getRow(i+1).getCell(2).setText(m.getMeasureName());
+        		tbl.getRow(i+1).getCell(3).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
         		
         		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
         		NumberFormat currency = NumberFormat.getCurrencyInstance();
@@ -977,11 +978,18 @@ public class AdminController extends HttpServlet {
                     df.setDecimalFormatSymbols(dfs);
                 }
                 String priceStr = currency.format(price);
+                priceStr = priceStr.split(" ")[0];
         		
-        		tbl.getRow(i+1).getCell(3).setText(priceStr);
-        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
-        	}*/
-	               
+        		tbl.getRow(i+1).getCell(4).setText(priceStr);
+        		tbl.getRow(i+1).getCell(5).setText(order.getLineItems().get(i).getTotalCurrencyFormat().split(" ")[0]);
+        		tbl.getRow(i+1).getCell(7).setText(order.getLineItems().get(i).getTotalCurrencyFormat().split(" ")[0]);
+        	}
+			
+			XWPFTableRow row =tbl.createRow();
+			row.getCell(1).setText("Итого:");
+			row.getCell(7).setText(order.getOrderTotalCurrencyFormat().split(" ")[0]);
+			
+			
 	        response.setContentType("application/msword");
 	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 	        out = response.getOutputStream();
