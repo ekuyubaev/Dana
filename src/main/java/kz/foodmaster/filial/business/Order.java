@@ -1,6 +1,9 @@
 package kz.foodmaster.filial.business;
 
 import java.util.*;
+
+import kz.foodmaster.filial.util.Num;
+
 import java.text.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -157,16 +160,23 @@ public class Order implements Serializable {
 
         };
         // получаем отдельно рубли и копейки
-        long rub = this.getOrderTotal().longValue();
+        Long rub = this.getOrderTotal().longValue();
         String[] moi = this.getOrderTotal().toString().split("\\.");
-        long kop = Long.valueOf(moi[1]);
-        if (!moi[1].substring( 0,1).equals("0") ){// начинается не с нуля
+        Long kop = Long.valueOf(moi[1]);
+        
+        String result = Num.toString(rub.intValue()) + " тенге " + Num.toString(kop.intValue()) + " тиын";
+        
+        return result;
+        
+        
+        /*if (!moi[1].substring(0,1).equals("0") ) {// начинается не с нуля
             if (kop<10 )
                 kop *=10;
         }
         String kops = String.valueOf(kop);
         if (kops.length()==1 )
             kops = "0"+kops;
+        
         long rub_tmp = rub;
         // Разбиватель суммы на сегменты по 3 цифры с конца
         ArrayList segments = new ArrayList();
@@ -179,12 +189,12 @@ public class Order implements Serializable {
         Collections.reverse(segments);
         // Анализируем сегменты
         String o = "";
-        if (rub== 0) {// если Ноль
-            o = "ноль "+morph( 0, forms[1][ 0],forms[1][1],forms[1][2]);
+        if (rub == 0) {// если Ноль
+            o = "ноль "+ morph( 0, forms[1][ 0],forms[1][1],forms[1][2]);
             if (stripkop)
                 return o;
             else
-                return o +" "+kop+" "+morph(kop,forms[ 0][ 0],forms[ 0][1],forms[ 0][2]);
+                return o +" "+kop+" "+ morph(kop,forms[ 0][ 0],forms[ 0][1],forms[ 0][2]);
         }
         // Больше нуля
         int lev = segments.size();
@@ -226,7 +236,7 @@ public class Order implements Serializable {
             o = o+""+kops+" "+morph(kop,forms[ 0][ 0],forms[ 0][1],forms[ 0][2]);
             o = o.replaceAll(" {2,}", " ");
         }
-        return o;
+        return o;*/
     }
  
     /**<br/>     * Склоняем словоформу<br/>     * @param n Long количество объектов<br/>     * @param f1 String вариант словоформы для одного объекта<br/>     * @param f2 String вариант словоформы для двух объектов<br/>     * @param f5 String вариант словоформы для пяти объектов<br/>     * @return String правильный вариант словоформы для указанного количества объектов<br/>     */
