@@ -28,7 +28,7 @@
                     Показать корзину</a></li>
             <li><a href="<c:url value='/userController/showCabinet'/>">
                     Личный кабинет</a></li>
-            <li><a href="<c:url value='/adminController/startPage'/>">
+            <li><a href="<c:url value='/admin/index.jsp'/>">
                     Администрирование</a></li>
             <li><a href="<c:url value='/adminController/breakSession'/>">
                     Выйти</a></li>

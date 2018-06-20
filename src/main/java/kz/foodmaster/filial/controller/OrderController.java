@@ -282,7 +282,7 @@ public class OrderController extends HttpServlet {
         	
         	final String fromEmail = "foodmasterfilial@gmail.com"; //requires valid gmail id
     		final String password = "fD47mrtQ"; // correct password for gmail id
-    		final String toEmail = "ekuyubaev@gmail.com"; // can be any email id 
+    		final String toEmail = "kanatovna.dana@bk.ru"; // can be any email id 
     		String mailBody = "Новый заказ. " + ".\n\n" +
     				"Дата: " + order.getOrderDateDefaultFormat() + ". \n\n" +
     				"На сумму: " + order.getOrderTotalCurrencyFormat() + ". \n\n" +
