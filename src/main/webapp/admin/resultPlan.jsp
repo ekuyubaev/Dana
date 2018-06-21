@@ -13,18 +13,22 @@
 			<th>Клиент</th>
 			<th>Заказ</th>
 		</tr>
-		<c:forEach var="client" items="${clients}" varStatus="status1" >
+		<c:forEach var="client" items="${clientsInPlan}" varStatus="status1" >
 			<tr>
 				<td>${status1.index}</td>
 				<td>${client.clientName}</td>
 				<td>
-				    <c:forEach var="order" items="${orders}"  varStatus="status2">
+				    <c:forEach var="order" items="${ordersInPlan}"  varStatus="status2">
 						<c:if test="${client.clientId == order.client.clientId}">[${order.orderDate}],</c:if> 
 				    </c:forEach>
 			    </td>
 		    </tr>
 		</c:forEach>
 	</table>
+	<br>
+	<form action="printPlan" method="get">
+		<input type="submit" value="Печать"></td>
+	</form>
 </section>
 <!-- end middle column -->
 

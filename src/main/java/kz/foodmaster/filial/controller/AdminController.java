@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -33,6 +34,7 @@ import kz.foodmaster.filial.business.Category;
 import kz.foodmaster.filial.business.Client;
 import kz.foodmaster.filial.business.Discount;
 import kz.foodmaster.filial.business.Distance;
+import kz.foodmaster.filial.business.LineItem;
 import kz.foodmaster.filial.business.Measure;
 import kz.foodmaster.filial.business.Order;
 import kz.foodmaster.filial.business.Packaging;
@@ -191,6 +193,8 @@ public class AdminController extends HttpServlet {
             url = displayClients(request, response);
         } else if (requestURI.endsWith("/startPage")) {
             url = startPage(request, response);
+        } else if (requestURI.endsWith("/printPlan")) {
+            printPlan(request, response);
         }
 
         getServletContext()
@@ -837,14 +841,14 @@ public class AdminController extends HttpServlet {
 			}
 		}
 		
-		System.out.println("--------After reading from database------------");
+		/*System.out.println("--------After reading from database------------");
 		for (int i=1; i <= clients.size()+1; i++) {
 			for (int j=1; j <= clients.size()+1; j++) {
 				System.out.print(matrix[i][j] + " ");
 			}
 			System.out.println("");
 		}
-		System.out.println("-----------------------------------------");
+		System.out.println("-----------------------------------------");*/
 		
 		request.setAttribute("matrix", matrix);
 		request.setAttribute("clients", clients);
@@ -855,7 +859,6 @@ public class AdminController extends HttpServlet {
     private String calcPlan(HttpServletRequest request, HttpServletResponse response) {	
     	String date = request.getParameter("date");
     	String plainPlan = request.getParameter("plainPlan");
-    	System.out.println(plainPlan);
 
     	List<Order> orders = OrderDB.selectOrders(date);
     	List<Client> clients = Plan.getClientsList(orders);
@@ -904,9 +907,10 @@ public class AdminController extends HttpServlet {
     	
     	clients.clear();
     	clients = plan.getPlan();
-    	request.setAttribute("clients", clients);
-    	request.setAttribute("orders", orders);
-    			
+    	HttpSession s = request.getSession();
+    	s.setAttribute("clientsInPlan", clients);
+    	s.setAttribute("ordersInPlan", orders);	
+    	s.setAttribute("ordersDate", date);
     	
     	return "/admin/resultPlan.jsp";
     }
@@ -1076,56 +1080,68 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private void salesReport(HttpServletRequest request, HttpServletResponse response) {
+    private void printPlan(HttpServletRequest request, HttpServletResponse response) {
     	
-    	String orderID = request.getParameter("orderID");
     	String path = request.getSession().getServletContext().getRealPath("/");
-    	path += "WEB-INF\\classes\\templates\\OtchetPoProdazham.docx";
+    	path += "WEB-INF\\classes\\templates\\Plan_postavok.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
     	
-    	//Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
-    	//Calendar cal = Calendar.getInstance();
-    	//cal.setTime(order.getOrderDate());
+    	List<Order> orders = (List<Order>)request.getSession().getAttribute("ordersInPlan");
+    	List<Client> clients = (List<Client>)request.getSession().getAttribute("clientsInPlan");
+    	
+    	String ordersDate = (String)request.getSession().getAttribute("ordersDate");
+    	SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+    	java.util.Date date = new java.util.Date();
+    	try {
+			date = in.parse(ordersDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	Calendar ordersCal = Calendar.getInstance();
+    	ordersCal.setTime(date);
+    	Calendar curCal = Calendar.getInstance();
     	
     	try {
 			doc = new XWPFDocument (new FileInputStream(path));
 
-			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
-			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
-			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
-			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
-			System.out.println(order.getClient().getClientName());
-			replaceText(doc, "client", order.getClient().getClientName());
-			replaceText(doc, "adress", order.getClient().getClientAdress());
-			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
-
-			XWPFTable tbl = doc.getTables().get(1);
+			replaceText(doc, "orderday", String.format("%02d", ordersCal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "ordermonth", String.format("%02d", ordersCal.get(Calendar.MONTH)));
+			replaceText(doc, "orderyear", String.valueOf(ordersCal.get(Calendar.YEAR)));
 			
-			for(int i=0; i < order.getLineItems().size(); i++) {
-				XWPFTableRow row =tbl.createRow();
-				//tbl.addRow(row);
+			replaceText(doc, "planday", String.format("%02d", curCal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "planmonth", String.format("%02d", curCal.get(Calendar.MONTH)));
+			replaceText(doc, "planyear", String.valueOf(curCal.get(Calendar.YEAR)));
+
+			XWPFTable tbl = doc.getTables().get(0);
+			
+			for(int i=0; i < clients.size(); i++) {
+				tbl.createRow();
+
         		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
-        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
-        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		tbl.getRow(i+1).getCell(1).setText(clients.get(i).getClientName());
+        		tbl.getRow(i+1).getCell(2).setText(clients.get(i).getClientAdress());
         		
-        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
-        		NumberFormat currency = NumberFormat.getCurrencyInstance();
-                if (currency instanceof DecimalFormat) {
-                    DecimalFormat df = (DecimalFormat) currency;
-                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
-                    dfs.setCurrencySymbol("тенге");
-                    df.setDecimalFormatSymbols(dfs);
-                }
-                String priceStr = currency.format(price);
-        		
-        		tbl.getRow(i+1).getCell(3).setText(priceStr);
-        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
-        	}*/
-	               
+        		String items = "";
+        		for (int j=0; j < orders.size(); j++) {
+        			if (orders.get(j).getClient().getClientId() == clients.get(i).getClientId()) {
+        				for (LineItem item : orders.get(j).getLineItems()) {
+        					items = item.getProduct().getProductName() +" - "
+        							+ item.getQuantity() + " шт.";
+        					XWPFParagraph p = tbl.getRow(i+1).getCell(3).addParagraph();
+        					XWPFRun r = p.createRun();
+        					r.setText(items);
+        					r.addBreak();
+        					tbl.getRow(i+1).getCell(3).addParagraph(p);
+        					
+        				}
+        			}
+        		}
+        	}
+			
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=OtchetPoProdazham.docx");
+	        response.addHeader("Content-Disposition", "attachment; filename=Plan_postavok.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
@@ -1142,6 +1158,134 @@ public class AdminController extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+    }
+    
+    
+    private void salesReport(HttpServletRequest request, HttpServletResponse response) {
+
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\OtchetPoProdazham.docx";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	String startDateStr = request.getParameter("startDate");
+    	String endDateStr = request.getParameter("endDate");
+    	
+    	SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+    	java.util.Date startDate = new java.util.Date();
+    	java.util.Date endDate = new java.util.Date();
+    	try {
+    		startDate = in.parse(startDateStr);
+    		endDate = in.parse(endDateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    	
+    	
+    	List<Order> orders = OrderDB.selectOrdersBetween(in.format(startDate), in.format(endDate));
+    	List<Category> categories = CategoryDB.selectCategories();
+    	List<Product> products = ProductDB.selectProducts();
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+			
+			replaceText(doc, "startDate", startDateStr);
+			replaceText(doc, "endDate", endDateStr);
+    	
+	    	XWPFTable tbl = doc.getTables().get(0);
+	    	
+	    	NumberFormat currency = NumberFormat.getCurrencyInstance();
+	    	if (currency instanceof DecimalFormat) {
+                DecimalFormat df = (DecimalFormat) currency;
+                DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                dfs.setCurrencySymbol("тенге");
+                df.setDecimalFormatSymbols(dfs);
+            }
+	    	
+	    	int index = 0;
+	    	BigDecimal totalSum = new BigDecimal(0);
+			int totalCount = 0;
+			
+	    	for (int i=0; i < categories.size(); i++) {
+	    		Category c = categories.get(i);
+	    		
+	    		tbl.createRow();
+	    		index++;
+				tbl.getRow(index).getCell(0).setText(c.getCategoryName());
+	    		
+	    		BigDecimal categorySum = new BigDecimal(0);
+				int categoryCount = 0;
+				
+	    		for (int j=0; j < products.size(); j++) {
+	    			Product p = products.get(j);
+	
+	    			if (p.getProductCategoryID() == c.getCategoryID()) {
+	    				tbl.createRow();
+	    				index++;
+	    				tbl.getRow(index).getCell(1).setText(p.getProductName());
+	    				
+	    				BigDecimal sum = new BigDecimal(0);
+	    				int count = 0;
+	    				for (Order order : orders) {
+	    					for (LineItem item : order.getLineItems()) {
+	    						if (item.getProduct().getProductID() == p.getProductID()) {
+	    							count += item.getQuantity();
+	    							sum = sum.add(item.getTotal());
+	    						}
+	    					}
+	    				}
+	    				
+	    				tbl.getRow(index).getCell(3).setText(currency.format(sum));
+	    				tbl.getRow(index).getCell(2).setText(String.valueOf(count));
+	    				
+	    				categoryCount += count;
+	    				categorySum = categorySum.add(sum);
+	    			}
+	    		}
+	    		
+	    		tbl.createRow();
+	    		index++;
+	    		//spanCellsAcrossRow(tbl, index, 0, 2);
+	    		tbl.getRow(index).getCell(1).setText("Всего по категории:");
+	    		tbl.getRow(index).getCell(3).setText(currency.format(categorySum));
+				tbl.getRow(index).getCell(2).setText(String.valueOf(categoryCount));
+				tbl.createRow();
+	    		index++;
+				
+				totalCount += categoryCount;
+				totalSum = totalSum.add(categorySum);
+	    	}
+	    	
+	    	tbl.createRow();
+	    	index++;
+	    	tbl.getRow(index).getCell(1).setText("Итого:");
+			tbl.getRow(index).getCell(3).setText(currency.format(totalSum));
+			tbl.getRow(index).getCell(2).setText(String.valueOf(totalCount));
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=OtchetPoProdazham.docx");
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+    }
+    
+    private void spanCellsAcrossRow(XWPFTable table, int rowNum, int colNum, int span) {
+        XWPFTableCell  cell = table.getRow(rowNum).getCell(colNum);
+        cell.getCTTc().getTcPr().addNewGridSpan();
+        cell.getCTTc().getTcPr().getGridSpan().setVal(BigInteger.valueOf((long)span));
     }
 
     
