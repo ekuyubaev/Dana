@@ -21,18 +21,18 @@
 <form action="monthReport" method="post">
 <table>
 <tr>
-	<td width="30%"><label>Год: <input type="number" value="2018"></label></td>
+	<td width="30%"><label>Год: <input type="number" value="2018" name="year"></label></td>
 	<td width="30%">
 		<label>Месяц: <select id="month" size="1" name="month" >
-	      <option value="01" >Январт</option>
-	      <option value="02">Февраль</option>
-	      <option value="03">Март</option>
-	      <option value="04">Апрель</option>
-	      <option value="05">Май</option>
-	      <option value="06">Июнь</option>
-	      <option value="07">Июль</option>
-	      <option value="08">Август</option>
-	      <option value="09">Сентябрь</option>
+	      <option value="1" >Январт</option>
+	      <option value="2">Февраль</option>
+	      <option value="3">Март</option>
+	      <option value="4">Апрель</option>
+	      <option value="5">Май</option>
+	      <option value="6">Июнь</option>
+	      <option value="7">Июль</option>
+	      <option value="8">Август</option>
+	      <option value="9">Сентябрь</option>
 	      <option value="10">Октябрь</option>
 	      <option value="11">Ноябрь</option>
 	      <option value="12">Декабрь</option>

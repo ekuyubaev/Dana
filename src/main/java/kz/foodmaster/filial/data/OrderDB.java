@@ -226,6 +226,54 @@ public class OrderDB {
     }
     
     
+    public static ArrayList<Order> selectOrdersInMonth(String year, String month) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+		String query = "SELECT * "
+                + "FROM Заказ "
+                + "WHERE Выполнен = 1 "
+                +" and YEAR(ДатаЗаказа) = " + year   
+                +" and MONTH(ДатаЗаказа) = " + month   
+                +" ORDER BY ДатаЗаказа";
+        	
+        try {
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            ArrayList<Order> orders = new ArrayList<>();
+            while (rs.next()) {
+                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+
+                int orderID = rs.getInt("ИДЗаказ");
+                List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
+
+                Order order = new Order();
+                order.setOrderID(orderID);
+                order.setClient(client);
+                order.setLineItems(lineItems);
+                order.setProcessed(rs.getBoolean("Выполнен"));
+                order.setConfirmed(rs.getBoolean("Подтвержден"));
+                order.setCancelled(rs.getBoolean("Отменен"));
+                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
+                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
+                order.setSum(rs.getBigDecimal("Сумма"));
+
+                orders.add(order);
+            }
+            return orders;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+    
+    
     public static boolean selectNotExecutedOrders() {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();

@@ -13,9 +13,12 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -1291,51 +1294,95 @@ public class AdminController extends HttpServlet {
     
     private void monthReport(HttpServletRequest request, HttpServletResponse response) {
     	
-    	String orderID = request.getParameter("orderID");
     	String path = request.getSession().getServletContext().getRealPath("/");
     	path += "WEB-INF\\classes\\templates\\Ezhemeciachnyi_otchet.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
     	
-    	//Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
-    	//Calendar cal = Calendar.getInstance();
-    	//cal.setTime(order.getOrderDate());
+    	String year = request.getParameter("year");
+    	String month = request.getParameter("month");
+    	List<Order> orders = OrderDB.selectOrdersInMonth(year, month);
+    	List<Category> categories = CategoryDB.selectCategories();
+    	List<Product> products = ProductDB.selectProducts();
     	
     	try {
 			doc = new XWPFDocument (new FileInputStream(path));
-
-			/*replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
-			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
-			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
-			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
-			System.out.println(order.getClient().getClientName());
-			replaceText(doc, "client", order.getClient().getClientName());
-			replaceText(doc, "adress", order.getClient().getClientAdress());
-			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
-
-			XWPFTable tbl = doc.getTables().get(1);
 			
-			for(int i=0; i < order.getLineItems().size(); i++) {
-				XWPFTableRow row =tbl.createRow();
-				//tbl.addRow(row);
-        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
-        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
-        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
-        		
-        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
-        		NumberFormat currency = NumberFormat.getCurrencyInstance();
-                if (currency instanceof DecimalFormat) {
-                    DecimalFormat df = (DecimalFormat) currency;
-                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
-                    dfs.setCurrencySymbol("тенге");
-                    df.setDecimalFormatSymbols(dfs);
-                }
-                String priceStr = currency.format(price);
-        		
-        		tbl.getRow(i+1).getCell(3).setText(priceStr);
-        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
-        	}*/
+			Month monthStr = Month.of(Integer.parseInt(month));
+			Locale loc = Locale.forLanguageTag("ru");
+			replaceText(doc, "month", monthStr.getDisplayName(TextStyle.FULL_STANDALONE, loc));
+			replaceText(doc, "year", year);
+    	
+	    	XWPFTable tbl = doc.getTables().get(0);
+	    	
+	    	NumberFormat currency = NumberFormat.getCurrencyInstance();
+	    	if (currency instanceof DecimalFormat) {
+                DecimalFormat df = (DecimalFormat) currency;
+                DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                dfs.setCurrencySymbol("тенге");
+                df.setDecimalFormatSymbols(dfs);
+            }
+	    	
+	    	int index = 0;
+	    	BigDecimal totalSum = new BigDecimal(0);
+			int totalCount = 0;
+			
+	    	for (int i=0; i < categories.size(); i++) {
+	    		Category c = categories.get(i);
+	    		
+	    		tbl.createRow();
+	    		index++;
+				tbl.getRow(index).getCell(0).setText(c.getCategoryName());
+	    		
+	    		BigDecimal categorySum = new BigDecimal(0);
+				int categoryCount = 0;
+				
+	    		for (int j=0; j < products.size(); j++) {
+	    			Product p = products.get(j);
+	
+	    			if (p.getProductCategoryID() == c.getCategoryID()) {
+	    				tbl.createRow();
+	    				index++;
+	    				tbl.getRow(index).getCell(1).setText(p.getProductName());
+	    				
+	    				BigDecimal sum = new BigDecimal(0);
+	    				int count = 0;
+	    				for (Order order : orders) {
+	    					for (LineItem item : order.getLineItems()) {
+	    						if (item.getProduct().getProductID() == p.getProductID()) {
+	    							count += item.getQuantity();
+	    							sum = sum.add(item.getTotal());
+	    						}
+	    					}
+	    				}
+	    				
+	    				tbl.getRow(index).getCell(3).setText(currency.format(sum));
+	    				tbl.getRow(index).getCell(2).setText(String.valueOf(count));
+	    				
+	    				categoryCount += count;
+	    				categorySum = categorySum.add(sum);
+	    			}
+	    		}
+	    		
+	    		tbl.createRow();
+	    		index++;
+	    		//spanCellsAcrossRow(tbl, index, 0, 2);
+	    		tbl.getRow(index).getCell(1).setText("Всего по категории:");
+	    		tbl.getRow(index).getCell(3).setText(currency.format(categorySum));
+				tbl.getRow(index).getCell(2).setText(String.valueOf(categoryCount));
+				tbl.createRow();
+	    		index++;
+				
+				totalCount += categoryCount;
+				totalSum = totalSum.add(categorySum);
+	    	}
+	    	
+	    	tbl.createRow();
+	    	index++;
+	    	tbl.getRow(index).getCell(1).setText("Итого:");
+			tbl.getRow(index).getCell(3).setText(currency.format(totalSum));
+			tbl.getRow(index).getCell(2).setText(String.valueOf(totalCount));
 	               
 	        response.setContentType("application/msword");
 	        response.addHeader("Content-Disposition", "attachment; filename=Ezhemeciachnyi_otchet.docx");
@@ -1351,7 +1398,6 @@ public class AdminController extends HttpServlet {
 				doc.close();
 				out.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
