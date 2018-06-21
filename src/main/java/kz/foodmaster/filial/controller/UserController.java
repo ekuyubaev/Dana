@@ -204,10 +204,8 @@ public class UserController extends HttpServlet {
     private void printContract(HttpServletRequest request, HttpServletResponse response) {
     	
     	String orderID = request.getParameter("orderID");
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/Dogovor_na_postavku.docx").getFile();
-    	String [] pathParts = path.split("/");
-    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\Dogovor_na_postavku.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
@@ -252,7 +250,7 @@ public class UserController extends HttpServlet {
         	}
 	               
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        response.addHeader("Content-Disposition", "attachment; filename=Dogovor_na_postavku.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
@@ -261,13 +259,12 @@ public class UserController extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			/*try {
-				//doc.close();
-				//out.close();
+			try {
+				doc.close();
+				out.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}*/
+			}
 		}
     	
         //return "/userController/displayClientOrder";

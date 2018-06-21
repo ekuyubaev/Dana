@@ -935,10 +935,8 @@ public class AdminController extends HttpServlet {
     private void printAkt(HttpServletRequest request, HttpServletResponse response) {
     	
     	String orderID = request.getParameter("orderID");
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/AKT.docx").getFile();
-    	String [] pathParts = path.split("/");
-    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\AKT.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
@@ -991,7 +989,7 @@ public class AdminController extends HttpServlet {
 			
 			
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        response.addHeader("Content-Disposition", "attachment; filename=AKT.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
@@ -1014,8 +1012,8 @@ public class AdminController extends HttpServlet {
     private void printNakladnaia(HttpServletRequest request, HttpServletResponse response) {
     	
     	String orderID = request.getParameter("orderID");
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/Nakladnaia.docx").getFile();
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\Nakladnaia.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
@@ -1068,7 +1066,7 @@ public class AdminController extends HttpServlet {
 			
 			
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=Накладная");
+	        response.addHeader("Content-Disposition", "attachment; filename=Nakladnaia.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
@@ -1091,10 +1089,8 @@ public class AdminController extends HttpServlet {
     private void salesReport(HttpServletRequest request, HttpServletResponse response) {
     	
     	String orderID = request.getParameter("orderID");
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/OtchetPoProdazham.docx").getFile();
-    	String [] pathParts = path.split("/");
-    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".docx";
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\OtchetPoProdazham.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
@@ -1139,7 +1135,7 @@ public class AdminController extends HttpServlet {
         	}*/
 	               
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        response.addHeader("Content-Disposition", "attachment; filename=OtchetPoProdazham.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
@@ -1162,10 +1158,8 @@ public class AdminController extends HttpServlet {
     private void monthReport(HttpServletRequest request, HttpServletResponse response) {
     	
     	String orderID = request.getParameter("orderID");
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	String path = classLoader.getResource("templates/Ezhemeciachnyi_otchet.docx").getFile();
-    	String [] pathParts = path.split("/");
-    	String fileName = pathParts[pathParts.length-1].substring(0, pathParts[pathParts.length-1].indexOf('.')) + ".doc";
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\Ezhemeciachnyi_otchet.docx";
 
     	XWPFDocument  doc = null;
     	OutputStream  out = null;
@@ -1210,7 +1204,7 @@ public class AdminController extends HttpServlet {
         	}*/
 	               
 	        response.setContentType("application/msword");
-	        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        response.addHeader("Content-Disposition", "attachment; filename=Ezhemeciachnyi_otchet.docx");
 	        out = response.getOutputStream();
 	        doc.write(out);
 			out.flush();
