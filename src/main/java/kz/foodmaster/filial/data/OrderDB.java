@@ -84,6 +84,14 @@ public class OrderDB {
                         + "FROM Заказ "
                         + "WHERE Выполнен = 1 "
                         + "ORDER BY ДатаЗаказа";
+        		break;
+        	}
+        	
+        	case 5: {
+        		query = "SELECT * "
+                        + "FROM Заказ "
+                        + "WHERE (Выполнен = 0 or Подтвержден = 0) and (Отменен != 1) "
+                        + "ORDER BY ДатаЗаказа";
         	}
         }
 

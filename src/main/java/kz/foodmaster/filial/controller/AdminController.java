@@ -128,7 +128,10 @@ public class AdminController extends HttpServlet {
         String requestURI = request.getRequestURI();
         String url = "/admin";
         
-        if (requestURI.endsWith("/displayPackages")) {
+        
+        if (requestURI.endsWith("/startPage")) {
+            url = startPage(request, response);
+        } else if (requestURI.endsWith("/displayPackages")) {
             url = displayPackages(request, response);
         } else if (requestURI.endsWith("/editPackage")) {
             url = editPackage(request, response);
@@ -180,8 +183,6 @@ public class AdminController extends HttpServlet {
             url = editTransport(request, response);
         } else if (requestURI.endsWith("/deleteTransport")) {
             url = deleteTransport(request, response);
-        } else if (requestURI.endsWith("/breakSession")) {
-            url = breakSession(request, response);
         } else if (requestURI.endsWith("/displayPlan")) {
             url = "/admin/plan.jsp";
         } else if (requestURI.endsWith("/displayReports")) {
@@ -793,17 +794,6 @@ public class AdminController extends HttpServlet {
     	int ID = Integer.parseInt(request.getParameter("ID"));
     	TransportDB.delete(ID);
         return "/adminController/displayTransports";
-    }
-    
-    
-    private String breakSession(HttpServletRequest request, HttpServletResponse response) {
-    	
-    	HttpSession session = request.getSession();
-    	
-    	if (session != null) session.invalidate();
-    	request.getSession(true);
-    	
-    	return "/index";
     }
     
     

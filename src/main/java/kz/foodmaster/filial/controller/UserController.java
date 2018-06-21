@@ -56,7 +56,9 @@ public class UserController extends HttpServlet {
             url = "/cabinet/index.jsp";
         }  else if (requestURI.endsWith("/displayClientOrder")) {
             url = displayClientOrder(request, response);
-        }
+        } else if (requestURI.endsWith("/breakSession")) {
+            url = breakSession(request, response);
+        } 
         
         getServletContext()
                 .getRequestDispatcher(url)
@@ -90,6 +92,18 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
+    private String breakSession(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	HttpSession session = request.getSession(false);
+    	//session.setAttribute("client", null);
+    	
+    	if (session != null) session.invalidate();
+    	//request.getSession(true);
+    	
+    	return "/index.jsp";
+    }
+    
     
     private String addClient(HttpServletRequest request, HttpServletResponse response) {
 

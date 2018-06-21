@@ -5,14 +5,14 @@
 
 <section>
 
-<h2>Login Form - Error</h2>
-<p>You did not log in successfully.</p>
-<p>Please check your username and password and try again.</p>
+<h2>Авторизация - Ошибка</h2>
+<p>Авторизация прошла неуспешно.</p>
+<p>Пожалуйста проверьте Ваш логин и пароль и повторите попытку.</p>
 
 <form action="j_security_check" method="get">
-    <label>Username</label>
+    <label>Логин</label>
     <input type="text" name="j_username"><br>
-    <label>Password</label>
+    <label>Пароль</label>
     <input type="password" name="j_password"><br>
     <label>&nbsp;</label>
     <input type="submit" value="Login">

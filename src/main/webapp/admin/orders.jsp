@@ -18,6 +18,7 @@
 			    	<option value="2"<c:if test="${orderFilter == 2}"> selected</c:if>>В обработке</option>
 			    	<option value="3"<c:if test="${orderFilter == 3}"> selected</c:if>>Выполненные</option>
 			    	<option value="4"<c:if test="${orderFilter == 4}"> selected</c:if>>Все</option>
+			    	<option value="5"<c:if test="${orderFilter == 5}"> selected</c:if>>Не выполненные</option>
 			    </select>
 		    </td>
 		    <td>
