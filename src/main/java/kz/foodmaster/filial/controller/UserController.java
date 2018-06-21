@@ -201,7 +201,7 @@ public class UserController extends HttpServlet {
         
     	List<Order> orders = null;
     	String orderFilter = request.getParameter("orderFilter");
-    	if (orderFilter == null) orderFilter = "4"; 
+    	if (orderFilter == null) orderFilter = "6"; 
     		
     	orders = OrderDB.selectClientOrders(clientID, Integer.parseInt(orderFilter));
         

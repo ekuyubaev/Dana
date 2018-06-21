@@ -24,7 +24,7 @@
 	    <td>${order.client.clientName}</td>
 	    <td>${order.client.clientAdress}</td>
 	    <td>${order.client.clientPhone}</td>
-	    <td><input type="checkbox"<c:if test="${order.appoved}"> checked</c:if> disabled></td>
+	    <td><input type="checkbox"<c:if test="${order.approved}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.processed}"> checked</c:if> disabled></td>
 	    <td>${order.processedDate}</td>

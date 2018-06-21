@@ -277,7 +277,7 @@ public class OrderController extends HttpServlet {
         	session.setAttribute("cart", null);
         	
         	message = "Ваш заказ принят. Наш экспедитор получил письменное уведомление о Вашем заказе."
-        			+ " В течение 8 рабочих часов он свяжется с Вами, чтобы подтвердить Ваш заказ.";
+        			+ " Мы вышлем Вам письменное уведомление об одобрении Вашего заказа.";
         	
         	
         	final String fromEmail = "foodmasterfilial@gmail.com"; //requires valid gmail id

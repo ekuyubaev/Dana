@@ -12,6 +12,7 @@
 	    <th>Дата заказа</th>
 	    <th>Адрес доставки</th>
 	    <th>Телефон клиента</th>
+	    <th>Одобрен</th>
 	    <th>Подтвержден</th>
 	    <th>Выполнен</th>
 	    <th>Дата выполнения</th>
@@ -21,6 +22,7 @@
 	    <td>${order.orderDateDefaultFormat}</td>
 	    <td>${order.client.clientAdress}</td>
 	    <td>${order.client.clientPhone}</td>
+	    <td><input type="checkbox"<c:if test="${order.approved}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.processed}"> checked</c:if> disabled></td>
 	    <td>${order.processedDate}</td>

@@ -65,7 +65,7 @@ public class OrderDB {
         	case 1: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Одобрен != 1 and Отменен != 1 "
+                        + "WHERE Одобрен != 1 and Подтвержден != 1 and Выполнен != 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
@@ -73,7 +73,7 @@ public class OrderDB {
         	case 2: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Одобрен = 1 and Подтвержден != 1 and Отменен != 1 "
+                        + "WHERE Одобрен = 1 and Подтвержден != 1 and Выполнен != 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
@@ -81,7 +81,7 @@ public class OrderDB {
         	case 3: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
+                        + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
@@ -89,7 +89,7 @@ public class OrderDB {
         	case 4: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Выполнен = 1 "
+                        + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен = 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
@@ -154,7 +154,7 @@ public class OrderDB {
         
 		String query = "SELECT * "
                 + "FROM Заказ "
-                + "WHERE Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
+                + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
                 +"and DATE_FORMAT(ДатаЗаказа,'%y-%m-%d') < '" + date + "' "  
                 +"ORDER BY ДатаЗаказа";
         	
@@ -174,6 +174,7 @@ public class OrderDB {
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setCancelled(rs.getBoolean("Отменен"));
                 order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
                 order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
@@ -207,6 +208,7 @@ public class OrderDB {
         	
         try {
             ps = connection.prepareStatement(query);
+            System.out.println(ps.toString());
             rs = ps.executeQuery();
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
@@ -219,6 +221,7 @@ public class OrderDB {
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
@@ -267,6 +270,7 @@ public class OrderDB {
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
@@ -337,6 +341,7 @@ public class OrderDB {
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));
@@ -506,6 +511,7 @@ public class OrderDB {
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
                 order.setCancelled(rs.getBoolean("Отменен"));

@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +56,7 @@ import kz.foodmaster.filial.data.OrderDB;
 import kz.foodmaster.filial.data.PackageDB;
 import kz.foodmaster.filial.data.ProductDB;
 import kz.foodmaster.filial.data.TransportDB;
+import kz.foodmaster.filial.util.EmailUtil;
 
 public class AdminController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -119,6 +123,8 @@ public class AdminController extends HttpServlet {
         	salesReport(request, response);
         } else if (requestURI.endsWith("/monthReport")) {
         	monthReport(request, response);
+        }  else if (requestURI.endsWith("/printContract")) {
+        	printContract(request, response);
         }
 
         getServletContext()
@@ -205,6 +211,76 @@ public class AdminController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
+private void printContract(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	String orderID = request.getParameter("orderID");
+    	String path = request.getSession().getServletContext().getRealPath("/");
+    	path += "WEB-INF\\classes\\templates\\Dogovor_na_postavku.docx";
+
+    	XWPFDocument  doc = null;
+    	OutputStream  out = null;
+    	
+    	Order order = OrderDB.selectOrder(Integer.parseInt(orderID));
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(order.getOrderDate());
+    	
+    	try {
+			doc = new XWPFDocument (new FileInputStream(path));
+
+			replaceText(doc, "nomer", String.valueOf(order.getOrderID()));
+			replaceText(doc, "dd", String.format("%02d", cal.get(Calendar.DAY_OF_MONTH)));
+			replaceText(doc, "mm", String.format("%02d", cal.get(Calendar.MONTH)));
+			replaceText(doc, "yyyy", String.valueOf(cal.get(Calendar.YEAR)));
+			System.out.println(order.getClient().getClientName());
+			replaceText(doc, "client", order.getClient().getClientName());
+			replaceText(doc, "adress", order.getClient().getClientAdress());
+			replaceText(doc, "contractsum", order.getOrderTotalCurrencyFormat());
+
+			XWPFTable tbl = doc.getTables().get(1);
+			
+			for(int i=0; i < order.getLineItems().size(); i++) {
+				XWPFTableRow row =tbl.createRow();
+				//tbl.addRow(row);
+        		tbl.getRow(i+1).getCell(0).setText(String.valueOf(i+1));
+        		tbl.getRow(i+1).getCell(1).setText(order.getLineItems().get(i).getProduct().getProductName());
+        		tbl.getRow(i+1).getCell(2).setText(String.valueOf(order.getLineItems().get(i).getQuantity()));
+        		
+        		BigDecimal price = order.getLineItems().get(i).getTotal().divide(new BigDecimal(order.getLineItems().get(i).getQuantity()));
+        		NumberFormat currency = NumberFormat.getCurrencyInstance();
+                if (currency instanceof DecimalFormat) {
+                    DecimalFormat df = (DecimalFormat) currency;
+                    DecimalFormatSymbols dfs = new DecimalFormat().getDecimalFormatSymbols();
+                    dfs.setCurrencySymbol("тенге");
+                    df.setDecimalFormatSymbols(dfs);
+                }
+                String priceStr = currency.format(price);
+        		
+        		tbl.getRow(i+1).getCell(3).setText(priceStr);
+        		tbl.getRow(i+1).getCell(4).setText(String.valueOf(order.getLineItems().get(i).getTotalCurrencyFormat()));
+        	}
+	               
+	        response.setContentType("application/msword");
+	        response.addHeader("Content-Disposition", "attachment; filename=Dogovor_na_postavku.docx");
+	        out = response.getOutputStream();
+	        doc.write(out);
+			out.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				doc.close();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+    	
+        //return "/userController/displayClientOrder";
+    }
+    
     
     private String startPage(HttpServletRequest request, HttpServletResponse response) {
 
@@ -692,6 +768,31 @@ public class AdminController extends HttpServlet {
     	int orderID = Integer.parseInt(request.getParameter("orderID"));
 
         OrderDB.approveOrder(orderID);
+        
+        Order order = OrderDB.selectOrder(orderID);
+        
+        final String fromEmail = "foodmasterfilial@gmail.com"; //requires valid gmail id
+		final String password = "fD47mrtQ"; // correct password for gmail id
+		final String toEmail = order.getClient().getClientMail(); // can be any email id 
+		String mailBody = "Ваш заказ от " + order.getOrderDateDefaultFormat() + " на сумму: " + order.getOrderTotalCurrencyFormat() + "\n\n" +
+				" одобрен нашим экспедитором. Пожалуйста проверьте условия договора и подтвердите заказ в Вашем кабинете. \n\n" +
+				"С Уважением, Филиал Фуд Мастер в г. Кызылорда. ";
+		Properties props = new Properties();
+		props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+		props.put("mail.smtp.port", "587"); //TLS Port
+		props.put("mail.smtp.auth", "true"); //enable authentication
+		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+		
+                //create Authenticator object to pass in Session.getInstance argument
+		Authenticator auth = new Authenticator() {
+			//override the getPasswordAuthentication method
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(fromEmail, password);
+			}
+		};
+		javax.mail.Session mailSession = javax.mail.Session.getInstance(props, auth);
+		
+		EmailUtil.sendEmail(mailSession, toEmail,"Новый заказ", mailBody);
 
         return "/adminController/displayOrders";
     }
