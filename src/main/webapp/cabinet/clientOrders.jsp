@@ -13,10 +13,12 @@
     	<tr>
     		<td>
 			    <select name="orderFilter">
-			    	<option value="1"<c:if test="${orderFilter == 1}"> selected</c:if>>Не подтвержденные</option>
-			    	<option value="2"<c:if test="${orderFilter == 2}"> selected</c:if>>В обработке</option>
-			    	<option value="3"<c:if test="${orderFilter == 3}"> selected</c:if>>Выполненные</option>
-			    	<option value="4"<c:if test="${orderFilter == 4}"> selected</c:if>>Все</option>
+			    	<option value="1"<c:if test="${orderFilter == 1}"> selected</c:if>>Не рассмотренные</option>
+			    	<option value="2"<c:if test="${orderFilter == 2}"> selected</c:if>>Одобренные экспедитором</option>
+			    	<option value="3"<c:if test="${orderFilter == 3}"> selected</c:if>>Подтвержденные мной</option>
+			    	<option value="4"<c:if test="${orderFilter == 4}"> selected</c:if>>Выполненные</option>
+			    	<option value="5"<c:if test="${orderFilter == 5}"> selected</c:if>>Отмененные</option>
+			    	<option value="6"<c:if test="${orderFilter == 6}"> selected</c:if>>Все</option>
 			    </select>
 		    </td>
 		    <td>
@@ -31,7 +33,8 @@
 	    <tr>
 	        <th>Дата заказа</th>
 	        <th>Сумма</th>
-	        <th>В обработке</th>
+	        <th>Одобрен</th>
+	        <th>Подтвержден</th>
 	        <th>Выполнен</th>
 	        <th>Дата выполнения</th>
 	        <th>Отменен</th> 
@@ -41,6 +44,7 @@
 	    <tr>
 	        <td>${order.orderDateDefaultFormat}</td>
 	        <td>${order.sumCurrencyFormat}</td>
+	        <td><input type="checkbox"<c:if test="${order.approved}"> checked</c:if> disabled></td>
 	        <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
 	        <td><input type="checkbox"<c:if test="${order.processed}"> checked</c:if> disabled></td>
 	        <td>${order.processedDate}</td>

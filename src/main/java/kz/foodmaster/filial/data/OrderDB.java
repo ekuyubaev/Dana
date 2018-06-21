@@ -65,7 +65,7 @@ public class OrderDB {
         	case 1: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Подтвержден = 0 and Отменен != 1 "
+                        + "WHERE Одобрен != 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
@@ -73,13 +73,20 @@ public class OrderDB {
         	case 2: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE Подтвержден = 1 "
-        				+ "and Выполнен = 0 "
+                        + "WHERE Одобрен = 1 and Подтвержден != 1 and Отменен != 1 "
                         + "ORDER BY ДатаЗаказа";
         		break;
         	}
         	
         	case 3: {
+        		query = "SELECT * "
+                        + "FROM Заказ "
+                        + "WHERE Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
+                        + "ORDER BY ДатаЗаказа";
+        		break;
+        	}
+        	
+        	case 4: {
         		query = "SELECT * "
                         + "FROM Заказ "
                         + "WHERE Выполнен = 1 "
@@ -90,8 +97,14 @@ public class OrderDB {
         	case 5: {
         		query = "SELECT * "
                         + "FROM Заказ "
-                        + "WHERE (Выполнен = 0 or Подтвержден = 0) and (Отменен != 1) "
+                        + "WHERE Отменен = 1 "
                         + "ORDER BY ДатаЗаказа";
+        		break;
+        	}
+        	
+        	case 6: {
+        		query = "SELECT * "
+                        + "FROM Заказ";
         	}
         }
 
@@ -113,6 +126,7 @@ public class OrderDB {
                 order.setLineItems(lineItems);
                 order.setProcessed(rs.getBoolean("Выполнен"));
                 order.setConfirmed(rs.getBoolean("Подтвержден"));
+                order.setApproved(rs.getBoolean("Одобрен"));
                 order.setCancelled(rs.getBoolean("Отменен"));
                 order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
                 order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
@@ -334,6 +348,31 @@ public class OrderDB {
         } catch (SQLException e) {
             System.err.println(e);
             return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+    
+    
+    public static boolean approveOrder(int orderID) {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "Update Заказ " +
+        				"Set Одобрен = 1 " +
+        				"Where ИДЗаказ = ?";
+        
+        try { 	
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, orderID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);

@@ -13,6 +13,7 @@
 	    <th>Клиент</th>
 	    <th>Адрес доставки</th>
 	    <th>Телефон клиента</th>
+	    <th>Одобрен</th>
 	    <th>Подтвержден</th>
 	    <th>Выполнен</th>
 	    <th>Дата выполнения</th>
@@ -23,6 +24,7 @@
 	    <td>${order.client.clientName}</td>
 	    <td>${order.client.clientAdress}</td>
 	    <td>${order.client.clientPhone}</td>
+	    <td><input type="checkbox"<c:if test="${order.appoved}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.confirmed}"> checked</c:if> disabled></td>
 	    <td><input type="checkbox"<c:if test="${order.processed}"> checked</c:if> disabled></td>
 	    <td>${order.processedDate}</td>
@@ -53,36 +55,81 @@
 	</tr>
 </table>
 
-<c:if test="${!order.confirmed && !order.cancelled && !order.processed}"> 
-<form action="confirmOrder" method="post" id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-     <input type="submit" value="Подтвердить">
-</form>
-<form action="cancelOrder" method="post"  id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-     <input type="submit" value="Отменить">
-</form>
-</c:if>
-<c:if test="${order.confirmed && !order.processed}"> 
-<form action="completeOrder" method="post" id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-     <input type="submit" value="Выполнен">
-</form>
-<form action="cancelOrder" method="post"  id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-     <input type="submit" value="Отменить">
-</form>
+<c:if test="${!order.approved && !order.confirmed && !order.processed  && !order.cancelled}"> 
+	<form action="approveOrder" method="post" id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	     <input type="submit" value="Одобрить">
+	</form>
+	
+	<form action="cancelOrder" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	     <input type="submit" value="Отменить">
+	</form>
+	
+	<form action="printContract" method="post">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Договор на поставку">
+	</form>
 </c:if>
 
-<form action="nakladnaia" method="post"  id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-    <input type="submit" value="Товарная накладная">
-</form>
 
-<form action="akt" method="post"  id="float_left">
-	<input type="hidden" name="orderID" value="${order.orderID}">
-    <input type="submit" value="Акт выполненных работ">
-</form>
+<c:if test="${order.approved && !order.confirmed && !order.processed  && !order.cancelled}"> 	
+	<form action="cancelOrder" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	     <input type="submit" value="Отменить">
+	</form>
+	
+	<form action="printContract" method="post">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Договор на поставку">
+	</form>
+</c:if>
+
+
+<c:if test="${order.approved && order.confirmed && !order.processed  && !order.cancelled}"> 
+	<form action="completeOrder" method="post" id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	     <input type="submit" value="Выполнен">
+	</form>
+	
+	<form action="cancelOrder" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	     <input type="submit" value="Отменить">
+	</form>
+	
+	<form action="printContract" method="post">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Договор на поставку">
+	</form>
+		
+	<form action="nakladnaia" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Товарная накладная">
+	</form>
+	
+	<form action="akt" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Акт выполненных работ">
+	</form>
+</c:if>
+
+
+<c:if test="${order.approved && order.confirmed && order.processed  && !order.cancelled}">
+	<form action="printContract" method="post">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Договор на поставку">
+	</form>
+ 
+	<form action="nakladnaia" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Товарная накладная">
+	</form>
+	
+	<form action="akt" method="post"  id="float_left">
+		<input type="hidden" name="orderID" value="${order.orderID}">
+	    <input type="submit" value="Акт выполненных работ">
+	</form>
+</c:if>
 
 </section>
 

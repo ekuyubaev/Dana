@@ -85,6 +85,10 @@ public class UserController extends HttpServlet {
             printContract(request, response);
         }  else if (requestURI.endsWith("/displayClientOrder")) {
             url = displayClientOrder(request, response);
+        }  else if (requestURI.endsWith("/confirmOrder")) {
+        	url = confirmOrder(request, response);
+        } else if (requestURI.endsWith("/completeOrder")) {
+        	url = completeOrder(request, response);
         }
         
         getServletContext()
@@ -92,6 +96,26 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
+    
+    private String completeOrder(HttpServletRequest request, HttpServletResponse response) {
+        
+    	int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+        OrderDB.finishOrder(orderID);
+
+        return "/userController/orders";
+    }
+    
+    
+    private String confirmOrder(HttpServletRequest request, HttpServletResponse response) {
+        
+    	int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+        OrderDB.confirmOrder(orderID);
+
+        return "/userController/orders";
+    }
+    
     
     private String breakSession(HttpServletRequest request, HttpServletResponse response) {
     	

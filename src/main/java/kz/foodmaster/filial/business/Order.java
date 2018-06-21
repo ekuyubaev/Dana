@@ -19,16 +19,22 @@ public class Order implements Serializable {
     private boolean processed;
     private boolean confirmed;
     private boolean cancelled;
+    private boolean approved;
     private BigDecimal sum;
 
 	public Order() {
     	processedDate = null;
     }
 	
-	
-	
-	
-    public String getSumCurrencyFormat() {
+    public boolean isApproved() {
+		return approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
+
+	public String getSumCurrencyFormat() {
     	NumberFormat currency = NumberFormat.getCurrencyInstance();
         if (currency instanceof DecimalFormat) {
             DecimalFormat df = (DecimalFormat) currency;

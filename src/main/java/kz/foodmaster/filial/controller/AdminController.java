@@ -93,13 +93,13 @@ public class AdminController extends HttpServlet {
             url = insertDiscount(request, response);
         } else if (requestURI.endsWith("/displayDiscounts")) {
         	url = displayDiscounts(request, response);
-        }  else if (requestURI.endsWith("/confirmOrder")) {
-        	url = confirmOrder(request, response);
-        }   else if (requestURI.endsWith("/cancelOrder")) {
+        }  else if (requestURI.endsWith("/approveOrder")) {
+        	url = approveOrder(request, response);
+        } else if (requestURI.endsWith("/cancelOrder")) {
         	url = cancelOrder(request, response);
-        }   else if (requestURI.endsWith("/displayOrders")) {
+        } else if (requestURI.endsWith("/displayOrders")) {
         	url = displayOrders(request, response);
-        }   else if (requestURI.endsWith("/completeOrder")) {
+        } else if (requestURI.endsWith("/completeOrder")) {
         	url = completeOrder(request, response);
         } else if (requestURI.endsWith("/updateTransport")) {
             url = updateTransport(request, response);
@@ -687,11 +687,11 @@ public class AdminController extends HttpServlet {
     }
     
     
-    private String confirmOrder(HttpServletRequest request, HttpServletResponse response) {
+    private String approveOrder(HttpServletRequest request, HttpServletResponse response) {
         
     	int orderID = Integer.parseInt(request.getParameter("orderID"));
 
-        OrderDB.confirmOrder(orderID);
+        OrderDB.approveOrder(orderID);
 
         return "/adminController/displayOrders";
     }
