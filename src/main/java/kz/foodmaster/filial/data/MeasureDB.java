@@ -18,7 +18,7 @@ public class MeasureDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM ЕдиницаИзмерения";
+        String query = "SELECT * FROM measure";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
@@ -27,8 +27,8 @@ public class MeasureDB {
             
             while (rs.next()) {
             	Measure m = new Measure();
-                m.setMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-                m.setMeasureName(rs.getString("ЕдиницаИзмерения"));
+                m.setMeasureID(rs.getInt("MeasureID"));
+                m.setMeasureName(rs.getString("Measure"));
                 measures.add(m);
             }
             
@@ -50,16 +50,16 @@ public class MeasureDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM ЕдиницаИзмерения "
-                + "WHERE ИДЕдиницаИзмерения = ?";
+        String query = "SELECT * FROM measure "
+                + "WHERE MeasureID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, measureID);
             rs = ps.executeQuery();
             if (rs.next()) {
                 Measure m = new Measure();
-                m.setMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-                m.setMeasureName(rs.getString("ЕдиницаИзмерения"));
+                m.setMeasureID(rs.getInt("MeasureID"));
+                m.setMeasureName(rs.getString("Measure"));
                 return m;
             } else {
                 return null;
@@ -81,8 +81,8 @@ public class MeasureDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update ЕдиницаИзмерения Set ЕдиницаИзмерения = ? "
-                + "WHERE ИДЕдиницаИзмерения = ?";
+        String query = "Update measure Set Measure = ? "
+                + "WHERE MeasureID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -107,12 +107,11 @@ public class MeasureDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into ЕдиницаИзмерения (ЕдиницаИзмерения, Обозначение) Values (?, ?)";
+        String query = "Insert Into measure (Measure) Values (?)";
         try {
             ps = connection.prepareStatement(query);
             
             ps.setString(1, measure.getMeasureName());
-            ps.setString(2, measure.getMeasureName());
             
             return ps.executeUpdate() > 0;      
         } catch (SQLException e) {
@@ -132,7 +131,7 @@ public class MeasureDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From ЕдиницаИзмерения WHERE ИДЕдиницаИзмерения = ?";
+        String query = "Delete From measure WHERE MeasureID = ?";
         try {
             ps = connection.prepareStatement(query);
             

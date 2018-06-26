@@ -20,7 +20,7 @@ public class ConnectionPool {
     private ConnectionPool() {
         try {
             InitialContext ic = new InitialContext();
-            dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/DBFoodMaster");
+            dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/filialfo_foodmaster");
         } catch (NamingException e) {
             System.err.println(e);
         }

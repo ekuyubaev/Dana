@@ -17,7 +17,7 @@ public class PackageDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Упаковка";
+        String query = "SELECT * FROM pack";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
@@ -26,8 +26,8 @@ public class PackageDB {
             
             while (rs.next()) {
             	Packaging p = new Packaging();
-                p.setID(rs.getInt("ИДУпаковка"));
-                p.setName(rs.getString("Упаковка"));
+                p.setID(rs.getInt("PackID"));
+                p.setName(rs.getString("Pack"));
                 packages.add(p);
             }
             
@@ -49,16 +49,16 @@ public class PackageDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Упаковка "
-                + "WHERE ИДУпаковка = ?";
+        String query = "SELECT * FROM pack "
+                + "WHERE PackID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, ID);
             rs = ps.executeQuery();
             if (rs.next()) {
             	Packaging p = new Packaging();
-                p.setID(rs.getInt("ИДУпаковка"));
-                p.setName(rs.getString("Упаковка"));
+                p.setID(rs.getInt("PackID"));
+                p.setName(rs.getString("Pack"));
                 return p;
             } else {
                 return null;
@@ -80,8 +80,8 @@ public class PackageDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Упаковка Set Упаковка = ? "
-                + "WHERE ИДУпаковка = ?";
+        String query = "Update pack Set Pack = ? "
+                + "WHERE PackID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -106,7 +106,7 @@ public class PackageDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Упаковка (Упаковка) Values (?)";
+        String query = "Insert Into pack (Pack) Values (?)";
         try {
             ps = connection.prepareStatement(query);
             
@@ -130,7 +130,7 @@ public class PackageDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From Упаковка WHERE ИДУпаковка = ?";
+        String query = "Delete From pack WHERE PackID = ?";
         try {
             ps = connection.prepareStatement(query);
             

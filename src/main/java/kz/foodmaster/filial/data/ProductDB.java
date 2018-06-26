@@ -14,22 +14,22 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Продукт "
-                + "WHERE ИДПродукт = ?";
+        String query = "SELECT * FROM product "
+                + "WHERE ProductID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, productID);
             rs = ps.executeQuery();
             if (rs.next()) {
                 Product p = new Product();
-                p.setProductID(rs.getInt("ИДПродукт"));
-                p.setProductCategoryID(rs.getInt("ИДКатегория"));
-                p.setProductMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-                p.setProductName(rs.getString("Продукт"));
-                p.setProductNote(rs.getString("Примечание"));
-                p.setProductPrice(rs.getBigDecimal("Стоимость"));
-                p.setProductQuantity(rs.getFloat("Количество"));
-                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductCategoryID(rs.getInt("CategoryID"));
+                p.setProductMeasureID(rs.getInt("MeasureID"));
+                p.setProductName(rs.getString("Product"));
+                p.setProductNote(rs.getString("Notes"));
+                p.setProductPrice(rs.getBigDecimal("Price"));
+                p.setProductQuantity(rs.getFloat("Quantity"));
+                p.setProductPackagingID(rs.getInt("PackID"));
                 return p;
             } else {
                 return null;
@@ -51,21 +51,21 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Продукт";
+        String query = "SELECT * FROM product";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Product> products = new ArrayList<>();
             while (rs.next()) {
                 Product p = new Product();
-                p.setProductID(rs.getInt("ИДПродукт"));
-                p.setProductCategoryID(rs.getInt("ИДКатегория"));
-                p.setProductMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-                p.setProductName(rs.getString("Продукт"));
-                p.setProductNote(rs.getString("Примечание"));
-                p.setProductPrice(rs.getBigDecimal("Стоимость"));
-                p.setProductQuantity(rs.getFloat("Количество"));
-                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductCategoryID(rs.getInt("CategoryID"));
+                p.setProductMeasureID(rs.getInt("MeasureID"));
+                p.setProductName(rs.getString("Product"));
+                p.setProductNote(rs.getString("Notes"));
+                p.setProductPrice(rs.getBigDecimal("Price"));
+                p.setProductQuantity(rs.getFloat("Quantity"));
+                p.setProductPackagingID(rs.getInt("PackID"));
                 products.add(p);
             }
             return products;
@@ -86,8 +86,8 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Продукт " +
-        				"Where ИДКатегория = ?";
+        String query = "SELECT * FROM product " +
+        				"Where CategoryID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, categoryCode);
@@ -95,14 +95,14 @@ public class ProductDB {
             ArrayList<Product> products = new ArrayList<>();
             while (rs.next()) {
                 Product p = new Product();
-                p.setProductID(rs.getInt("ИДПродукт"));
-                p.setProductCategoryID(rs.getInt("ИДКатегория"));
-                p.setProductMeasureID(rs.getInt("ИДЕдиницаИзмерения"));
-                p.setProductName(rs.getString("Продукт"));
-                p.setProductNote(rs.getString("Примечание"));
-                p.setProductPrice(rs.getBigDecimal("Стоимость"));
-                p.setProductQuantity(rs.getFloat("Количество"));
-                p.setProductPackagingID(rs.getInt("ИДУпаковка"));
+                p.setProductID(rs.getInt("ProductID"));
+                p.setProductCategoryID(rs.getInt("CategoryID"));
+                p.setProductMeasureID(rs.getInt("MeasureID"));
+                p.setProductName(rs.getString("Product"));
+                p.setProductNote(rs.getString("Notes"));
+                p.setProductPrice(rs.getBigDecimal("Price"));
+                p.setProductQuantity(rs.getFloat("Quantity"));
+                p.setProductPackagingID(rs.getInt("PackID"));
                 products.add(p);
             }
             return products;
@@ -123,10 +123,10 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Продукт Set Продукт = ?, ИДЕдиницаИзмерения = ?, "
-        		+ "ИДКатегория = ?, Количество = ?, "
-        		+ "Стоимость = ?, Примечание = ?, ИДУпаковка = ? "
-                + "WHERE ИДПродукт = ?";
+        String query = "Update product Set Product = ?, MeasureID = ?, "
+        		+ "CategoryID = ?, Quantity = ?, "
+        		+ "Price = ?, Notes = ?, PackID = ? "
+                + "WHERE ProductID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -157,8 +157,8 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Продукт (Продукт, ИДЕдиницаИзмерения, " + 
-        		"ИДКатегория, Количество, Стоимость, Примечание, ИДУпаковка) " +
+        String query = "Insert Into product (Product, MeasureID, " + 
+        		"CategoryID, Quantity, Price, Notes, PackID) " +
         		"Values (?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -189,7 +189,7 @@ public class ProductDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From Продукт WHERE ИДПродукт = ?";
+        String query = "Delete From product WHERE ProductID = ?";
         try {
             ps = connection.prepareStatement(query);
             

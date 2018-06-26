@@ -14,17 +14,17 @@ public class CategoryDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Категория "
-                + "WHERE ИДКатегория = ?";
+        String query = "SELECT * FROM category "
+                + "WHERE CategoryID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, categoryID);
             rs = ps.executeQuery();
             if (rs.next()) {
                 Category c = new Category();
-                c.setCategoryID(rs.getInt("ИДКатегория"));
-                c.setCategoryName(rs.getString("Категория"));
-                c.setCategoryNote(rs.getString("Примечание"));
+                c.setCategoryID(rs.getInt("CategoryID"));
+                c.setCategoryName(rs.getString("Category"));
+                c.setCategoryNote(rs.getString("Notes"));
                 return c;
             } else {
                 return null;
@@ -46,16 +46,16 @@ public class CategoryDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Категория";
+        String query = "SELECT * FROM category";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Category> categories = new ArrayList<>();
             while (rs.next()) {
                 Category c = new Category();
-                c.setCategoryID(rs.getInt("ИДКатегория"));
-                c.setCategoryName(rs.getString("Категория"));
-                c.setCategoryNote(rs.getString("Примечание"));
+                c.setCategoryID(rs.getInt("CategoryID"));
+                c.setCategoryName(rs.getString("Category"));
+                c.setCategoryNote(rs.getString("Notes"));
                 categories.add(c);
             }
             return categories;
@@ -65,7 +65,7 @@ public class CategoryDB {
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
-            pool.freeConnection(connection);
+            //pool.freeConnection(connection);
         }
     }
     
@@ -76,8 +76,8 @@ public class CategoryDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Категория Set Категория = ?, Примечание = ? "
-                + "WHERE ИДКатегория = ?";
+        String query = "Update category Set Category = ?, Notes = ? "
+                + "WHERE CategoryID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -103,7 +103,7 @@ public class CategoryDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Категория (Категория, Примечание) Values (?, ?)";
+        String query = "Insert Into category (Category, Notes) Values (?, ?)";
         try {
             ps = connection.prepareStatement(query);
             
@@ -128,7 +128,7 @@ public class CategoryDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From Категория WHERE ИДКатегория = ?";
+        String query = "Delete From category WHERE CategoryID = ?";
         try {
             ps = connection.prepareStatement(query);
             
