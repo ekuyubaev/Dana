@@ -19,15 +19,16 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert into Заказ (ИДКлиент, ДатаЗаказа, Сумма) "
-                + "VALUES (?, NOW(), ?)";
+        String query = "Insert Into invoice (ClientID, Total) "
+        				+ "Values (?, ?)";
         try {      	
         	ps = connection.prepareStatement(query);
             ps.setInt(1, order.getClient().getClientId());
             ps.setBigDecimal(2, order.getOrderTotal());
+            System.out.println(ps.toString());
             ps.executeUpdate();
 
-            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.Заказ";
+            String identityQuery = "SELECT last_insert_id() as IDENTITY from invoice";
             Statement identityStatement = connection.createStatement();
             ResultSet identityResultSet = identityStatement.executeQuery(identityQuery);
             identityResultSet.next();
@@ -59,52 +60,52 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Заказ";
+        String query = "Select * From invoice";
         
         switch(status) {
         	case 1: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE Одобрен != 1 and Подтвержден != 1 and Выполнен != 1 and Отменен != 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE Approved != 1 and Confirmed != 1 and Completed != 1 and Cancelled != 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 2: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE Одобрен = 1 and Подтвержден != 1 and Выполнен != 1 and Отменен != 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE Approved = 1 and Confirmed != 1 and Completed != 1 and Cancelled != 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 3: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE Approved = 1 and Confirmed = 1 and Completed != 1 and Cancelled != 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 4: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен = 1 and Отменен != 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE Approved = 1 and Confirmed = 1 and Completed = 1 and Cancelled != 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 5: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE Отменен = 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE Cancelled = 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 6: {
         		query = "SELECT * "
-                        + "FROM Заказ";
+                        + "FROM invoice";
         	}
         }
 
@@ -113,10 +114,10 @@ public class OrderDB {
             rs = ps.executeQuery();
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
                 //Get line items
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("OrderID");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 //Create the Order object
@@ -124,13 +125,13 @@ public class OrderDB {
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
 
                 orders.add(order);
             }
@@ -153,32 +154,32 @@ public class OrderDB {
         ResultSet rs = null;
         
 		String query = "SELECT * "
-                + "FROM Заказ "
-                + "WHERE Одобрен = 1 and Подтвержден = 1 and Выполнен != 1 and Отменен != 1 "
-                +"and DATE_FORMAT(ДатаЗаказа,'%y-%m-%d') < '" + date + "' "  
-                +"ORDER BY ДатаЗаказа";
+                + "FROM invoice "
+                + "WHERE Approved = 1 and Confirmed = 1 and Completed != 1 and Cancelled != 1 "
+                +"and DATE_FORMAT(OrderDate,'%y-%m-%d') < '" + date + "' "  
+                +"ORDER BY OrderDate";
         	
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("OrderID");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
 
                 orders.add(order);
             }
@@ -201,10 +202,10 @@ public class OrderDB {
         ResultSet rs = null;
         
 		String query = "SELECT * "
-                + "FROM Заказ "
-                + "WHERE Выполнен = 1 "
-                +"and ДатаЗаказа between '" + startDate + "' and '" + endDate + "' "   
-                +"ORDER BY ДатаЗаказа";
+                + "FROM invoice "
+                + "WHERE Completed = 1 "
+                +"and OrderDate between '" + startDate + "' and '" + endDate + "' "   
+                +"ORDER BY OrderDate";
         	
         try {
             ps = connection.prepareStatement(query);
@@ -212,22 +213,22 @@ public class OrderDB {
             rs = ps.executeQuery();
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("OrderID");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
 
                 orders.add(order);
             }
@@ -250,33 +251,33 @@ public class OrderDB {
         ResultSet rs = null;
         
 		String query = "SELECT * "
-                + "FROM Заказ "
-                + "WHERE Выполнен = 1 "
-                +" and YEAR(ДатаЗаказа) = " + year   
-                +" and MONTH(ДатаЗаказа) = " + month   
-                +" ORDER BY ДатаЗаказа";
+                + "FROM invoice "
+                + "WHERE Completed = 1 "
+                +" and YEAR(OrderDate) = " + year   
+                +" and MONTH(OrderDate) = " + month   
+                +" ORDER BY OrderDate";
         	
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("OrderID");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
 
                 orders.add(order);
             }
@@ -299,9 +300,9 @@ public class OrderDB {
         ResultSet rs = null;
         
 		String query = "SELECT * "
-                + "FROM Заказ "
-                + "WHERE (Подтвержден = 0 or Выполнен = 0) and Отменен != 1 "
-                +"ORDER BY ДатаЗаказа";
+                + "FROM invoice "
+                + "WHERE (Confirmed = 0 or Completed = 0) and Cancelled != 1 "
+                +"ORDER BY OrderDate";
         	
         try {
             ps = connection.prepareStatement(query);
@@ -324,8 +325,8 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Заказ " +
-        				"Where ИДЗаказ = ?";
+        String query = "Select * From invoice " +
+        				"Where OrderID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -334,20 +335,20 @@ public class OrderDB {
             Order order = null;
             if (rs.next()) {
             	order = new Order();
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
             }
             return order;
         } catch (SQLException e) {
@@ -367,9 +368,9 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Заказ " +
-        				"Set Одобрен = 1 " +
-        				"Where ИДЗаказ = ?";
+        String query = "Update invoice " +
+        				"Set Approved = 1 " +
+        				"Where OrderID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -392,9 +393,9 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Заказ " +
-        				"Set Подтвержден = 1 " +
-        				"Where ИДЗаказ = ?";
+        String query = "Update invoice " +
+        				"Set Confirmed = 1 " +
+        				"Where OrderID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -417,9 +418,9 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Заказ " +
-        				"Set Отменен = 1 " +
-        				"Where ИДЗаказ = ?";
+        String query = "Update invoice " +
+        				"Set Cancelled = 1 " +
+        				"Where OrderID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -442,9 +443,9 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Заказ " +
-        				"Set Выполнен = 1, ДатаИсполнения = NOW() " +
-        				"Where ИДЗаказ = ?";
+        String query = "Update invoice " +
+        				"Set Completed = 1, ExecutedDate = NOW() " +
+        				"Where OrderID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -467,31 +468,31 @@ public class OrderDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Заказ Where ИДКлиент = ?";
+        String query = "Select * From invoice Where ClientID = ?";
         
         switch(status) {
         	case 1: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE ИДКлиент = ? and Подтвержден = 0 and Отменен != 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE ClientID = ? and Confirmed = 0 and Cancelled != 1 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 2: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE ИДКлиент = ? and Подтвержден = 1 "
-        				+ "and Выполнен = 0 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE ClientID = ? and Confirmed = 1 "
+        				+ "and Completed = 0 "
+                        + "ORDER BY OrderDate";
         		break;
         	}
         	
         	case 3: {
         		query = "SELECT * "
-                        + "FROM Заказ "
-                        + "WHERE ИДКлиент = ? and Выполнен = 1 "
-                        + "ORDER BY ДатаЗаказа";
+                        + "FROM invoice "
+                        + "WHERE ClientID = ? and Completed = 1 "
+                        + "ORDER BY OrderDate";
         	}
         }
 
@@ -502,22 +503,22 @@ public class OrderDB {
             
             ArrayList<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Client client = ClientDB.selectClient(rs.getInt("ИДКлиент"));
+                Client client = ClientDB.selectClient(rs.getInt("ClientID"));
 
-                int orderID = rs.getInt("ИДЗаказ");
+                int orderID = rs.getInt("OrderID");
                 List<LineItem> lineItems = LineItemDB.selectLineItems(orderID);
 
                 Order order = new Order();
                 order.setOrderID(orderID);
                 order.setClient(client);
                 order.setLineItems(lineItems);
-                order.setApproved(rs.getBoolean("Одобрен"));
-                order.setProcessed(rs.getBoolean("Выполнен"));
-                order.setConfirmed(rs.getBoolean("Подтвержден"));
-                order.setCancelled(rs.getBoolean("Отменен"));
-                order.setOrderDate(rs.getTimestamp("ДатаЗаказа"));
-                order.setProcessedDate(rs.getTimestamp("ДатаИсполнения"));
-                order.setSum(rs.getBigDecimal("Сумма"));
+                order.setProcessed(rs.getBoolean("Completed"));
+                order.setConfirmed(rs.getBoolean("Confirmed"));
+                order.setApproved(rs.getBoolean("Approved"));
+                order.setCancelled(rs.getBoolean("Cancelled"));
+                order.setOrderDate(rs.getTimestamp("OrderDate"));
+                order.setProcessedDate(rs.getTimestamp("ExecutedDate"));
+                order.setSum(rs.getBigDecimal("Total"));
 
                 orders.add(order);
             }

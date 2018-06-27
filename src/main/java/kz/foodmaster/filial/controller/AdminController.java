@@ -678,9 +678,6 @@ private void printContract(HttpServletRequest request, HttpServletResponse respo
         int productID = 0;
         if (request.getParameter("productID") != null)
         	productID = Integer.parseInt(request.getParameter("productID"));
-        int categoryID = 0;
-        if (request.getParameter("categoryID") != null)
-        	productID = Integer.parseInt(request.getParameter("categoryID"));
         
         Discount discount= new Discount();
         
@@ -690,7 +687,6 @@ private void printContract(HttpServletRequest request, HttpServletResponse respo
         discount.setDiscountStart(discountStart);
         discount.setDiscountEnd(discountEnd);
         discount.setProductID(productID);
-        discount.setCategoryID(categoryID);
 
         DiscountDB.updateDiscount(discount);
 

@@ -17,20 +17,19 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Скидка";
+        String query = "SELECT * FROM discount";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Discount> discounts = new ArrayList<>();
             while (rs.next()) {
             	Discount d = new Discount();
-                d.setDiscountID(rs.getInt("ИДСкидка"));
-                d.setDiscountName(rs.getString("Описание"));
-                d.setDiscountAmount(rs.getFloat("Размер"));
-                d.setDiscountStart(rs.getDate("Начало"));
-                d.setDiscountEnd(rs.getDate("Окончание"));
-                d.setProductID(rs.getInt("ИДПродукт"));
-                d.setCategoryID(rs.getInt("ИДКатегория"));
+                d.setDiscountID(rs.getInt("DiscountID"));
+                d.setDiscountName(rs.getString("Discount"));
+                d.setDiscountAmount(rs.getFloat("Size"));
+                d.setDiscountStart(rs.getDate("StartDate"));
+                d.setDiscountEnd(rs.getDate("EndDate"));
+                d.setProductID(rs.getInt("ProductID"));
                 discounts.add(d);
             }
             return discounts;
@@ -50,21 +49,20 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Скидка "
-                + "WHERE ИДСкидка = ?";
+        String query = "SELECT * FROM discount "
+                + "WHERE DiscountID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, discountID);
             rs = ps.executeQuery();
             if (rs.next()) {
             	Discount d = new Discount();
-                d.setDiscountID(rs.getInt("ИДСкидка"));
-                d.setDiscountName(rs.getString("Описание"));
-                d.setDiscountAmount(rs.getFloat("Размер"));
-                d.setDiscountStart(rs.getDate("Начало"));
-                d.setDiscountEnd(rs.getDate("Окончание"));
-                d.setProductID(rs.getInt("ИДПродукт"));
-                d.setCategoryID(rs.getInt("ИДКатегория"));
+            	d.setDiscountID(rs.getInt("DiscountID"));
+                d.setDiscountName(rs.getString("Discount"));
+                d.setDiscountAmount(rs.getFloat("Size"));
+                d.setDiscountStart(rs.getDate("StartDate"));
+                d.setDiscountEnd(rs.getDate("EndDate"));
+                d.setProductID(rs.getInt("ProductID"));
                 
                 return d;
             } else {
@@ -87,9 +85,9 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Скидка Set Описание = ?, Размер = ?, "
-        		+ "Начало = ?, Окончание = ?, ИДПродукт = ?, ИДКатегория = ? "
-                + "WHERE ИДСкидка = ?";
+        String query = "Update discount Set Discount = ?, Size = ?, "
+        		+ "StartDate = ?, EndDate = ?, ProductID = ? "
+                + "WHERE DiscountID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -98,8 +96,7 @@ public class DiscountDB {
             ps.setDate(3, discount.getDiscountStart());
             ps.setDate(4, discount.getDiscountEnd());
             ps.setInt(5, discount.getProductID());
-            ps.setInt(6, discount.getCategoryID());
-            ps.setInt(7, discount.getDiscountID());
+            ps.setInt(6, discount.getDiscountID());
             
             return ps.executeUpdate() > 0;      
         } catch (SQLException e) {
@@ -119,8 +116,8 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Скидка (Описание, Размер, " + 
-        		"Начало, Окончание, ИДПродукт) " +
+        String query = "Insert Into discount (Discount, Size, " + 
+        		"StartDate, EndDate, ProductID) " +
         		"Values (?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -149,7 +146,7 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From Скидка WHERE ИДСкидка = ?";
+        String query = "Delete From discount WHERE DiscountID = ?";
         try {
             ps = connection.prepareStatement(query);
             
@@ -173,14 +170,14 @@ public class DiscountDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Скидка "
-                + "WHERE ИДПродукт = ? and Начало <= NOW() and NOW() <= Окончание";
+        String query = "SELECT * FROM discount "
+                + "WHERE ProductID = ? and StartDate <= NOW() and NOW() <= EndDate";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, productID);
             rs = ps.executeQuery();
             if (rs.next()) {
-            	return rs.getFloat("Размер");
+            	return rs.getFloat("Size");
             } else {
                 return 0;
             }

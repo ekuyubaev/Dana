@@ -48,7 +48,9 @@ public class UserController extends HttpServlet {
         System.out.println("In doGet with URI = " + requestURI);
         String url = "";
         
-        if (requestURI.endsWith("/register")) {
+        if (requestURI.endsWith("/editClient")) {
+            url = displayUserForm(request, response);
+        }  else if (requestURI.endsWith("/register")) {
             url = "/login/user.jsp";
         }  else if (requestURI.endsWith("/orders")) {
             url = displayClientOrders(request, response);
@@ -73,7 +75,11 @@ public class UserController extends HttpServlet {
         System.out.println("In doPost with URI = " + requestURI);
         String url = "";
         
-        if (requestURI.endsWith("/addClient")) {
+        if (requestURI.endsWith("/editClient")) { 
+            url = displayUserForm(request, response);
+        }  else if (requestURI.endsWith("/updateClient")) {
+        	url = updateClient(request, response);
+        }  else if (requestURI.endsWith("/addClient")) {
         	url = addClient(request, response);
         }  else if (requestURI.endsWith("/register")) {
             url = "/login/user.jsp";
@@ -104,6 +110,21 @@ public class UserController extends HttpServlet {
         OrderDB.finishOrder(orderID);
 
         return "/userController/orders";
+    }
+    
+    
+    private String displayUserForm(HttpServletRequest request, HttpServletResponse response) {
+        
+    	String message = "";
+    	HttpSession session = request.getSession();
+    	
+    	if (session.getAttribute("client") == null) {
+    		message = "Вы не авторизованы";
+    		request.setAttribute("message", message);
+    		return "/cabinet/index.jsp";
+    	}
+
+        return "/login/UserForm.jsp";
     }
     
     
@@ -182,6 +203,55 @@ public class UserController extends HttpServlet {
 		}
 		
 		String url = "/login/thanks.jsp";
+		return url;
+    } 
+    
+    
+    private String updateClient(HttpServletRequest request, HttpServletResponse response) {
+
+    	String message = "";
+    	
+		HttpSession session = request.getSession();
+		
+		String clientName = request.getParameter("clientName");
+		String clientBirthDate = request.getParameter("clientBirthDate");
+		String clientMail = request.getParameter("clientMail");
+		String clientPhone = request.getParameter("clientPhone");
+		String clientAdress = request.getParameter("clientAdress");	
+		String password = request.getParameter("password");
+		String passwordConfirmation = request.getParameter("passwordConfirmation"); 
+		
+		Client client = (Client)session.getAttribute("client");
+		
+		client.setClientName(clientName);
+		client.setClientBirthDate(Date.valueOf(clientBirthDate));
+		client.setClientMail(clientMail);
+		client.setClientPhone(clientPhone);
+		client.setClientAdress(clientAdress);
+		
+		
+		if (!password.equals(passwordConfirmation)) {
+			//request.setAttribute("client", client);  
+		    message = "Пароли не совпадают.";
+		    request.setAttribute("message", message);
+		    
+		    return "/login/UserForm.jsp";
+		} else {
+		    User user = (User)session.getAttribute("user");
+		    user.setUserPass(password);
+		    UserDB.update(user);
+		    //session.setAttribute("user", null);
+		    session.setAttribute("user", user);
+		    
+		    ClientDB.update(client);
+		    //session.setAttribute("client", null);
+		    session.setAttribute("client", client);
+		    
+		    message = "Ваши данные успешно изменены.";
+		    request.setAttribute("message", message);
+		}
+		
+		String url = "/login/UserForm.jsp";
 		return url;
     } 
     

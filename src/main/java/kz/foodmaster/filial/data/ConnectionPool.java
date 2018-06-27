@@ -1,9 +1,12 @@
 package kz.foodmaster.filial.data;
 
 
-import java.sql.*;
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.naming.*;
+import javax.sql.DataSource;
+
 
 public class ConnectionPool {
 

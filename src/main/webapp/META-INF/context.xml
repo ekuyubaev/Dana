@@ -5,7 +5,7 @@
             driverClassName="com.mysql.jdbc.Driver" 
             url="jdbc:mysql://localhost:3306/filialfo_foodmaster?autoReconnect=true" 
             connectionProperties="useUnicode=yes;characterEncoding=utf8;"
-            username="filialfo_root" password="gdx4852T" 
+            username="root" password="gdx4852T" 
             logAbandoned="true" 
             removeAbandoned="true" removeAbandonedTimeout="60" 
             maxActive="100" maxIdle="30" maxWait="10000" />

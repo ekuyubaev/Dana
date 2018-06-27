@@ -192,7 +192,7 @@ public class ProductDB {
         String query = "Delete From product WHERE ProductID = ?";
         try {
             ps = connection.prepareStatement(query);
-            
+           
             ps.setInt(1, productID);
             
             return ps.executeUpdate() > 0;      

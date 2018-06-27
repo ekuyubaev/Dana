@@ -13,7 +13,6 @@ public class Discount implements Serializable {
     private Date discountStart;
     private Date discountEnd;
     private int productID;
-    private int categoryID;
 	
     public Discount() {
 	}
@@ -24,14 +23,6 @@ public class Discount implements Serializable {
 
 	public void setProductID(int productID) {
 		this.productID = productID;
-	}
-
-	public int getCategoryID() {
-		return categoryID;
-	}
-
-	public void setCategoryID(int categoryID) {
-		this.categoryID = categoryID;
 	}
 
 	public int getDiscountID() {

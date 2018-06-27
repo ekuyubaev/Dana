@@ -103,6 +103,8 @@ public class OrderController extends HttpServlet {
             	url = "/login/welcome.jsp";
             	message = "Вы успешно авторизованы!";
             	session.setAttribute("client", client);
+            	User user = UserDB.selectUser(client.getClientLogin());
+            	session.setAttribute("user", user);
         	} else {
         		message = "Клиента с таким логином/паролем не существует.";
         	}

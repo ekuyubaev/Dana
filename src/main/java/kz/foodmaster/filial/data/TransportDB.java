@@ -13,7 +13,7 @@ public class TransportDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert into Транспорт (Модель, Номер, Грузоподъемность, Холодильная, Примечание) "
+        String query = "Insert into transport (Model, Number, Capacity, Fridge, Notes) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try {      	
         	ps = connection.prepareStatement(query);
@@ -24,7 +24,7 @@ public class TransportDB {
             ps.setString(5, transport.getNotes());
             ps.executeUpdate();
 
-            String identityQuery = "SELECT last_insert_id() as IDENTITY from dbfoodmaster.Транспорт";
+            String identityQuery = "SELECT last_insert_id() as IDENTITY from transport";
             Statement identityStatement = connection.createStatement();
             ResultSet identityResultSet = identityStatement.executeQuery(identityQuery);
             identityResultSet.next();
@@ -47,9 +47,9 @@ public class TransportDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Транспорт SET "
-                + "Модель = ?, Номер = ?, Грузоподъемность = ?, Холодильная = ?, Примечание = ? "
-                + "WHERE ИДТранспорт = ?";
+        String query = "UPDATE transport SET "
+                + "Model = ?, Number = ?, Capacity = ?, Fridge = ?, Notes = ? "
+                + "WHERE TransportID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, transport.getModel());
@@ -75,7 +75,7 @@ public class TransportDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Транспорт";
+        String query = "Select * From transport";
         
         try {
             ps = connection.prepareStatement(query);
@@ -83,12 +83,12 @@ public class TransportDB {
             ArrayList<Transport> transports = new ArrayList<>();
             while (rs.next()) {
             	Transport transport = new Transport();
-            	transport.setID(rs.getInt("ИДТранспорт"));
-            	transport.setModel(rs.getString("Модель"));
-            	transport.setNumber(rs.getString("Номер"));
-            	transport.setCapacity(rs.getInt("Грузоподъемность"));
-            	transport.setFridge(rs.getBoolean("Холодильная"));
-            	transport.setNotes(rs.getString("Примечание"));
+            	transport.setID(rs.getInt("TransportID"));
+            	transport.setModel(rs.getString("Model"));
+            	transport.setNumber(rs.getString("Number"));
+            	transport.setCapacity(rs.getInt("Capacity"));
+            	transport.setFridge(rs.getBoolean("Fridge"));
+            	transport.setNotes(rs.getString("Notes"));
 
             	transports.add(transport);
             }
@@ -110,8 +110,8 @@ public class TransportDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Транспорт " +
-        				"Where ИДТранспорт = ?";
+        String query = "Select * From transport " +
+        				"Where TransportID = ?";
         
         try { 	
             ps = connection.prepareStatement(query);
@@ -122,12 +122,12 @@ public class TransportDB {
             if (rs.next()) {
             	transport = new Transport();
 
-            	transport.setID(rs.getInt("ИДТранспорт"));
-            	transport.setModel(rs.getString("Модель"));
-            	transport.setNumber(rs.getString("Номер"));
-            	transport.setCapacity(rs.getInt("Грузоподъемность"));
-            	transport.setFridge(rs.getBoolean("Холодильная"));
-            	transport.setNotes(rs.getString("Примечание"));
+            	transport.setID(rs.getInt("TransportID"));
+            	transport.setModel(rs.getString("Model"));
+            	transport.setNumber(rs.getString("Number"));
+            	transport.setCapacity(rs.getInt("Capacity"));
+            	transport.setFridge(rs.getBoolean("Fridge"));
+            	transport.setNotes(rs.getString("Notes"));
             }
             return transport;
         } catch (SQLException e) {
@@ -147,8 +147,8 @@ public class TransportDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Delete From Транспорт "
-                + "WHERE ИДТранспорт = ?";
+        String query = "Delete From transport "
+                + "WHERE TransportID = ?";
         try {
             ps = connection.prepareStatement(query);
             

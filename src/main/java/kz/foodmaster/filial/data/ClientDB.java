@@ -15,8 +15,8 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент "
-                + "WHERE Логин = ?";
+        String query = "SELECT * FROM client "
+                + "WHERE Login = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -39,9 +39,9 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент К inner join Пользователь П "
-        		+ "ON К.Логин = П.Логин "
-                + "WHERE П.Логин = ? and Пароль = ?";
+        String query = "SELECT * FROM client c inner join user u "
+        		+ "ON c.Login = u.Login "
+                + "WHERE u.Login = ? and Password = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -50,13 +50,14 @@ public class ClientDB {
             Client client = null;
             if (rs.next()) {
             	client = new Client();
-            	client.setClientId(rs.getInt("ИДКлиент"));
-            	client.setClientName(rs.getString("ФИОКлиент"));
-            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
-            	client.setClientMail(rs.getString("Почта"));
-            	client.setClientPhone(rs.getString("Телефон"));
-            	client.setClientLogin(rs.getString("Логин"));
-            	client.setClientAdress(rs.getString("Адрес"));
+            	client.setClientId(rs.getInt("ClientID"));
+            	client.setClientName(rs.getString("Name"));
+            	client.setClientMail(rs.getString("Mail"));
+            	client.setClientPhone(rs.getString("Phone"));
+            	client.setClientNotes(rs.getString("Notes"));
+            	client.setClientBirthDate(rs.getDate("BirthDate"));
+            	client.setClientAdress(rs.getString("Adress"));
+            	client.setClientLogin(rs.getString("Login"));
             }
             
             return client;
@@ -78,7 +79,7 @@ public class ClientDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO Клиент (ФИОКлиент, ДатаРождения, Почта, Телефон, Логин, Адрес, Примечание) "
+                = "INSERT INTO client (Name, BirthDate, Mail, Phone, Login, Adress, Notes) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -118,14 +119,13 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Клиент SET "
-                + "ФИОКлиент = ?, "
-                + "ДатаРождения = ?, "
-                + "Почта = ?, "
-                + "Телефон = ?, "
-                + "Примечание = ? "
-                + "Логин = ? "
-                + "WHERE ИДКлиент = ?";
+        String query = "UPDATE client SET "
+                + "Name = ?, "
+                + "BirthDate = ?, "
+                + "Mail = ?, "
+                + "Phone = ?, "
+                + "Notes = ? "
+                + "WHERE ClientID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, client.getClientName());
@@ -133,8 +133,7 @@ public class ClientDB {
             ps.setString(3, client.getClientMail());
             ps.setString(4, client.getClientPhone());
             ps.setString(5, client.getClientNotes());
-            ps.setString(6, client.getClientLogin());
-            ps.setInt(7, client.getClientId());
+            ps.setInt(6, client.getClientId());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -152,8 +151,8 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент "
-                + "WHERE ИДКлиент = ?";
+        String query = "SELECT * FROM client "
+                + "WHERE ClientID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, clientID);
@@ -161,14 +160,14 @@ public class ClientDB {
             Client client = null;
             if (rs.next()) {
             	client = new Client();
-            	client.setClientId(rs.getInt("ИДКлиент"));
-            	client.setClientName(rs.getString("ФИОКлиент"));
-            	client.setClientMail(rs.getString("Почта"));
-            	client.setClientPhone(rs.getString("Телефон"));
-            	client.setClientNotes(rs.getString("Примечание"));
-            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
-            	client.setClientAdress(rs.getString("Адрес"));
-            	client.setClientLogin(rs.getString("Логин"));
+            	client.setClientId(rs.getInt("ClientID"));
+            	client.setClientName(rs.getString("Name"));
+            	client.setClientMail(rs.getString("Mail"));
+            	client.setClientPhone(rs.getString("Phone"));
+            	client.setClientNotes(rs.getString("Notes"));
+            	client.setClientBirthDate(rs.getDate("BirthDate"));
+            	client.setClientAdress(rs.getString("Adress"));
+            	client.setClientLogin(rs.getString("Login"));
             }
             return client;
         } catch (SQLException e) {
@@ -188,21 +187,21 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент";
+        String query = "SELECT * FROM client";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             List<Client> clients = new ArrayList<>();
             while (rs.next()) {
             	Client client = new Client();
-            	client.setClientId(rs.getInt("ИДКлиент"));
-            	client.setClientName(rs.getString("ФИОКлиент"));
-            	client.setClientMail(rs.getString("Почта"));
-            	client.setClientPhone(rs.getString("Телефон"));
-            	client.setClientNotes(rs.getString("Примечание"));
-            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
-            	client.setClientAdress(rs.getString("Адрес"));
-            	client.setClientLogin(rs.getString("Логин"));
+            	client.setClientId(rs.getInt("ClientID"));
+            	client.setClientName(rs.getString("Name"));
+            	client.setClientMail(rs.getString("Mail"));
+            	client.setClientPhone(rs.getString("Phone"));
+            	client.setClientNotes(rs.getString("Notes"));
+            	client.setClientBirthDate(rs.getDate("BirthDate"));
+            	client.setClientAdress(rs.getString("Adress"));
+            	client.setClientLogin(rs.getString("Login"));
             	clients.add(client);
             }
             return clients;
@@ -223,8 +222,8 @@ public class ClientDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Клиент "
-                + "WHERE Логин = ?";
+        String query = "SELECT * FROM client "
+                + "WHERE Login = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -232,14 +231,14 @@ public class ClientDB {
             Client client = null;
             if (rs.next()) {
             	client = new Client();
-            	client.setClientId(rs.getInt("ИДКлиент"));
-            	client.setClientName(rs.getString("ФИОКлиент"));
-            	client.setClientMail(rs.getString("Почта"));
-            	client.setClientPhone(rs.getString("Телефон"));
-            	client.setClientNotes(rs.getString("Примечание"));
-            	client.setClientBirthDate(rs.getDate("ДатаРождения"));
-            	client.setClientAdress(rs.getString("Адрес"));
-            	client.setClientLogin(rs.getString("Логин"));
+            	client.setClientId(rs.getInt("ClientID"));
+            	client.setClientName(rs.getString("Name"));
+            	client.setClientMail(rs.getString("Mail"));
+            	client.setClientPhone(rs.getString("Phone"));
+            	client.setClientNotes(rs.getString("Notes"));
+            	client.setClientBirthDate(rs.getDate("BirthDate"));
+            	client.setClientAdress(rs.getString("Adress"));
+            	client.setClientLogin(rs.getString("Login"));
             }
             return client;
         } catch (SQLException e) {

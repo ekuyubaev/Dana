@@ -6,6 +6,8 @@
                   На главную</a></li>
           <li><a href="<c:url value='/userController/orders' />">
                   Мои заказы</a></li>
+          <li><a href="<c:url value='/userController/editClient' />">
+                  Личные данные</a></li>
       </ul>
     </nav>
 </aside>

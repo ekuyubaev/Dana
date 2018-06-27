@@ -17,16 +17,16 @@ public class DistanceDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Расстояния";
+        String query = "SELECT * FROM distance";
         try {
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             ArrayList<Distance> distances = new ArrayList<>();
             while (rs.next()) {
             	Distance d = new Distance();
-            	d.setFromID(rs.getInt("ИД_от"));
-            	d.setToID(rs.getInt("ИД_до"));
-            	d.setValue(rs.getInt("расстояние"));
+            	d.setFromID(rs.getInt("FromID"));
+            	d.setToID(rs.getInt("ToID"));
+            	d.setValue(rs.getInt("Distance"));
             	distances.add(d);
             }
             return distances;
@@ -46,7 +46,7 @@ public class DistanceDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Расстояния (ИД_от, ИД_до, расстояние) Values (?, ?, ?)";
+        String query = "Insert Into distance (FromID, ToID, Distance) Values (?, ?, ?)";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, from);
@@ -69,7 +69,7 @@ public class DistanceDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Update Расстояния Set расстояние = ? Where ИД_от = ? and ИД_до =  ?";
+        String query = "Update distance Set Distance = ? Where FromID = ? and ToID =  ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(2, from);
@@ -93,7 +93,7 @@ public class DistanceDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Select * From Расстояния Where ИД_от = ? and ИД_до = ?";
+        String query = "Select * From distance Where FromID = ? and ToID = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setInt(1, from);
@@ -103,7 +103,7 @@ public class DistanceDB {
             	Distance d = new Distance();
             	d.setFromID(from);
             	d.setToID(to);
-            	d.setValue(rs.getFloat("Расстояние"));
+            	d.setValue(rs.getFloat("Distance"));
             	return d;
             }
             return null;

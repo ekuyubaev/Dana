@@ -13,7 +13,7 @@ public class RoleDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "Insert Into Роль (Логин, Роль) " +
+        String query = "Insert Into role (Login, Role) " +
         		"Values (?, ?)";
         try {
             ps = connection.prepareStatement(query);

@@ -12,7 +12,7 @@ public class UserDB {
         ResultSet rs = null;
 
         String query
-                = "INSERT INTO Пользователь (Логин, Пароль) "
+                = "INSERT INTO user (Login, Password) "
                 + "VALUES (?, ?)";
         try {
             ps = connection.prepareStatement(query);
@@ -35,9 +35,9 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "UPDATE Пользователь SET "
-                + "Пароль = ? "
-                + "WHERE Логин = ?";
+        String query = "UPDATE user SET "
+                + "Password = ? "
+                + "WHERE Login = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, user.getUserPass());
@@ -60,8 +60,8 @@ public class UserDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = "SELECT * FROM Пользователь "
-                + "WHERE Логин = ?";
+        String query = "SELECT * FROM user "
+                + "WHERE Login = ?";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, login);
@@ -69,8 +69,8 @@ public class UserDB {
             User user = null;
             if (rs.next()) {
                 user = new User();
-                user.setUserLogin(rs.getString("Логин"));
-                user.setUserPass(rs.getString("Пароль"));
+                user.setUserLogin(rs.getString("Login"));
+                user.setUserPass(rs.getString("Password"));
             }
             return user;
         } catch (SQLException e) {
